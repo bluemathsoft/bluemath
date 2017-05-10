@@ -1,6 +1,6 @@
 
-import {Vector2} from '../src'
-import {isEqualFloat} from '../src'
+import {utils, Vector2} from '../src'
+
 
 /// <reference path="qunit/index.d.ts" />
 
@@ -40,7 +40,7 @@ window.onload = () => {
   });
   QUnit.test('len', assert => {
     let v = new Vector2(12,12);
-    assert.ok(isEqualFloat(v.len(), 12*Math.sqrt(2)));
+    assert.ok(utils.isEqualFloat(v.len(), 12*Math.sqrt(2)));
   });
   QUnit.test('unit', assert => {
     let v = new Vector2(12,12);
@@ -60,7 +60,7 @@ window.onload = () => {
   });
   QUnit.test('dist', assert => {
     let v = new Vector2(0,0);
-    assert.ok(isEqualFloat(v.dist(new Vector2(12,12)), 12*Math.sqrt(2)));
+    assert.ok(utils.isEqualFloat(v.dist(new Vector2(12,12)), 12*Math.sqrt(2)));
   });
   QUnit.test('dot', assert => {
     let v = new Vector2(5,4);

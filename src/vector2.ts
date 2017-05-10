@@ -1,11 +1,11 @@
 
 import {EPSILON} from './constants'
-import {isZero} from '.'
+import * as utils from './utils'
 
 /**
  * 2D Vector
  */
-class Vector2 {
+export default class Vector2 {
 
   x : number;
   y : number;
@@ -61,7 +61,7 @@ class Vector2 {
    */
   unit() : Vector2 {
     let len = this.len();
-    if(isZero(len)) {
+    if(utils.isZero(len)) {
       return new Vector2(0,0);
     } else {
       return new Vector2(this.x/len, this.y/len);
@@ -176,5 +176,3 @@ class Vector2 {
     return new Vector2(xhigh, yhigh);
   }
 }
-
-export default Vector2;
