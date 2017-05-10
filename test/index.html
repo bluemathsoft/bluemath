@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>BlueMath Tests</title>
+  <script src="../build/bluemath-test.js"></script>
+  <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
+  <link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css" />
+  <style>
+    select {
+      font-size: 120%;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      z-index: 10;
+    }
+
+    svg {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <select>
+  <option value="bboxes">Bounding Boxes</option>
+  <option value="circarcs">Circular Arcs</option>
+  <option value="int-line-ellipse-full">Intersections Line Ellipse-full</option>
+  <option value="int-line-ellipse-partial">Intersections Line Ellipse-partial</option>
+  <option value="int-line-cbez">Intersections Line Cubic Bezier</option>
+  <option value="nurbs-basis">Plot NURBS basis</option>
+  <option value="unittests">Unit Tests</option>
+  <option value="ndarrunittests">NDArray Unit Tests</option>
+</select>
+</body>
+
+</html>
