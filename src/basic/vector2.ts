@@ -1,6 +1,6 @@
 
-import {EPSILON} from './constants'
-import * as utils from './utils'
+import {EPSILON} from '../constants'
+import * as utils from '../utils'
 
 /**
  * 2D Vector

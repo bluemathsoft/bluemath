@@ -1,10 +1,10 @@
 
 
-import Vector2 from './vector2'
 import * as utils from './utils'
+import * as basic from './basic'
 
 export {
   utils,
-  Vector2
+  basic
 }
 

@@ -1,6 +1,7 @@
 
-import {utils, Vector2} from '../src'
+import {utils, basic} from '../src'
 
+let {Matrix, Vector2} = basic;
 
 /// <reference path="qunit/index.d.ts" />
 
@@ -95,5 +96,11 @@ window.onload = () => {
   QUnit.test('toString', assert => {
     assert.equal(new Vector2(3.5466,-6.0988).toString(), '[3.55,-6.10]');
     assert.equal(new Vector2(3.5466,-6.0988).toString(3), '[3.547,-6.099]');
+  });
+
+  QUnit.module('Matrix');
+
+  QUnit.test('construction', assert => {
+    assert.notEqual(new Matrix(), null);
   });
 }
