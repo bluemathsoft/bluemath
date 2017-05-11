@@ -101,6 +101,16 @@ window.onload = () => {
   QUnit.module('Matrix');
 
   QUnit.test('construction', assert => {
-    assert.notEqual(new Matrix(), null);
+    assert.notEqual(new Matrix([2,2],null,'float32'), null);
+  });
+  QUnit.test('fill', assert => {
+    let m = new Matrix([2,2],null,'float32');
+    m.fill(29);
+    assert.equal(m.get([1,1]), 29);
+  });
+  QUnit.test('get-set', assert => {
+    let m = new Matrix([2,2],null,'float32');
+    m.set([0,1],43.66);
+    assert.ok(utils.isEqualFloat(m.get([0,1]), 43.66));
   });
 }
