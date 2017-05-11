@@ -65,7 +65,7 @@ export default class Matrix {
     this.data.fill(value);
   }
 
-  _getAddress(indices:Array<number>) {
+  private _getAddress(indices:Array<number>) {
     console.assert(indices.length === this.shape.length);
     let addr = 0;
     for (let i = 0; i < this.shape.length; i++) {
