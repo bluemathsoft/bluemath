@@ -20,18 +20,6 @@
 
 */
 
-import * as utils from './utils'
-import * as basic from './basic'
-import * as geom from './geom'
+export default class Vector {
 
-type NumberArray1D = Array<number>;
-type NumberArray2D = Array<NumberArray1D>;
-
-export {
-  utils,
-  basic,
-  geom,
-  NumberArray1D,
-  NumberArray2D
 }
-

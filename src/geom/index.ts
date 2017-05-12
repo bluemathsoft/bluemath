@@ -1,4 +1,3 @@
-
  /*
 
  Copyright (C) 2017 Jayesh Salvi, Blue Math Software Inc.
@@ -20,18 +19,8 @@
 
 */
 
-import * as utils from './utils'
-import * as basic from './basic'
-import * as geom from './geom'
-
-type NumberArray1D = Array<number>;
-type NumberArray2D = Array<NumberArray1D>;
+import * as nurbs from './nurbs'
 
 export {
-  utils,
-  basic,
-  geom,
-  NumberArray1D,
-  NumberArray2D
-}
-
+  nurbs
+};

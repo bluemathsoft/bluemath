@@ -23,15 +23,18 @@
 import {EPSILON} from '../constants'
 import * as utils from '../utils'
 
+import Vector from './vector'
+
 /**
  * 2D Vector
  */
-export default class Vector2 {
+export default class Vector2 extends Vector {
 
   x : number;
   y : number;
 
-  constructor(x:number, y:number) {
+  constructor(x=0.0, y=0.0) {
+    super();
     this.x = x;
     this.y = y;
   }

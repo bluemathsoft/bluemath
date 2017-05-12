@@ -20,9 +20,10 @@
 
 */
 
-import {utils, basic} from '../src'
+import {utils, basic, geom} from '../src'
 
 let {Matrix, Vector2} = basic;
+let {BSplineCurve2D} = geom.nurbs;
 
 /// <reference path="qunit/index.d.ts" />
 
@@ -133,5 +134,18 @@ window.onload = () => {
     let m = new Matrix([2,2],null,'float32');
     m.set([0,1],43.66);
     assert.ok(utils.isEqualFloat(m.get([0,1]), 43.66));
+  });
+
+  QUnit.module('BSplineCurve2D');
+  QUnit.test('construction', assert => {
+    let bcrv = new BSplineCurve2D(1, [new Vector2(0,0), new Vector2(10,10)], [0,0,1,1]);
+    assert.ok(!!bcrv);
+    assert.equal(bcrv.degree, 1);
+    assert.equal(bcrv.cpoints.length, 2);
+    assert.equal(bcrv.knots.length, 4);
+  });
+  QUnit.test('evaluate at midpoint', assert => {
+    let bcrv = new BSplineCurve2D(1, [new Vector2(0,0), new Vector2(10,10)], [0,0,1,1]);
+    assert.ok(bcrv.evaluate(0.5).isEqual(new Vector2(5,5)));
   });
 }

@@ -1,5 +1,5 @@
 
- /*
+/*
 
  Copyright (C) 2017 Jayesh Salvi, Blue Math Software Inc.
 
@@ -20,18 +20,19 @@
 
 */
 
-import * as utils from './utils'
-import * as basic from './basic'
-import * as geom from './geom'
+import Vector from './vector'
 
-type NumberArray1D = Array<number>;
-type NumberArray2D = Array<NumberArray1D>;
+export default class Vector3 extends Vector {
 
-export {
-  utils,
-  basic,
-  geom,
-  NumberArray1D,
-  NumberArray2D
+  x : number;
+  y : number;
+  z : number;
+
+  constructor(x=0.0, y=0.0, z=0.0) {
+    super();
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+
 }
-

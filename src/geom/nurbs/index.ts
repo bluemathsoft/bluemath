@@ -20,18 +20,10 @@
 
 */
 
-import * as utils from './utils'
-import * as basic from './basic'
-import * as geom from './geom'
-
-type NumberArray1D = Array<number>;
-type NumberArray2D = Array<NumberArray1D>;
+import {BSplineCurve,BSplineCurve2D,BSplineCurve3D} from './bcurve'
 
 export {
-  utils,
-  basic,
-  geom,
-  NumberArray1D,
-  NumberArray2D
-}
-
+  BSplineCurve,
+  BSplineCurve2D,
+  BSplineCurve3D
+};
