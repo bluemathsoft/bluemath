@@ -46,16 +46,16 @@ window.onload = () => {
   QUnit.test('add', assert => {
     let v1 = new Vector2(20,30);
     let v2 = new Vector2(20,30);
-    assert.equal(v1.add(v2).x, 40);
+    assert.equal(v1.add(v2).data[0], 40);
   });
   QUnit.test('sub', assert => {
     let v1 = new Vector2(20,30);
     let v2 = new Vector2(14,22);
-    assert.equal(v1.sub(v2).y, 8);
+    assert.equal(v1.sub(v2).data[1], 8);
   });
   QUnit.test('mul', assert => {
     let v = new Vector2(20,30);
-    assert.equal(v.mul(0.1).y, 3);
+    assert.equal(v.mul(0.1).data[1], 3);
   });
   QUnit.test('lenSq', assert => {
     let v = new Vector2(12,12);
@@ -67,7 +67,7 @@ window.onload = () => {
   });
   QUnit.test('unit', assert => {
     let v = new Vector2(12,12);
-    assert.equal(v.unit().len(), 1);
+    assert.ok(utils.isEqualFloat(v.unit().len(), 1));
   });
   QUnit.test('isNonZero', assert => {
     let v = new Vector2(20,30);

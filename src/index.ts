@@ -26,12 +26,17 @@ import * as geom from './geom'
 
 type NumberArray1D = Array<number>;
 type NumberArray2D = Array<NumberArray1D>;
+type NumberType = 'int8'|'int16'|'int32'|'float32'|'float64';
+type TypedArray = Int8Array | Uint8Array | Int16Array |
+    Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array;
 
 export {
   utils,
   basic,
   geom,
   NumberArray1D,
-  NumberArray2D
+  NumberArray2D,
+  NumberType,
+  TypedArray
 }
 
