@@ -19,26 +19,24 @@
 
 */
 
+import {NumberType} from '..'
+
 export default class Matrix {
 
   shape : Array<number>
   data : Int8Array|Int16Array|Int32Array|Float32Array|Float64Array
-  datatype : string
+  datatype : NumberType
   size : number
 
-  /**
-   * Supported datatype strings
-   * ['int8','int16','int32','float32','float64']
-   */
   constructor(
     shape:Array<number>,
     data : Int8Array|Int16Array|Int32Array|Float32Array|Float64Array|null,
-    datatype='float32')
+    datatype? : NumberType)
   {
     this.shape = shape;
     this._computeSize();
 
-    this.datatype = datatype;
+    this.datatype = datatype || 'float32';
 
     if(data === null) {
       this._alloc();
