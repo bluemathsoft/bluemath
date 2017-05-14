@@ -22,7 +22,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 import { utils, basic, geom } from '../src'
 
-let { Matrix, Vector2 } = basic;
+let { Matrix2, Vector2 } = basic;
 let { BSplineCurve2D } = geom.nurbs;
 
 /// <reference path="qunit/index.d.ts" />
@@ -123,17 +123,17 @@ window.onload = () => {
   QUnit.module('Matrix');
 
   QUnit.test('construction', assert => {
-    assert.notEqual(new Matrix([2,2]), null);
+    assert.notEqual(new Matrix2({rows:2,cols:2}), null);
   });
   QUnit.test('fill', assert => {
-    let m = new Matrix([2,2]);
+    let m = new Matrix2({rows:2,cols:2});
     m.fill(29);
-    assert.equal(m.get([1,1]), 29);
+    assert.equal(m.get(1,1), 29);
   });
   QUnit.test('get-set', assert => {
-    let m = new Matrix([2,2]);
-    m.set([0,1],43.66);
-    assert.ok(utils.isEqualFloat(m.get([0,1]), 43.66));
+    let m = new Matrix2({rows:2,cols:2});
+    m.set(0,1,43.66);
+    assert.ok(utils.isEqualFloat(m.get(0,1), 43.66));
   });
 
   QUnit.module('BSplineCurve2D');

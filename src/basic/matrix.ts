@@ -19,59 +19,82 @@
 
 */
 
-import {NumberType, TypedArray} from '..'
+import {NumberType, NumberArray2D, TypedArray} from '..'
 
-export default class Matrix {
 
-  shape : Array<number>
-  data : TypedArray
-  datatype : NumberType
-  size : number
+export default class Matrix2 {
 
+  private _data : TypedArray
+  private datatype : NumberType
+  private rows : number;
+  private cols : number;
+
+  /**
+   * If arg0 is 2D array, all its rows should be the same length.
+   * Let length of first row is assumed to be the number of columns.
+   */
   constructor(
-    shape:Array<number>,
-    data? : TypedArray,
+    arg0 : NumberArray2D | {rows:number,cols:number},
     datatype? : NumberType)
   {
-    this.shape = shape;
-    this._computeSize();
-
     this.datatype = datatype || 'float32';
 
-    if(!data) {
-      this._alloc();
+    if(Array.isArray(arg0)) {
+      this.rows = arg0.length;
+      console.assert(Array.isArray(arg0[0]));
+      this.cols = arg0[0].length;
+      this._alloc(arg0);
     } else {
-      this.data = data;
+      this.rows = arg0.rows;
+      this.cols = arg0.cols;
+      this._alloc();
     }
   }
 
-  private _computeSize() : void {
-    let size = 1;
-    for(let dimsize of this.shape) {
-      size *= dimsize;
-    }
-    this.size = size;
+  get size() : number {
+    return this._data.length;
   }
 
-  private _alloc() : void {
+  get data() : TypedArray {
+    return this._data;
+  }
+
+  private _alloc(data?:NumberArray2D) : void {
+    let size = this.rows*this.cols;
     switch(this.datatype) {
       case 'int8':
-        this.data = new Int8Array(this.size);
+        this._data = new Int8Array(size);
+        break;
+      case 'uint8':
+        this._data = new Uint8Array(size);
         break;
       case 'int16':
-        this.data = new Int16Array(this.size);
+        this._data = new Int16Array(size);
+        break;
+      case 'uint16':
+        this._data = new Uint16Array(size);
         break;
       case 'int32':
-        this.data = new Int32Array(this.size);
+        this._data = new Int32Array(size);
+        break;
+      case 'uint32':
+        this._data = new Uint32Array(size);
         break;
       case 'float32':
-        this.data = new Float32Array(this.size);
+        this._data = new Float32Array(size);
         break;
       case 'float64':
-        this.data = new Float64Array(this.size);
+        this._data = new Float64Array(size);
         break;
       default:
         throw new Error("Unknown datatype");
+    }
+    if(data) {
+      for(let i=0; i<this.rows; i++) {
+        for(let j=0; j<this.cols; j++) {
+          this._data[this._getAddress(i,j)] = data[i][j];
+        }
+      }
     }
   }
 
@@ -79,30 +102,21 @@ export default class Matrix {
    * Assign value to all items in the matrix
    */
   fill(value:number) {
-    this.data.fill(value);
+    this._data.fill(value);
   }
 
-  private _getAddress(indices:Array<number>) {
-    console.assert(indices.length === this.shape.length);
-    let addr = 0;
-    for (let i = 0; i < this.shape.length; i++) {
-      if (i < this.shape.length - 1) {
-        addr += this.shape[i + 1] * indices[i];
-      } else {
-        addr += indices[i];
-      }
-    }
-    return addr;
+  private _getAddress(row:number, col:number) {
+    return row * this.cols + col;
   }
 
-  get(indices:Array<number>) : number {
-    let address = this._getAddress(indices);
-    return this.data[address];
+  get(row:number,col:number) : number {
+    let address = this._getAddress(row,col);
+    return this._data[address];
   }
 
-  set(indices:Array<number>, value:number) : void {
-    let address = this._getAddress(indices);
-    this.data[address] = value;
+  set(row:number, col:number, value:number) : void {
+    let address = this._getAddress(row,col);
+    this._data[address] = value;
   }
 
 }

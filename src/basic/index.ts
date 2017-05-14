@@ -19,11 +19,11 @@
 
 */
 
-import Matrix from './matrix'
+import Matrix2 from './matrix'
 import Vector from './vector'
 import Vector2 from './vector2'
 import Vector3 from './vector3'
 
 export {
-  Matrix, Vector, Vector2, Vector3
+  Matrix2, Vector, Vector2, Vector3
 };
