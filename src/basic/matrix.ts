@@ -22,7 +22,7 @@
 import {NumberType, NumberArray2D, TypedArray} from '..'
 
 
-export default class Matrix2 {
+export default class Matrix {
 
   private _data : TypedArray
   private datatype : NumberType
