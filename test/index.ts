@@ -1,29 +1,29 @@
 
- /*
+/*
 
- Copyright (C) 2017 Jayesh Salvi, Blue Math Software Inc.
+Copyright (C) 2017 Jayesh Salvi, Blue Math Software Inc.
 
- This file is part of bluemath.
+This file is part of bluemath.
 
- bluemath is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+bluemath is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- bluemath is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- GNU Affero General Public License for more details.
+bluemath is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
 
- You should have received a copy of the GNU Affero General Public License
- along with bluemath. If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Affero General Public License
+along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import {utils, basic, geom} from '../src'
+import { utils, basic, geom } from '../src'
 
-let {Matrix, Vector2} = basic;
-let {BSplineCurve2D} = geom.nurbs;
+let { Matrix, Vector2 } = basic;
+let { BSplineCurve2D } = geom.nurbs;
 
 /// <reference path="qunit/index.d.ts" />
 
@@ -34,47 +34,47 @@ window.onload = () => {
   document.body.appendChild(qunitDiv);
 
   let qunitFixtureDiv = document.createElement('div');
-  qunitFixtureDiv.setAttribute('id','qunit-fixture');
+  qunitFixtureDiv.setAttribute('id', 'qunit-fixture');
   document.body.appendChild(qunitFixtureDiv);
 
   QUnit.module('Vector2');
 
   QUnit.test('construction', assert => {
-    let v = new Vector2(20,30);
+    let v = new Vector2(20, 30);
     assert.equal(v.x, 20);
   });
   QUnit.test('add', assert => {
-    let v1 = new Vector2(20,30);
-    let v2 = new Vector2(20,30);
+    let v1 = new Vector2(20, 30);
+    let v2 = new Vector2(20, 30);
     assert.equal(v1.add(v2).data[0], 40);
   });
   QUnit.test('sub', assert => {
-    let v1 = new Vector2(20,30);
-    let v2 = new Vector2(14,22);
+    let v1 = new Vector2(20, 30);
+    let v2 = new Vector2(14, 22);
     assert.equal(v1.sub(v2).data[1], 8);
   });
   QUnit.test('mul', assert => {
-    let v = new Vector2(20,30);
+    let v = new Vector2(20, 30);
     assert.equal(v.mul(0.1).data[1], 3);
   });
   QUnit.test('lenSq', assert => {
-    let v = new Vector2(12,12);
-    assert.equal(v.lenSq(), 2*144);
+    let v = new Vector2(12, 12);
+    assert.equal(v.lenSq(), 2 * 144);
   });
   QUnit.test('len', assert => {
-    let v = new Vector2(12,12);
-    assert.ok(utils.isEqualFloat(v.len(), 12*Math.sqrt(2)));
+    let v = new Vector2(12, 12);
+    assert.ok(utils.isEqualFloat(v.len(), 12 * Math.sqrt(2)));
   });
   QUnit.test('unit', assert => {
-    let v = new Vector2(12,12);
+    let v = new Vector2(12, 12);
     assert.ok(utils.isEqualFloat(v.unit().len(), 1));
   });
   QUnit.test('isNonZero', assert => {
-    let v = new Vector2(20,30);
+    let v = new Vector2(20, 30);
     assert.equal(v.isNonZero(), true);
   });
   QUnit.test('isZero', assert => {
-    let v = new Vector2(0,0);
+    let v = new Vector2(0, 0);
     assert.equal(v.isZero(), true);
   });
   QUnit.test('distSq', assert => {
@@ -123,15 +123,15 @@ window.onload = () => {
   QUnit.module('Matrix');
 
   QUnit.test('construction', assert => {
-    assert.notEqual(new Matrix([2,2],null,'float32'), null);
+    assert.notEqual(new Matrix([2,2]), null);
   });
   QUnit.test('fill', assert => {
-    let m = new Matrix([2,2],null,'float32');
+    let m = new Matrix([2,2]);
     m.fill(29);
     assert.equal(m.get([1,1]), 29);
   });
   QUnit.test('get-set', assert => {
-    let m = new Matrix([2,2],null,'float32');
+    let m = new Matrix([2,2]);
     m.set([0,1],43.66);
     assert.ok(utils.isEqualFloat(m.get([0,1]), 43.66));
   });

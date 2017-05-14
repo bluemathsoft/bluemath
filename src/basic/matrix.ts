@@ -19,18 +19,18 @@
 
 */
 
-import {NumberType} from '..'
+import {NumberType, TypedArray} from '..'
 
 export default class Matrix {
 
   shape : Array<number>
-  data : Int8Array|Int16Array|Int32Array|Float32Array|Float64Array
+  data : TypedArray
   datatype : NumberType
   size : number
 
   constructor(
     shape:Array<number>,
-    data : Int8Array|Int16Array|Int32Array|Float32Array|Float64Array|null,
+    data? : TypedArray,
     datatype? : NumberType)
   {
     this.shape = shape;
@@ -38,7 +38,7 @@ export default class Matrix {
 
     this.datatype = datatype || 'float32';
 
-    if(data === null) {
+    if(!data) {
       this._alloc();
     } else {
       this.data = data;
