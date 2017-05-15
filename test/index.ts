@@ -135,7 +135,7 @@ window.onload = () => {
       QUnit.test('Float32Array wrong dimensions', assert => {
         let farr = new Float32Array([0.034,1.203,5.08,999.7]);
         assert.throws(() => {
-          let m = new Matrix({rows:3,cols:2,data:farr});
+          new Matrix({rows:3,cols:2,data:farr});
         })
       });
       QUnit.test('Float32Array', assert => {
@@ -274,7 +274,7 @@ window.onload = () => {
         let A = new Matrix([[1,0],[2,1],[6,9]], 'int16');
         let B = new Matrix([[1,2,3],[1,2,9],[4,5,3]], 'int16');
         assert.throws(() => {
-          let M = A.mul(B);
+          A.mul(B);
         });
       });
       QUnit.test("by Vector", assert => {
