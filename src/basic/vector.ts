@@ -26,13 +26,33 @@ import {EPSILON} from '../constants'
 
 export default class Vector {
 
-  private _data : TypedArray | NumberArray1D;
+  protected _data : TypedArray | NumberArray1D;
   datatype : NumberType;
 
-  constructor(data:TypedArray | NumberArray1D, datatype?:NumberType) {
+  constructor(data:TypedArray | NumberArray1D | number, datatype?:NumberType) {
     this.datatype = datatype || 'float32';
     if(ArrayBuffer.isView(data)) {
       this._data = data;
+    } else if(Array.isArray(data)) {
+      switch(this.datatype) {
+        case 'int8':
+          this._data = new Int8Array(data);
+          break;
+        case 'int16':
+          this._data = new Int16Array(data);
+          break;
+        case 'int32':
+          this._data = new Int32Array(data);
+          break;
+        case 'float32':
+          this._data = new Float32Array(data);
+          break;
+        case 'float64':
+          this._data = new Float64Array(data);
+          break;
+        default:
+          throw new Error("Unknown datatype");
+      }
     } else {
       switch(this.datatype) {
         case 'int8':

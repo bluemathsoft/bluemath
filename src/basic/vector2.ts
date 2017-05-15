@@ -32,19 +32,19 @@ export default class Vector2 extends Vector {
   }
 
   get x() : number {
-    return this.data[0];
+    return this._data[0];
   }
 
   set x(newx:number) {
-    this.data[0] = newx;
+    this._data[0] = newx;
   }
 
   get y() : number {
-    return this.data[1];
+    return this._data[1];
   }
 
   set y(newy:number) {
-    this.data[1] = newy;
+    this._data[1] = newy;
   }
 
   /**
