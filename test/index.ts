@@ -289,6 +289,24 @@ window.onload = () => {
       });
     });
 
+    QUnit.module('Linear equations', () => {
+      QUnit.test("LU Decomposition", assert => {
+        let A = new Matrix([
+          [3,-7,-2,2],
+          [-3,5,1,0],
+          [6,-4,0,-5],
+          [-9,5,-5,12]
+        ], 'int32');
+        A.LUDecompose();
+        assert.ok(A.LU.isEqual(new Matrix([
+          [3,-7,-2,2],
+          [-1,-2,-1,2],
+          [2,-5,-1,1],
+          [-3,8,3,-1]
+        ])));
+      });
+    });
+
   });
 
   QUnit.module('BSplineCurve2D');

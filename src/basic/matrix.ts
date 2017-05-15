@@ -22,6 +22,7 @@
 import {NumberType, NumberArray2D, TypedArray} from '..'
 import Vector from './vector'
 import {utils} from '..'
+import {EPSILON} from '../constants'
 
 export default class Matrix {
 
@@ -29,6 +30,7 @@ export default class Matrix {
   private datatype : NumberType
   private _rows : number;
   private _cols : number;
+  private _LU : Matrix;
 
   /**
    * If arg0 is 2D array, all its rows should be the same length.
@@ -238,4 +240,75 @@ export default class Matrix {
     }
     return true;
   }
+
+  get LU() {
+    if(!this._LU) {
+      this.LUDecompose();
+    }
+    return this._LU;
+  }
+
+  /**
+   * Ref: Numerical Recipies 2.3.1
+   */
+  LUDecompose() {
+    if(this.rows !== this.cols) {
+      throw new Error("Non-square matrices can't be LU decomposed");
+    }
+    let LU = this.clone();
+    let n = this.rows;
+    let vv = new Float32Array(n);
+    let indx = new Array(n);
+    let d = 1;
+    let big;
+    let temp;
+    let imax=0;
+    // Loop over rows to get implicit scaling information
+    for(let i=0; i<n; i++) {
+      big = 0.0;
+      for(let j=0; j<n; j++) {
+        big = Math.max(big, Math.abs(LU.get(i,j)));
+      }
+      if(utils.isZero(big)) {
+        throw new Error("Singular matrix. Can't perform LU decomposition");
+      }
+      vv[i] = 1.0/big;
+    }
+
+    for(let k=0; k<n; k++) {
+      big = 0.0;
+      for(let i=k; i<n; i++) {
+        temp = vv[i] * Math.abs(LU.get(i,k));
+        if(temp > big) {
+          big = temp;
+          imax = i;
+        }
+      }
+      if(k !== imax) {
+        for(let j=0; j<n; j++) {
+          temp = LU.get(imax, j);
+          LU.set(imax, j, LU.get(k, j));
+          LU.set(k, j, temp);
+        }
+        d = -d;
+        vv[imax] = vv[k];
+      }
+      indx[k] = imax;
+      if(LU.get(k,k) == 0) { // TODO: reconsider
+        LU.set(k, k, EPSILON);
+      }
+      for(let i=k+1; i<n; i++) {
+        temp = LU.get(i,k)/LU.get(k,k);
+        LU.set(i, k, temp);
+        for(let j=k+1; j<n; j++) {
+          let val = LU.get(i,j) - temp*LU.get(k,j);
+          LU.set(i,j, val);
+        }
+      }
+    }
+    this._LU = LU;
+  }
+
+  // solve(b:Vector) : Vector {
+  // }
 }
