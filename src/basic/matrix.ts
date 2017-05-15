@@ -21,6 +21,7 @@
 
 import {NumberType, NumberArray2D, TypedArray} from '..'
 import Vector from './vector'
+import {utils} from '..'
 
 export default class Matrix {
 
@@ -208,5 +209,33 @@ export default class Matrix {
       }
       return result;
     }
+  }
+
+  transpose() {
+    if(this.rows !== this.cols) {
+      throw new Error("Non-square matrices can't be transposed");
+    }
+    for(let i=0; i<this.rows; i++) {
+      for(let j=i; j<this.cols; j++) {
+        if(i!==j) {
+          let tmp = this.get(i,j);
+          this.set(i,j,this.get(j,i));
+          this.set(j,i,tmp);
+        }
+      }
+    }
+  }
+
+  isEqual(other:Matrix) : boolean {
+    if(this.rows !== other.rows) { return false; }
+    if(this.cols !== other.cols) { return false; }
+    for(let i=0; i<this.rows; i++) {
+      for(let j=0; j<this.cols; j++) {
+        if(!utils.isEqualFloat(this.get(i,j), other.get(i,j))) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }

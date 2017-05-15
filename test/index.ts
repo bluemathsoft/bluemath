@@ -169,6 +169,74 @@ window.onload = () => {
       m.scale(100);
       assert.ok(utils.isEqualFloat(m.get(0,1), 120.3, 0.01));
     });
+    QUnit.module('Equality', () => {
+      QUnit.test('Int',assert => {
+        assert.ok(new Matrix([
+          [3,7,4],
+          [4,9,12]
+        ],'int32').isEqual(new Matrix([
+          [3,7,4],
+          [4,9,12]
+        ],'int32')));
+      });
+      QUnit.test('Float',assert => {
+        assert.ok(new Matrix([
+          [3,7,4.08],
+          [4,9,12],
+          [0.03,4,5]
+        ],'float64').isEqual(new Matrix([
+          [3,7,4.08],
+          [4,9,12],
+          [0.03,4,5]
+        ],'float64')));
+      });
+      QUnit.test('Failure',assert => {
+        assert.notOk(new Matrix([
+          [3,7,4.08],
+          [4,9,12],
+          [0.032,4,5]
+        ],'float64').isEqual(new Matrix([
+          [3,7,4.08],
+          [4,9,12],
+          [0.03,4,5]
+        ],'float64')));
+      });
+      QUnit.test('Failure dimension mismatch',assert => {
+        assert.notOk(new Matrix([
+          [3,7,4.08],
+          [4,9,12]
+        ],'float64').isEqual(new Matrix([
+          [3,7,4.08],
+          [4,9,12],
+          [0.03,4,5]
+        ],'float64')));
+      });
+    });
+
+    QUnit.module('Transpose', () => {
+      QUnit.test('Simple 3x3', assert => {
+        let A = new Matrix([
+          [2,3,7],
+          [5,3,7],
+          [-9,0,1]
+        ]);
+        A.transpose();
+        assert.ok(A.isEqual(new Matrix([
+          [2,5,-9],
+          [3,3,0],
+          [7,7,1]
+        ])));
+      });
+      QUnit.test('Negative 2x3', assert => {
+        let A = new Matrix([
+          [2,3,7],
+          [5,3,7]
+        ]);
+        assert.throws(() => {
+          A.transpose();
+        });
+      });
+    });
 
     QUnit.module("Multiplication", () => {
       QUnit.test("Square 3x3", assert => {
