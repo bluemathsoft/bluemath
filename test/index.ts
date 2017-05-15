@@ -120,20 +120,89 @@ window.onload = () => {
     assert.equal(new Vector2(3.5466,-6.0988).toString(3), '[3.547,-6.099]');
   });
 
-  QUnit.module('Matrix');
+  QUnit.module('Matrix', () => {
 
-  QUnit.test('construction', assert => {
-    assert.notEqual(new Matrix({rows:2,cols:2}), null);
-  });
-  QUnit.test('fill', assert => {
-    let m = new Matrix({rows:2,cols:2});
-    m.fill(29);
-    assert.equal(m.get(1,1), 29);
-  });
-  QUnit.test('get-set', assert => {
-    let m = new Matrix({rows:2,cols:2});
-    m.set(0,1,43.66);
-    assert.ok(utils.isEqualFloat(m.get(0,1), 43.66));
+    QUnit.module('construction', () => {
+      QUnit.test('only dimensions', assert => {
+        let m = new Matrix({rows:2,cols:2});
+        assert.ok(m instanceof Matrix);
+      });
+      QUnit.test('Int32 Array 2D', assert => {
+        let m = new Matrix([[4,5],[23,42]], "int32");
+        assert.ok(m instanceof Matrix);
+        assert.equal(m.get(0,1), 5);
+      });
+      QUnit.test('Float32Array wrong dimensions', assert => {
+        let farr = new Float32Array([0.034,1.203,5.08,999.7]);
+        assert.throws(() => {
+          let m = new Matrix({rows:3,cols:2,data:farr});
+        })
+      });
+      QUnit.test('Float32Array', assert => {
+        let farr = new Float32Array([0.034,1.203,5.08,999.7]);
+        let m = new Matrix({rows:2,cols:2,data:farr});
+        assert.ok(m instanceof Matrix);
+        assert.ok(utils.isEqualFloat(m.get(0,1), 1.203, 0.0001));
+      });
+    });
+    QUnit.test('Fill', assert => {
+      let m = new Matrix({rows:2,cols:2});
+      m.fill(29);
+      assert.equal(m.get(1,1), 29);
+    });
+    QUnit.test('Set value', assert => {
+      let m = new Matrix({rows:2,cols:2});
+      m.set(0,1,43.66);
+      assert.ok(utils.isEqualFloat(m.get(0,1), 43.66));
+    });
+    QUnit.test('Clone', assert => {
+      let m = new Matrix([[3.35,6.09],[4.55,9]]);
+      assert.ok(utils.isEqualFloat(m.get(0,0), 3.35));
+      let mcopy = m.clone();
+      mcopy.set(0,0,98.078);
+      assert.ok(utils.isEqualFloat(mcopy.get(0,0), 98.078,0.0001));
+      assert.ok(utils.isEqualFloat(m.get(0,0), 3.35));
+    });
+    QUnit.test('Scale', assert => {
+      let farr = new Float32Array([0.034,1.203,5.08,999.7]);
+      let m = new Matrix({rows:2,cols:2,data:farr});
+      m.scale(100);
+      assert.ok(utils.isEqualFloat(m.get(0,1), 120.3, 0.01));
+    });
+
+    QUnit.module("Multiplication", () => {
+      QUnit.test("Square 3x3", assert => {
+        let A = new Matrix([[2,2,2],[2,2,2],[2,2,2]], 'int16');
+        let B = new Matrix([[5,5,5],[5,5,5],[5,5,5]], 'int16');
+        let M = A.mul(B);
+        assert.equal(M.rows,3);
+        assert.equal(M.cols,3);
+        for(let i=0; i<3; i++) {
+          for(let j=0; j<3; j++) {
+            assert.equal(M.get(i,j), 30);
+          }
+        }
+      });
+      QUnit.test("3x2 mul 2x3", assert => {
+        let A = new Matrix([[1,0],[2,1],[6,9]], 'int16');
+        let B = new Matrix([[1,2,3],[1,2,9]], 'int16');
+        let M = A.mul(B);
+        assert.equal(M.rows,3);
+        assert.equal(M.cols,3);
+        assert.equal(M.get(1,0), 3);
+        assert.equal(M.get(1,2), 15);
+        assert.equal(M.get(2,1), 30);
+        assert.equal(M.get(2,2), 99);
+      });
+      QUnit.test("3x2 mul 3x3, error", assert => {
+        let A = new Matrix([[1,0],[2,1],[6,9]], 'int16');
+        let B = new Matrix([[1,2,3],[1,2,9],[4,5,3]], 'int16');
+        assert.throws(() => {
+          let M = A.mul(B);
+        });
+      });
+    });
+
   });
 
   QUnit.module('BSplineCurve2D');
