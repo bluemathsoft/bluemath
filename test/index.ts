@@ -22,7 +22,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 import { utils, basic, geom } from '../src'
 
-let { Matrix, Vector2 } = basic;
+let { Matrix, Vector2, Vector } = basic;
 let { BSplineCurve2D } = geom.nurbs;
 
 /// <reference path="qunit/index.d.ts" />
@@ -46,16 +46,16 @@ window.onload = () => {
   QUnit.test('add', assert => {
     let v1 = new Vector2(20, 30);
     let v2 = new Vector2(20, 30);
-    assert.equal(v1.add(v2).data[0], 40);
+    assert.equal(v1.add(v2).get(0), 40);
   });
   QUnit.test('sub', assert => {
     let v1 = new Vector2(20, 30);
     let v2 = new Vector2(14, 22);
-    assert.equal(v1.sub(v2).data[1], 8);
+    assert.equal(v1.sub(v2).get(1), 8);
   });
   QUnit.test('mul', assert => {
     let v = new Vector2(20, 30);
-    assert.equal(v.mul(0.1).data[1], 3);
+    assert.equal(v.mul(0.1).get(1), 3);
   });
   QUnit.test('lenSq', assert => {
     let v = new Vector2(12, 12);
@@ -175,24 +175,32 @@ window.onload = () => {
         let A = new Matrix([[2,2,2],[2,2,2],[2,2,2]], 'int16');
         let B = new Matrix([[5,5,5],[5,5,5],[5,5,5]], 'int16');
         let M = A.mul(B);
-        assert.equal(M.rows,3);
-        assert.equal(M.cols,3);
-        for(let i=0; i<3; i++) {
-          for(let j=0; j<3; j++) {
-            assert.equal(M.get(i,j), 30);
+        if(M instanceof Matrix) {
+          assert.equal(M.rows,3);
+          assert.equal(M.cols,3);
+          for(let i=0; i<3; i++) {
+            for(let j=0; j<3; j++) {
+              assert.equal(M.get(i,j), 30);
+            }
           }
+        } else {
+          assert.notOk(true);
         }
       });
       QUnit.test("3x2 mul 2x3", assert => {
         let A = new Matrix([[1,0],[2,1],[6,9]], 'int16');
         let B = new Matrix([[1,2,3],[1,2,9]], 'int16');
         let M = A.mul(B);
-        assert.equal(M.rows,3);
-        assert.equal(M.cols,3);
-        assert.equal(M.get(1,0), 3);
-        assert.equal(M.get(1,2), 15);
-        assert.equal(M.get(2,1), 30);
-        assert.equal(M.get(2,2), 99);
+        if(M instanceof Matrix) {
+          assert.equal(M.rows,3);
+          assert.equal(M.cols,3);
+          assert.equal(M.get(1,0), 3);
+          assert.equal(M.get(1,2), 15);
+          assert.equal(M.get(2,1), 30);
+          assert.equal(M.get(2,2), 99);
+        } else {
+          assert.notOk(true);
+        }
       });
       QUnit.test("3x2 mul 3x3, error", assert => {
         let A = new Matrix([[1,0],[2,1],[6,9]], 'int16');
@@ -200,6 +208,16 @@ window.onload = () => {
         assert.throws(() => {
           let M = A.mul(B);
         });
+      });
+      QUnit.test("by Vector", assert => {
+        let A = new Matrix([[1,0,2]], 'int16');
+        let V = new Vector([4,4,9]);
+        assert.equal(A.mul(V), 22);
+      });
+      QUnit.test("by Vector, error", assert => {
+        let A = new Matrix([[1,0,2],[3,5,6]], 'int16');
+        let V = new Vector([4,4,9]);
+        assert.throws(() => A.mul(V));
       });
     });
 

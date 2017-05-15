@@ -20,7 +20,7 @@
 */
 
 import {NumberType, NumberArray2D, TypedArray} from '..'
-
+import Vector from './vector'
 
 export default class Matrix {
 
@@ -177,22 +177,36 @@ export default class Matrix {
     }
   }
 
-  mul(other:Matrix):Matrix {
-    let A = this;
-    let B = other;
-    if(A._cols !== B._rows) {
-      throw new Error("Incompatible dimensions for multiplication");
-    }
-    let result = new Matrix({rows:A._rows,cols:B._cols},A.datatype);
-    for(let i=0; i<A._rows; i++) {
-      for(let j=0; j<B._cols; j++) {
-        let value = 0.0;
-        for(let k=0; k<A._cols; k++) {
-          value += A.get(i,k)*B.get(k,j);
-        }
-        result.set(i,j,value);
+  mul(other:Matrix|Vector):Matrix|number {
+    if(other instanceof Matrix) {
+      let A = this;
+      let B = other;
+      if(A._cols !== B._rows) {
+        throw new Error("Incompatible dimensions for multiplication");
       }
+      let result = new Matrix({rows:A._rows,cols:B._cols},A.datatype);
+      for(let i=0; i<A._rows; i++) {
+        for(let j=0; j<B._cols; j++) {
+          let value = 0.0;
+          for(let k=0; k<A._cols; k++) {
+            value += A.get(i,k)*B.get(k,j);
+          }
+          result.set(i,j,value);
+        }
+      }
+      return result;
+    } else {
+      // A vector is nx1 matrix
+      // Therefore for multiplication to be possible, this matrix should
+      // be 1xn matrix
+      if(this.rows !== 1 || this.cols !== other.size()) {
+        throw new Error("Incompatible dimensions for multiplication");
+      }
+      let result = 0.0;
+      for(let i=0; i<this.cols; i++) {
+        result += this.get(0,i) * other.get(i);
+      }
+      return result;
     }
-    return result;
   }
 }

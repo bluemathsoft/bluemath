@@ -26,29 +26,29 @@ import {EPSILON} from '../constants'
 
 export default class Vector {
 
-  data : TypedArray | NumberArray1D;
+  private _data : TypedArray | NumberArray1D;
   datatype : NumberType;
 
   constructor(data:TypedArray | NumberArray1D, datatype?:NumberType) {
     this.datatype = datatype || 'float32';
     if(ArrayBuffer.isView(data)) {
-      this.data = data;
+      this._data = data;
     } else {
       switch(this.datatype) {
         case 'int8':
-          this.data = new Int8Array(data);
+          this._data = new Int8Array(data);
           break;
         case 'int16':
-          this.data = new Int16Array(data);
+          this._data = new Int16Array(data);
           break;
         case 'int32':
-          this.data = new Int32Array(data);
+          this._data = new Int32Array(data);
           break;
         case 'float32':
-          this.data = new Float32Array(data);
+          this._data = new Float32Array(data);
           break;
         case 'float64':
-          this.data = new Float64Array(data);
+          this._data = new Float64Array(data);
           break;
         default:
           throw new Error("Unknown datatype");
@@ -56,12 +56,20 @@ export default class Vector {
     }
   }
 
+  get(i:number) {
+    return this._data[i];
+  }
+
+  set(i:number, value:number) {
+    this._data[i] = value;
+  }
+
   size() {
-    return this.data.length;
+    return this._data.length;
   }
 
   clone() {
-    return new Vector(this.data.slice());
+    return new Vector(this._data.slice());
   }
 
   /**
@@ -69,8 +77,8 @@ export default class Vector {
    */
   add(other:Vector) : Vector {
     console.assert(this.size() === other.size());
-    for(let i=0; i<this.data.length; i++) {
-      this.data[i] += other.data[i];
+    for(let i=0; i<this._data.length; i++) {
+      this._data[i] += other._data[i];
     }
     return this;
   }
@@ -80,8 +88,8 @@ export default class Vector {
    */
   sub(other:Vector) : Vector {
     console.assert(this.size() === other.size());
-    for(let i=0; i<this.data.length; i++) {
-      this.data[i] -= other.data[i];
+    for(let i=0; i<this._data.length; i++) {
+      this._data[i] -= other._data[i];
     }
     return this;
   }
@@ -90,8 +98,8 @@ export default class Vector {
    * Multiply by a constant
    */
   mul(k:number) : Vector {
-    for(let i=0; i<this.data.length; i++) {
-      this.data[i] *= k;
+    for(let i=0; i<this._data.length; i++) {
+      this._data[i] *= k;
     }
     return this;
   }
@@ -101,8 +109,8 @@ export default class Vector {
    */
   lenSq() : number {
     let s = 0;
-    for(let i=0; i<this.data.length; i++) {
-      s += this.data[i]*this.data[i];
+    for(let i=0; i<this._data.length; i++) {
+      s += this._data[i]*this._data[i];
     }
     return s;
   }
@@ -133,8 +141,8 @@ export default class Vector {
    * (i.e. either of its members are greater than tolerance in magnitude)
    */
   isNonZero(tolerance=EPSILON) : boolean {
-    for(let i=0; i<this.data.length; i++) {
-      if(Math.abs(this.data[i]) > tolerance) {
+    for(let i=0; i<this._data.length; i++) {
+      if(Math.abs(this._data[i]) > tolerance) {
         return true;
       }
     }
@@ -169,8 +177,8 @@ export default class Vector {
    */
   dot(other:Vector) : number {
     let dot = 0.0;
-    for(let i=0; i<this.data.length; i++) {
-      dot += this.data[i] * other.data[i];
+    for(let i=0; i<this._data.length; i++) {
+      dot += this._data[i] * other._data[i];
     }
     return dot;
   }
@@ -181,9 +189,9 @@ export default class Vector {
   round() : Vector {
     let v = new Int32Array(this.size());
     for(let i=0; i<v.length; i++) {
-      v[i] = Math.round(this.data[i]);
+      v[i] = Math.round(this._data[i]);
     }
-    this.data = v;
+    this._data = v;
     this.datatype = 'int32';
     return this;
   }
@@ -204,7 +212,7 @@ export default class Vector {
     lows.fill(Infinity);
     for(let point of points) {
       for(let i=0; i<point.size(); i++) {
-        lows[i] = Math.min(point.data[i], lows[i]);
+        lows[i] = Math.min(point._data[i], lows[i]);
       }
     }
     return new Vector(lows, 'float32');
@@ -219,7 +227,7 @@ export default class Vector {
     highs.fill(-Infinity);
     for(let point of points) {
       for(let i=0; i<point.size(); i++) {
-        highs[i] = Math.max(point.data[i], highs[i]);
+        highs[i] = Math.max(point._data[i], highs[i]);
       }
     }
     return new Vector(highs, 'float32');
@@ -230,8 +238,8 @@ export default class Vector {
    */
   toString(precision=2) : string {
     let s = [];
-    for(let i=0; i<this.data.length; i++) {
-      s.push(this.data[i].toFixed(precision));
+    for(let i=0; i<this._data.length; i++) {
+      s.push(this._data[i].toFixed(precision));
     }
     return '['+s.join(',')+']';
   }
