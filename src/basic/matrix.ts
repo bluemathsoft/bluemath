@@ -31,6 +31,7 @@ export default class Matrix {
   private _rows : number;
   private _cols : number;
   private _LU : Matrix;
+  private _luindx : Array<number>;
 
   /**
    * If arg0 is 2D array, all its rows should be the same length.
@@ -241,13 +242,6 @@ export default class Matrix {
     return true;
   }
 
-  get LU() {
-    if(!this._LU) {
-      this.LUDecompose();
-    }
-    return this._LU;
-  }
-
   /**
    * Ref: Numerical Recipies 2.3.1
    */
@@ -258,7 +252,7 @@ export default class Matrix {
     let LU = this.clone();
     let n = this.rows;
     let vv = new Float32Array(n);
-    let indx = new Array(n);
+    this._luindx = new Array(n);
     let d = 1;
     let big;
     let temp;
@@ -293,7 +287,7 @@ export default class Matrix {
         d = -d;
         vv[imax] = vv[k];
       }
-      indx[k] = imax;
+      this._luindx[k] = imax;
       if(LU.get(k,k) == 0) { // TODO: reconsider
         LU.set(k, k, EPSILON);
       }
@@ -309,6 +303,38 @@ export default class Matrix {
     this._LU = LU;
   }
 
-  // solve(b:Vector) : Vector {
-  // }
+  /**
+   * Ref: Numerical Recipies 2.3.1
+   */
+  solve(b:Vector) : Vector {
+    let n = this.rows;
+    if(b.size() !== n) {
+      throw new Error("RHS vector b has incorrect size");
+    }
+    let x = b.clone(); // Solution vector;
+    let ii=0;
+    let sum;
+    for(let i=0; i<n; i++) {
+      let ip = this._luindx[i];
+      sum = x.get(ip);
+      x.set(ip, x.get(i));
+      if(ii !== 0) {
+        for(let j=ii-1; j<i; j++) {
+          sum -= this._LU.get(i,j) * x.get(j);
+        }
+      } else if(!utils.isZero(sum)) {
+        ii = i+1;
+      }
+      x.set(i, sum);
+    }
+
+    for(let i=n-1; i>=0; i--) {
+      sum = x.get(i);
+      for(let j=i+1; j<n; j++) {
+        sum -= this._LU.get(i,j) * x.get(j);
+      }
+      x.set(i, sum/this._LU.get(i,i));
+    }
+    return x;
+  }
 }

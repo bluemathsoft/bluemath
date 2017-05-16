@@ -220,7 +220,12 @@ export default class Vector {
    * Is equal to other vector, within given tolerance
    */
   isEqual(other:Vector, tolerance=EPSILON) : boolean {
-    return this.clone().sub(other).isZero(tolerance);
+    for(let i=0; i<this._data.length; i++) {
+      if(!utils.isEqualFloat(this._data[i], other._data[i], tolerance)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
