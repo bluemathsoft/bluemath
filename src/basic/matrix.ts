@@ -401,4 +401,15 @@ export default class Matrix {
     return this.solve(inv) as Matrix;
   }
 
+  determinant() : number {
+    if(!this._LU) { // TODO: investigate if direct computation is cheaper
+      this.LUDecompose();
+    }
+    let answer = 1;
+    for(let i=0; i<this.rows; i++) {
+      answer *= this._LU.get(i,i);
+    }
+    return answer;
+  }
+
 }

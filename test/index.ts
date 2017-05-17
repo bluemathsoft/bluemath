@@ -376,6 +376,31 @@ window.onload = () => {
         assert.throws(() => { A.inverse(); });
       });
     });
+    QUnit.module('Determinant', () => {
+      QUnit.test('Identity', assert => {
+        let A = new Matrix([
+          [1,0,0],
+          [0,1,0],
+          [0,0,1]
+        ]);
+        assert.equal(A.determinant(), 1);
+      });
+      QUnit.test('3x3 (match with WolframAlpha)', assert => {
+        let A = new Matrix([
+          [1,5,3],
+          [3,4,5],
+          [0,9,0]
+        ],'float32');
+        assert.ok(utils.isEqualFloat(A.determinant(), 36, 1e-5));
+      });
+      QUnit.test('Non-square matrix error', assert => {
+        let A = new Matrix([
+          [1,0,0],
+          [0,1,0]
+        ]);
+        assert.throws(() => { A.determinant(); });
+      });
+    });
 
     QUnit.module('Linear equations', () => {
       QUnit.module('LU Solve', () => {
