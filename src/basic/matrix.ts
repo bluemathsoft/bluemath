@@ -248,12 +248,12 @@ export default class Matrix {
     }
   }
 
-  isEqual(other:Matrix) : boolean {
+  isEqual(other:Matrix, tolerance=EPSILON) : boolean {
     if(this.rows !== other.rows) { return false; }
     if(this.cols !== other.cols) { return false; }
     for(let i=0; i<this.rows; i++) {
       for(let j=0; j<this.cols; j++) {
-        if(!utils.isEqualFloat(this.get(i,j), other.get(i,j))) {
+        if(!utils.isEqualFloat(this.get(i,j), other.get(i,j), tolerance)) {
           return false;
         }
       }
@@ -325,7 +325,7 @@ export default class Matrix {
   /**
    * Ref: Numerical Recipies 2.3.1
    */
-  solve(b:Vector) : Vector {
+  private solve_single(b:Vector) : Vector {
     if(!this._LU) {
       this.LUDecompose();
     }
@@ -359,4 +359,33 @@ export default class Matrix {
     }
     return x;
   }
+
+  private solve_multiple(b:Matrix) : Matrix {
+    if(!this._LU) {
+      this.LUDecompose();
+    }
+    let n = this.rows;
+    if(b.rows !== n) {
+      throw new Error("RHS matrix b has incorrect size");
+    }
+    let answer = b.clone();
+    for(let i=0; i<b.cols; i++) {
+      let bcol = b.col(i);
+      let x = this.solve_single(bcol);
+      for(let j=0; j<n; j++) {
+        answer.set(j, i, x.get(j));
+      }
+    }
+    return answer;
+  }
+
+  solve(b:Vector|Matrix) : Vector|Matrix {
+    if(b instanceof Vector) {
+      return this.solve_single(b);
+    } else {
+      return this.solve_multiple(b);
+    }
+  }
+
+
 }
