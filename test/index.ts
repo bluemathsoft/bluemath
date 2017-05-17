@@ -290,15 +290,67 @@ window.onload = () => {
     });
 
     QUnit.module('Linear equations', () => {
-      QUnit.test("LU Solve", assert => {
-        let A = new Matrix([
-          [11,-3,0],
-          [-3,6,-1],
-          [0,-1,3]
-        ]);
-        A.LUDecompose();
-        let answer = A.solve(new Vector([30,5,-25]));
-        assert.ok(answer.isEqual(new Vector([3,1,-8])));
+      QUnit.module('LU Solve', () => {
+        QUnit.test("Circuit matrix", assert => {
+          let A = new Matrix([
+            [11,-3,0],
+            [-3,6,-1],
+            [0,-1,3]
+          ]);
+          let answer = A.solve(new Vector([30,5,-25]));
+          assert.ok(answer.isEqual(new Vector([3,1,-8])));
+        });
+        QUnit.test("From numpy tests", assert => {
+          let A = new Matrix([
+            [3,1],
+            [1,2]
+          ]);
+          let answer = A.solve(new Vector([9,8]));
+          assert.ok(answer.isEqual(new Vector([2,3])));
+        });
+        QUnit.test("From GSL tests", assert => {
+          let A = new Matrix([
+            [0.18, 0.60, 0.57, 0.96],
+            [0.41, 0.24, 0.99, 0.58],
+            [0.14, 0.30, 0.97, 0.66],
+            [0.51, 0.13, 0.19, 0.85]
+          ],'float64');
+          let answer = A.solve(new Vector([1,2,3,4]));
+          assert.ok(answer.isEqual(new Vector(
+            [-4.05205, -12.6056, 1.66091, 8.69377],'float64'),1e-4));
+        });
+        QUnit.test("Random tests 1 (match with numpy)", assert => {
+          let A = new Matrix([
+            [4, 7, 5, 12], [4, 3, 2, 1], [6, 2, 9, 3], [4, 1, 8, 8]])
+          assert.ok(
+            A.solve(new Vector([13, 15, 2, 90])).isEqual(
+              new Vector([40.50877193, -39.30526316, -25.02807018, 20.93684211])));
+        });
+        QUnit.test("Random tests 2 (match with numpy)", assert => {
+          let A = new Matrix([
+            [4, 7, 5, 0.5], [4, 3, 2, 1], [6, 2, 99, 3], [4, 1, 8, 8]])
+          assert.ok(
+            A.solve(new Vector([13, 15, 2, 90])).isEqual(
+              new Vector(
+                [0.19644227, 1.19044879, -0.36008822, 11.36306099])));
+        });
+        QUnit.test("Random tests 3 (match with numpy)", assert => {
+          let A = new Matrix([
+            [4, 0.0007, 5, 0.5], [4, 3, 2, 1], [6, 2, 9999, 3], [4, 1, 8, 8]])
+          assert.ok(
+            A.solve(new Vector([13, 15, 2, 90])).isEqual(
+              new Vector(
+                [1.95364698e+00, -1.07265497e+00, -3.88138726e-03,
+                1.04111398e+01])));
+        });
+        QUnit.test("Random tests 4 (match with numpy)", assert => {
+          let A = new Matrix([
+            [4, 0.0007, 5, 0.5], [4, 3, 2, 1], [6, 2, 9999, 3], [4, 1, 8, 8]])
+          assert.ok(
+            A.solve(new Vector([13, 0.15, 2986, 90])).isEqual(
+              new Vector(
+                [1.51620015, -5.80949758, 0.295605, 10.92248213])));
+        });
       });
     });
 

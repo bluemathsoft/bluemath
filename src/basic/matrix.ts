@@ -245,7 +245,7 @@ export default class Matrix {
   /**
    * Ref: Numerical Recipies 2.3.1
    */
-  LUDecompose() {
+  private LUDecompose() {
     if(this.rows !== this.cols) {
       throw new Error("Non-square matrices can't be LU decomposed");
     }
@@ -307,6 +307,9 @@ export default class Matrix {
    * Ref: Numerical Recipies 2.3.1
    */
   solve(b:Vector) : Vector {
+    if(!this._LU) {
+      this.LUDecompose();
+    }
     let n = this.rows;
     if(b.size() !== n) {
       throw new Error("RHS vector b has incorrect size");
