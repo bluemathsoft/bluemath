@@ -288,6 +288,48 @@ window.onload = () => {
         assert.throws(() => A.mul(V));
       });
     });
+    QUnit.module('Slicing', () => {
+      QUnit.test('Row-wise 2x3', assert => {
+        let A = new Matrix([[1,0,2],[3,5,6]], 'int16');
+        assert.ok(A.row(0).isEqual(new Vector([1,0,2])));
+        assert.ok(A.row(1).isEqual(new Vector([3,5,6])));
+      });
+      QUnit.test('Row-wise 1x4', assert => {
+        let A = new Matrix([[1,0,2,29]], 'int16');
+        assert.ok(A.row(0).isEqual(new Vector([1,0,2,29])));
+      });
+      QUnit.test('Row-wise 4x1', assert => {
+        let A = new Matrix([[1],[0],[2],[29]], 'int16');
+        assert.ok(A.row(2).isEqual(new Vector([2])));
+      });
+      QUnit.test('Row-wise. Check deep copy', assert => {
+        let A = new Matrix([[1,0,2],[3,5,6]], 'int16');
+        let row = A.row(0);
+        row.set(1, 243);
+        assert.ok(row.isEqual(new Vector([1,243,2])));
+        assert.ok(A.isEqual(new Matrix([[1,0,2],[3,5,6]], 'int16')));
+      });
+      QUnit.test('Column-wise 2x3', assert => {
+        let A = new Matrix([[1,0,2],[3,5,6]], 'int16');
+        assert.ok(A.col(0).isEqual(new Vector([1,3])));
+        assert.ok(A.col(2).isEqual(new Vector([2,6])));
+      });
+      QUnit.test('Column-wise 1x4', assert => {
+        let A = new Matrix([[1,0,2,29]], 'int16');
+        assert.ok(A.col(0).isEqual(new Vector([1])));
+      });
+      QUnit.test('Column-wise 4x1', assert => {
+        let A = new Matrix([[1],[0],[2],[29]], 'int16');
+        assert.ok(A.row(0).isEqual(new Vector([1,0,2,29])));
+      });
+      QUnit.test('Column-wise. Check deep copy', assert => {
+        let A = new Matrix([[1,0,2],[3,5,6]], 'int16');
+        let col = A.col(0);
+        col.set(1, 243);
+        assert.ok(col.isEqual(new Vector([1,243])));
+        assert.ok(A.isEqual(new Matrix([[1,0,2],[3,5,6]], 'int16')));
+      });
+    });
 
     QUnit.module('Linear equations', () => {
       QUnit.module('LU Solve', () => {

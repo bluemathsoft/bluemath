@@ -170,6 +170,25 @@ export default class Matrix {
     return this._data[address];
   }
 
+  row(idx:number) : Vector {
+    if(idx >= this.rows || idx < 0) {
+      throw new Error('Row index out of range');
+    }
+    return new Vector(
+      this._data.slice(idx*this.cols,(idx+1)*this.cols));
+  }
+
+  col(idx:number) : Vector {
+    if(idx >= this.cols || idx < 0) {
+      throw new Error('Column index out of range');
+    }
+    let col = new Vector(this.rows);
+    for(let i=0; i<this.rows; i++) {
+      col.set(i, this.get(i, idx));
+    }
+    return col;
+  }
+
   set(row:number, col:number, value:number) : void {
     let address = this._getAddress(row,col);
     this._data[address] = value;
