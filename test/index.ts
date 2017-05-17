@@ -290,6 +290,16 @@ window.onload = () => {
         assert.throws(() => A.mul(V));
       });
     });
+
+    QUnit.test('Identity', assert => {
+      assert.ok(Matrix.identity(5).isEqual(new Matrix([
+        [1,0,0,0,0],
+        [0,1,0,0,0],
+        [0,0,1,0,0],
+        [0,0,0,1,0],
+        [0,0,0,0,1]
+      ])));
+    });
     QUnit.module('Slicing', () => {
       QUnit.test('Row-wise 2x3', assert => {
         let A = new Matrix([[1,0,2],[3,5,6]], 'int16');
@@ -330,6 +340,40 @@ window.onload = () => {
         col.set(1, 243);
         assert.ok(col.isEqual(new Vector([1,243])));
         assert.ok(A.isEqual(new Matrix([[1,0,2],[3,5,6]], 'int16')));
+      });
+    });
+
+    QUnit.module('Inverse', () => {
+      QUnit.test('3x3 (match with WolframAlpha)', assert => {
+        let A = new Matrix([
+          [1,5,3],
+          [3,4,5],
+          [0,9,0]
+        ]);
+        assert.ok(A.inverse().isEqual(new Matrix([
+          [-5/4,3/4,13/36],
+          [0,0,1/9],
+          [3/4,-1/4,-11/36]
+        ])));
+      });
+      QUnit.test('Identity 3x3', assert => {
+        let A = new Matrix([
+          [1,0,0],
+          [0,1,0],
+          [0,0,1]
+        ]);
+        assert.ok(A.inverse().isEqual(new Matrix([
+          [1,0,0],
+          [0,1,0],
+          [0,0,1]
+        ])));
+      });
+      QUnit.test('Non-square matrix error', assert => {
+        let A = new Matrix([
+          [1,0,0],
+          [0,1,0]
+        ]);
+        assert.throws(() => { A.inverse(); });
       });
     });
 

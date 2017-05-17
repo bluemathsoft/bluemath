@@ -73,6 +73,15 @@ export default class Matrix {
     return this._data;
   }
 
+  static identity(size:number, datatype?:NumberType) : Matrix {
+    let m = new Matrix({rows:size,cols:size}, datatype);
+    m.fill(0);
+    for(let i=0; i<size; i++) {
+      m.set(i,i, 1);
+    }
+    return m;
+  }
+
   private _alloc(data?:NumberArray2D|TypedArray) : void {
     let size = this._rows*this._cols;
     switch(this.datatype) {
@@ -387,5 +396,9 @@ export default class Matrix {
     }
   }
 
+  inverse() : Matrix {
+    let inv = Matrix.identity(this.rows);
+    return this.solve(inv) as Matrix;
+  }
 
 }
