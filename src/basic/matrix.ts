@@ -242,19 +242,17 @@ export default class Matrix {
     }
   }
 
-  transpose() {
-    if(this.rows !== this.cols) {
-      throw new Error("Non-square matrices can't be transposed");
-    }
+  /**
+   * This matrix remains unchanged
+   */
+  transpose() : Matrix {
+    let xpose = new Matrix({rows:this.cols, cols:this.rows});
     for(let i=0; i<this.rows; i++) {
-      for(let j=i; j<this.cols; j++) {
-        if(i!==j) {
-          let tmp = this.get(i,j);
-          this.set(i,j,this.get(j,i));
-          this.set(j,i,tmp);
-        }
+      for(let j=0; j<this.cols; j++) {
+        xpose.set(j,i,this.get(i,j));
       }
     }
+    return xpose;
   }
 
   isEqual(other:Matrix, tolerance=EPSILON) : boolean {

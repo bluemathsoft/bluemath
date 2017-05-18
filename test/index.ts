@@ -216,27 +216,28 @@ window.onload = () => {
     });
 
     QUnit.module('Transpose', () => {
-      QUnit.test('Simple 3x3', assert => {
+      QUnit.test('Square 3x3', assert => {
         let A = new Matrix([
           [2,3,7],
           [5,3,7],
           [-9,0,1]
         ]);
-        A.transpose();
-        assert.ok(A.isEqual(new Matrix([
+        assert.ok(A.transpose().isEqual(new Matrix([
           [2,5,-9],
           [3,3,0],
           [7,7,1]
         ])));
       });
-      QUnit.test('Negative 2x3', assert => {
+      QUnit.test('Non square 2x3', assert => {
         let A = new Matrix([
           [2,3,7],
           [5,3,7]
         ]);
-        assert.throws(() => {
-          A.transpose();
-        });
+        assert.ok(A.transpose().isEqual(new Matrix([
+          [2,5],
+          [3,3],
+          [7,7]
+        ])));
       });
     });
 
