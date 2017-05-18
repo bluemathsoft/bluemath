@@ -2,7 +2,7 @@
   "name": "bluemath",
   "version": "0.0.1",
   "description": "Math kernel in Javascript",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "watch": "webpack --watch --config webpack.config.js",
@@ -27,6 +27,5 @@
     "webpack": "^2.5.1"
   },
   "dependencies": {
-    "emlapack": "0.0.1"
   }
 }
