@@ -20,12 +20,10 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import { utils } from '../src'
+import {utils, basic, geom} from '../src'
 
-import Vector from '../src/basic/vector';
-import Vector2 from '../src/basic/vector2';
-import Matrix from '../src/basic/matrix';
-import {BSplineCurve2D} from '../src/geom/nurbs/bcurve';
+let {Vector, Matrix, Vector2} = basic;
+let {BSplineCurve2D} = geom.nurbs;
 
 /// <reference path="qunit/index.d.ts" />
 
@@ -411,7 +409,7 @@ window.onload = () => {
             [-3,6,-1],
             [0,-1,3]
           ]);
-          let answer = A.solve(new Vector([30,5,-25])) as Vector;
+          let answer = A.solve(new Vector([30,5,-25])) as basic.Vector;
           assert.ok(answer.isEqual(new Vector([3,1,-8])));
         });
         QUnit.test("From numpy tests", assert => {
@@ -419,7 +417,7 @@ window.onload = () => {
             [3,1],
             [1,2]
           ]);
-          let answer = A.solve(new Vector([9,8])) as Vector;
+          let answer = A.solve(new Vector([9,8])) as basic.Vector;
           assert.ok(answer.isEqual(new Vector([2,3])));
         });
         QUnit.test("From GSL tests", assert => {
@@ -429,14 +427,14 @@ window.onload = () => {
             [0.14, 0.30, 0.97, 0.66],
             [0.51, 0.13, 0.19, 0.85]
           ],'float64');
-          let answer = A.solve(new Vector([1,2,3,4])) as Vector;
+          let answer = A.solve(new Vector([1,2,3,4])) as basic.Vector;
           assert.ok(answer.isEqual(new Vector(
             [-4.05205, -12.6056, 1.66091, 8.69377],'float64'),1e-4));
         });
         QUnit.test("Random tests 1 (match with numpy)", assert => {
           let A = new Matrix([
             [4, 7, 5, 12], [4, 3, 2, 1], [6, 2, 9, 3], [4, 1, 8, 8]])
-          let answer = A.solve(new Vector([13, 15, 2, 90])) as Vector;
+          let answer = A.solve(new Vector([13, 15, 2, 90])) as basic.Vector;
           assert.ok(answer.isEqual(
               new Vector([40.50877193, -39.30526316, -25.02807018, 20.93684211])));
         });
@@ -444,7 +442,7 @@ window.onload = () => {
           let A = new Matrix([
             [4, 7, 5, 0.5], [4, 3, 2, 1], [6, 2, 99, 3], [4, 1, 8, 8]])
           assert.ok(
-            (A.solve(new Vector([13, 15, 2, 90])) as Vector).isEqual(
+            (A.solve(new Vector([13, 15, 2, 90])) as basic.Vector).isEqual(
               new Vector(
                 [0.19644227, 1.19044879, -0.36008822, 11.36306099])));
         });
@@ -452,7 +450,7 @@ window.onload = () => {
           let A = new Matrix([
             [4, 0.0007, 5, 0.5], [4, 3, 2, 1], [6, 2, 9999, 3], [4, 1, 8, 8]])
           assert.ok(
-            (A.solve(new Vector([13, 15, 2, 90])) as Vector).isEqual(
+            (A.solve(new Vector([13, 15, 2, 90])) as basic.Vector).isEqual(
               new Vector(
                 [1.95364698e+00, -1.07265497e+00, -3.88138726e-03,
                 1.04111398e+01])));
@@ -461,7 +459,7 @@ window.onload = () => {
           let A = new Matrix([
             [4, 0.0007, 5, 0.5], [4, 3, 2, 1], [6, 2, 9999, 3], [4, 1, 8, 8]])
           assert.ok(
-            (A.solve(new Vector([13, 0.15, 2986, 90])) as Vector).isEqual(
+            (A.solve(new Vector([13, 0.15, 2986, 90])) as basic.Vector).isEqual(
               new Vector(
                 [1.51620015, -5.80949758, 0.295605, 10.92248213])));
         });
@@ -473,7 +471,7 @@ window.onload = () => {
             [15,66,3],
             [2,0.02,8],
             [90,1,0]
-          ])) as Matrix;
+          ])) as basic.Matrix;
           assert.ok(answer.isEqual(new Matrix([
                 [40.50877193, 31.61561404, -1.66667],
                 [-39.30526316, -8.06736842, 2.4],
