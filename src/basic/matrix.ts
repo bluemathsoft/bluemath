@@ -410,4 +410,14 @@ export default class Matrix {
     return answer;
   }
 
+  swaprows(i:number, j:number) : void {
+    if(i >= this.rows || j >= this.rows) {
+      throw new Error("Index out of range");
+    }
+    for(let k=0; k<this.cols; k++) {
+      let tmp = this.get(i,k);
+      this.set(i,k,this.get(j,k));
+      this.set(j,k,tmp);
+    }
+  }
 }

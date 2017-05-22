@@ -295,16 +295,23 @@ window.onload = () => {
           A.mul(B);
         });
       });
-      QUnit.test("by Vector", assert => {
+      QUnit.test("mul by Vector", assert => {
         let A = new Matrix([[1,0,2]], 'int16');
         let V = new Vector([4,4,9]);
         assert.equal(A.mul(V), 22);
       });
-      QUnit.test("by Vector, error", assert => {
+      QUnit.test("mul by Vector, error", assert => {
         let A = new Matrix([[1,0,2],[3,5,6]], 'int16');
         let V = new Vector([4,4,9]);
         assert.throws(() => A.mul(V));
       });
+    });
+
+    QUnit.test("swaprows", assert => {
+      let A = new Matrix([[1,0],[2,1],[6,9]], 'int16');
+      let B = new Matrix([[2,1],[1,0],[6,9]], 'int16');
+      A.swaprows(0,1);
+      assert.ok(A.isEqual(B));
     });
 
     QUnit.test('Identity', assert => {
