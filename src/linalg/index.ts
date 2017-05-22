@@ -20,27 +20,8 @@
 
 */
 
-import * as utils from './utils'
-import * as basic from './basic'
-import * as geom from './geom'
-import * as linalg from './linalg'
-import {EPSILON} from './constants'
-
-type NumberArray1D = Array<number>;
-type NumberArray2D = Array<NumberArray1D>;
-type NumberType = 'int8'|'uint8'|'int16'|'uint16'|'int32'|'uint32'|'float32'|'float64';
-type TypedArray = Int8Array | Uint8Array | Int16Array |
-    Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array;
+import * as blas from './blas'
 
 export {
-  utils,
-  basic,
-  geom,
-  linalg,
-  NumberArray1D,
-  NumberArray2D,
-  NumberType,
-  TypedArray,
-  EPSILON
+  blas
 }
-

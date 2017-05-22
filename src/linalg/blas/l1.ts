@@ -1,4 +1,3 @@
-
  /*
 
  Copyright (C) 2017 Jayesh Salvi, Blue Math Software Inc.
@@ -20,27 +19,18 @@
 
 */
 
-import * as utils from './utils'
-import * as basic from './basic'
-import * as geom from './geom'
-import * as linalg from './linalg'
-import {EPSILON} from './constants'
+import {TypedArray} from '../..'
 
-type NumberArray1D = Array<number>;
-type NumberArray2D = Array<NumberArray1D>;
-type NumberType = 'int8'|'uint8'|'int16'|'uint16'|'int32'|'uint32'|'float32'|'float64';
-type TypedArray = Int8Array | Uint8Array | Int16Array |
-    Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array;
-
-export {
-  utils,
-  basic,
-  geom,
-  linalg,
-  NumberArray1D,
-  NumberArray2D,
-  NumberType,
-  TypedArray,
-  EPSILON
+export function asum(X:TypedArray) : number {
+  let r = 0.0;
+  for(let i=0; i<X.length; i++) {
+    r += Math.abs(X[i]);
+  }
+  return r;
 }
 
+export function axpy(X:TypedArray, a:number, Y:TypedArray) : void {
+  for(let i=0; i<X.length; i++) {
+    Y[i] = a * X[i];
+  }
+}

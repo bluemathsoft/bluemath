@@ -20,7 +20,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import {utils, basic, geom} from '../src'
+import {utils, basic, geom, linalg} from '../src'
 
 let {Vector, Matrix, Vector2} = basic;
 let {BSplineCurve2D} = geom.nurbs;
@@ -484,16 +484,43 @@ window.onload = () => {
 
   });
 
-  QUnit.module('BSplineCurve2D');
-  QUnit.test('construction', assert => {
-    let bcrv = new BSplineCurve2D(1, [new Vector2(0,0), new Vector2(10,10)], [0,0,1,1]);
-    assert.ok(!!bcrv);
-    assert.equal(bcrv.degree, 1);
-    assert.equal(bcrv.cpoints.length, 2);
-    assert.equal(bcrv.knots.length, 4);
+  QUnit.module('BSplineCurve2D', () => {
+    QUnit.test('construction', assert => {
+      let bcrv = new BSplineCurve2D(1, [new Vector2(0,0), new Vector2(10,10)], [0,0,1,1]);
+      assert.ok(!!bcrv);
+      assert.equal(bcrv.degree, 1);
+      assert.equal(bcrv.cpoints.length, 2);
+      assert.equal(bcrv.knots.length, 4);
+    });
+    QUnit.test('evaluate at midpoint', assert => {
+      let bcrv = new BSplineCurve2D(1, [new Vector2(0,0), new Vector2(10,10)], [0,0,1,1]);
+      assert.ok(bcrv.evaluate(0.5).isEqual(new Vector2(5,5)));
+    });
   });
-  QUnit.test('evaluate at midpoint', assert => {
-    let bcrv = new BSplineCurve2D(1, [new Vector2(0,0), new Vector2(10,10)], [0,0,1,1]);
-    assert.ok(bcrv.evaluate(0.5).isEqual(new Vector2(5,5)));
+
+  QUnit.module('linalg', () => {
+    QUnit.module('blas', () => {
+      function numberArrayEqual(X:Float32Array,Y:Float32Array) {
+        if(X.length !== Y.length) { return false; }
+        for(let i=0; i<X.length; i++) {
+          if(!utils.isEqualFloat(X[i], Y[i])) {
+            return false;
+          }
+        }
+        return true;
+      }
+      QUnit.test('asum', assert => {
+        let X = new Float32Array([3.404,5.66,2,0,-3]);
+        let r = linalg.blas.asum(X);
+        assert.ok(utils.isEqualFloat(r, 14.064, 1e-4));
+      });
+      QUnit.test('axpy', assert => {
+        let X = new Float32Array([3.404,5.66,2,0,-3]);
+        let Y = new Float32Array(5);
+        let answer = new Float32Array([6.808,11.32,4,0,-6]);
+        linalg.blas.axpy(X,2,Y);
+        assert.ok(numberArrayEqual(Y,answer));
+      });
+    });
   });
 }
