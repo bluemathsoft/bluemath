@@ -228,6 +228,47 @@ export default class Vector {
     return true;
   }
 
+  swap(i:number, j:number) : void {
+    if(i >= this._data.length || j >= this._data.length) {
+      throw new Error('Index out of range');
+    }
+    let tmp = this._data[i];
+    this._data[i] = this._data[j];
+    this._data[j] = tmp;
+  }
+
+  /**
+   * A[i] <- A[permutation[i]]
+   */
+  permute(permutation:Vector) {
+    if(this._data.length !== permutation.size()) {
+      throw new Error("Permutation size doesn't match Vector size");
+    }
+    // TODO : Inefficient implementation,
+    // because it causes storage duplication
+    let tmp = new Vector(this._data.length);
+    for(let i=0; i<this._data.length; i++) {
+      tmp.set(i, this._data[permutation.get(i)]);
+    }
+    for(let i=0; i<this._data.length; i++) {
+      this._data[i] = tmp.get(i);
+    }
+  }
+
+  /**
+   */
+  permuteInverse(permutation:Vector) {
+    if(this._data.length !== permutation.size()) {
+      throw new Error("Permutation size doesn't match Vector size");
+    }
+    // TODO : Inefficient implementation,
+    // because it causes storage duplication
+    let tmp = this.clone();
+    for(let i=0; i<this._data.length; i++) {
+      this._data[permutation.get(i)] = tmp.get(i);
+    }
+  }
+
   /**
    * Return the min values for variable number of input point vectors
    * All points should be vectors of same size
@@ -267,5 +308,13 @@ export default class Vector {
       s.push(this._data[i].toFixed(precision));
     }
     return '['+s.join(',')+']';
+  }
+
+  static generatePermutationVector(length:number) : Vector {
+    let perm = new Vector(length);
+    for(let i=0; i<length; i++) {
+      perm.set(i, i);
+    }
+    return perm;
   }
 }
