@@ -31,6 +31,7 @@ export default class Matrix {
   private _rows : number;
   private _cols : number;
   private _LU : Matrix;
+  private _permutation : Vector;
   private _luindx : Array<number>;
 
   /**
@@ -418,6 +419,58 @@ export default class Matrix {
       let tmp = this.get(i,k);
       this.set(i,k,this.get(j,k));
       this.set(j,k,tmp);
+    }
+  }
+
+  /**
+   * Algorithm from GSL
+   */
+  LUDecompose2() {
+    if(this.rows !== this.cols) {
+      throw new Error("Non-square matrices can't be LU decomposed");
+    }
+    let LU = this.clone();
+    let signum = 1;
+    let N = this.rows;
+    let i:number,j:number;
+    let p = Vector.generatePermutationVector(N);
+    for(j=0; j<N-1; j++) {
+      let ajj,max;
+      ajj = max = Math.abs(this.get(j,j));
+      let ipivot = j;
+      for(i=j+1; i<N; i++) {
+        let aij = Math.abs(this.get(i,j));
+        if(aij > max) {
+          max = aij;
+          ipivot = i;
+        }
+      }
+      if(ipivot !== j) {
+        this.swaprows(j, ipivot);
+        p.swap(j, ipivot);
+        signum = -signum;
+      }
+      ajj = this.get(j,j);
+      
+      if(ajj !== 0.0) { // Should this be isZero()? TODO
+        for(i=j+1;i<N;i++) {
+          let aij = this.get(i,j) / ajj;
+          this.set(i,j,aij);
+          for(let k=j+1; k<N; k++) {
+            let aik = this.get(i,k);
+            let ajk = this.get(j,k);
+            this.set(i,k, aik - aij*ajk);
+          }
+        }
+      }
+    }
+    this._permutation = p;
+    this._LU = LU;
+  }
+
+  solve_single2() {
+    if(!this._LU) {
+      this.LUDecompose2();
     }
   }
 }
