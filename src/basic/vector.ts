@@ -310,6 +310,10 @@ export default class Vector {
     return '['+s.join(',')+']';
   }
 
+  toArray() : Array<number> {
+    return Array.from(this._data);
+  }
+
   static generatePermutationVector(length:number) : Vector {
     let perm = new Vector(length);
     for(let i=0; i<length; i++) {
