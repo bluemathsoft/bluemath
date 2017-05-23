@@ -366,6 +366,7 @@ window.onload = () => {
       });
     });
 
+    /*
     QUnit.module('Inverse', () => {
       QUnit.test('3x3 (match with WolframAlpha)', assert => {
         let A = new Matrix([
@@ -505,6 +506,7 @@ window.onload = () => {
         });
       });
     });
+    */
 
   });
 

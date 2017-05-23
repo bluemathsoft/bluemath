@@ -30,9 +30,9 @@ export default class Matrix {
   private datatype : NumberType
   private _rows : number;
   private _cols : number;
-  private _LU : Matrix;
-  private _permutation : Vector;
-  private _luindx : Array<number>;
+  // private _LU : Matrix;
+  // private _permutation : Vector;
+  // private _luindx : Array<number>;
 
   /**
    * If arg0 is 2D array, all its rows should be the same length.
@@ -128,6 +128,17 @@ export default class Matrix {
       } else {
         throw new Error("Unexpected data format");
       }
+    }
+  }
+
+  swaprows(i:number, j:number) : void {
+    if(i >= this.rows || j >= this.rows) {
+      throw new Error("Index out of range");
+    }
+    for(let k=0; k<this.cols; k++) {
+      let tmp = this.get(i,k);
+      this.set(i,k,this.get(j,k));
+      this.set(j,k,tmp);
     }
   }
 
@@ -269,9 +280,10 @@ export default class Matrix {
     return true;
   }
 
+  /*
   /**
    * Ref: Numerical Recipies 2.3.1
-   */
+   * /
   private LUDecompose() {
     if(this.rows !== this.cols) {
       throw new Error("Non-square matrices can't be LU decomposed");
@@ -330,9 +342,6 @@ export default class Matrix {
     this._LU = LU;
   }
 
-  /**
-   * Ref: Numerical Recipies 2.3.1
-   */
   private solve_single(b:Vector) : Vector {
     if(!this._LU) {
       this.LUDecompose();
@@ -411,20 +420,10 @@ export default class Matrix {
     return answer;
   }
 
-  swaprows(i:number, j:number) : void {
-    if(i >= this.rows || j >= this.rows) {
-      throw new Error("Index out of range");
-    }
-    for(let k=0; k<this.cols; k++) {
-      let tmp = this.get(i,k);
-      this.set(i,k,this.get(j,k));
-      this.set(j,k,tmp);
-    }
-  }
 
   /**
    * Algorithm from GSL
-   */
+   * /
   LUDecompose2() {
     if(this.rows !== this.cols) {
       throw new Error("Non-square matrices can't be LU decomposed");
@@ -473,4 +472,5 @@ export default class Matrix {
       this.LUDecompose2();
     }
   }
+  */
 }
