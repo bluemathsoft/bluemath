@@ -297,6 +297,8 @@ export default class Matrix {
   forward substitution.
     [ l00  0  ] [x0]  = [b0]
     [ l10 l11 ] [x1]    [b1]
+  Caller must ensure this matrix is Lower triangular before calling this
+  routine. Otherwise, undefined behavior
    */
   solveByForwardSubstitution(x:Vector) {
     for(let i=0; i<this.rows; i++) {
@@ -313,6 +315,8 @@ export default class Matrix {
   backward substitution.
     [ u00 u01 ] [x0]  = [b0]
     [ 0   u11 ] [x1]    [b1]
+  Caller must ensure this matrix is Upper triangular before calling this
+  routine. Otherwise, undefined behavior
   */
   solveByBackwardSubstitution(x:Vector) {
     for(let i=this.rows-1; i>=0; i--) {
