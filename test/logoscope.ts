@@ -41,11 +41,8 @@ window.onload = () => {
   for(let i=0; i<101; i++) {
     points.push(bcrv1.evaluate(i/100).toArray());
   }
-  let dg = new blueplot.Datagroup2D(plot.width,plot.height);
-  dg.addPoints(points,{type:'line'});
-  dg.addPoints(cpoints.map(v => v.toArray()),{type:'scatter'});
+  let dg = new blueplot.DataGroup2N(plot.width,plot.height);
+  dg.fromPoints(points,{type:'line'});
+  dg.fromPoints(cpoints.map(v => v.toArray()),{type:'scatter'});
   plot.add(dg);
-
-  plot.render();
-
 }

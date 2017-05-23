@@ -311,7 +311,11 @@ export default class Vector {
   }
 
   toArray() : Array<number> {
-    return Array.from(this._data);
+    let array = [];
+    for(let i=0; i<this._data.length; i++) {
+      array.push(this._data[i]);
+    }
+    return array;
   }
 
   static generatePermutationVector(length:number) : Vector {
