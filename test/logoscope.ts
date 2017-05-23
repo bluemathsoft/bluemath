@@ -27,9 +27,11 @@ import {Vector, Matrix} from '../src/basic'
 
 window.onload = () => {
 
-  let plot = new blueplot.Plot(600,400);
-  document.body.appendChild(plot.dom);
+  let plot1 = new blueplot.Plot(300,300);
+  document.body.appendChild(plot1.dom);
 
+  let plot2 = new blueplot.Plot(300,300);
+  document.body.appendChild(plot2.dom);
   /*
   let cpoints = [
     new Vector2(10,10),
@@ -49,17 +51,23 @@ window.onload = () => {
   plot.add(dg);
   */
 
-  let dg = new blueplot.DataGroupMN(plot.width, plot.height,{});
-  plot.add(dg);
+  let dgMatrix = new blueplot.DataGroupMN(plot1.width, plot1.height,{});
+  plot1.add(dgMatrix);
 
-  (<any>window).plotData = function (data:number[][]) {
-    dg.from2DData(data, {type:'grid'});
+  let dgVector = new blueplot.DataGroupMN(plot2.width, plot2.height, {});
+  plot2.add(dgVector);
+
+  (<any>window).plotData = function (data1:number[][], data2:number[][]) {
+    dgMatrix.from2DData(data1, {type:'grid'});
+    dgVector.from2DData(data2, {type:'grid'});
   };
 
   let m = new Matrix([
-    [3,0,0],
-    [2,1,0],
-    [6,7,2]
+    [3,0,0,0],
+    [2,1,0,0],
+    [6,7,2,0],
+    [6,7,2,15],
   ]);
-  m.solveByForwardSubstitution(new Vector(2));
+  let v = new Vector([10,2,30,14]);
+  m.solveByForwardSubstitution(v);
 }

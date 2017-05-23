@@ -292,16 +292,20 @@ export default class Matrix {
   }
 
   /*
+  Ref: Golub-Loan 3.1.1
   System of equations that forms lower triangular system can be solved by
   forward substitution.
     [ l00  0  ] [x0]  = [b0]
     [ l10 l11 ] [x1]    [b1]
    */
   solveByForwardSubstitution(x:Vector) {
-
-    console.log(x);
-    (<any>window).plotData(this.toArray());
-
+    for(let i=0; i<this.rows; i++) {
+      let sum = 0;
+      for(let j=0; j<i; j++) {
+        sum += x.get(j) * this.get(i,j);
+      }
+      x.set(i, (x.get(i) - sum)/this.get(i,i));
+    }
   }
 
   /*
