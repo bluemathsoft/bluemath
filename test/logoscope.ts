@@ -30,7 +30,7 @@ window.onload = () => {
   let plot1 = new blueplot.Plot(300,300);
   document.body.appendChild(plot1.dom);
 
-  let plot2 = new blueplot.Plot(300,300);
+  let plot2 = new blueplot.Plot(100,300);
   document.body.appendChild(plot2.dom);
   /*
   let cpoints = [
@@ -58,10 +58,11 @@ window.onload = () => {
   plot2.add(dgVector);
 
   (<any>window).plotData = function (data1:number[][], data2:number[][]) {
-    dgMatrix.from2DData(data1, {type:'grid'});
-    dgVector.from2DData(data2, {type:'grid'});
+    dgMatrix.from2DData(data1, {type:'grid',timetrail:true});
+    dgVector.from2DData(data2, {type:'grid',timetrail:true});
   };
 
+  /*
   let m = new Matrix([
     [3,0,0,0],
     [2,1,0,0],
@@ -70,4 +71,15 @@ window.onload = () => {
   ]);
   let v = new Vector([10,2,30,14]);
   m.solveByForwardSubstitution(v);
+  */
+
+  let m = new Matrix([
+    [3,0,23,9],
+    [0,1,76,23],
+    [0,0,4,3],
+    [0,0,0,15],
+  ]);
+  let v = new Vector([10,2,30,14]);
+  m.solveByBackwardSubstitution(v);
+
 }

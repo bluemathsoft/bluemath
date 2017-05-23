@@ -309,6 +309,22 @@ export default class Matrix {
   }
 
   /*
+  System of equations that forms upper triangular system can be solved by
+  backward substitution.
+    [ u00 u01 ] [x0]  = [b0]
+    [ 0   u11 ] [x1]    [b1]
+  */
+  solveByBackwardSubstitution(x:Vector) {
+    for(let i=this.rows-1; i>=0; i--) {
+      let sum = 0;
+      for(let j=this.cols-1;j>i;j--) {
+        sum += x.get(j) * this.get(i,j);
+      }
+      x.set(i, (x.get(i) - sum)/this.get(i,i));
+    }
+  }
+
+  /*
   /**
    * Ref: Numerical Recipies 2.3.1
    * /
