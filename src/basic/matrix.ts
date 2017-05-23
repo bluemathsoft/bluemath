@@ -280,6 +280,30 @@ export default class Matrix {
     return true;
   }
 
+  toArray() : number[][] {
+    let arr:number[][] = [];
+    for(let i=0; i<this.rows; i++) {
+      arr[i] = [];
+      for(let j=0; j<this.cols; j++) {
+        arr[i][j] = this.get(i,j);
+      }
+    }
+    return arr;
+  }
+
+  /*
+  System of equations that forms lower triangular system can be solved by
+  forward substitution.
+    [ l00  0  ] [x0]  = [b0]
+    [ l10 l11 ] [x1]    [b1]
+   */
+  solveByForwardSubstitution(x:Vector) {
+
+    console.log(x);
+    (<any>window).plotData(this.toArray());
+
+  }
+
   /*
   /**
    * Ref: Numerical Recipies 2.3.1

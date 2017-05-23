@@ -21,14 +21,16 @@
 */
 
 import * as blueplot from 'blueplot'
-import {Vector2} from '../src/basic'
-import {BSplineCurve2D} from '../src/geom/nurbs'
+import {Vector, Matrix} from '../src/basic'
+//import {Vector2} from '../src/basic'
+//import {BSplineCurve2D} from '../src/geom/nurbs'
 
 window.onload = () => {
 
   let plot = new blueplot.Plot(600,400);
   document.body.appendChild(plot.dom);
 
+  /*
   let cpoints = [
     new Vector2(10,10),
     new Vector2(40,130),
@@ -45,4 +47,19 @@ window.onload = () => {
   dg.fromPoints(points,{type:'line'});
   dg.fromPoints(cpoints.map(v => v.toArray()),{type:'scatter'});
   plot.add(dg);
+  */
+
+  let dg = new blueplot.DataGroupMN(plot.width, plot.height,{});
+  plot.add(dg);
+
+  (<any>window).plotData = function (data:number[][]) {
+    dg.from2DData(data, {type:'grid'});
+  };
+
+  let m = new Matrix([
+    [3,0,0],
+    [2,1,0],
+    [6,7,2]
+  ]);
+  m.solveByForwardSubstitution(new Vector(2));
 }
