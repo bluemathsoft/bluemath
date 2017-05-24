@@ -291,6 +291,21 @@ export default class Matrix {
     return arr;
   }
 
+  toString() {
+    let s = '';
+    for(let i=0; i<this.rows; i++) {
+      s += '[ ';
+      for(let j=0; j<this.cols; j++) {
+        s += this.get(i,j).toFixed(2);
+        if(j<this.cols-1) {
+          s += ', '
+        }
+      }
+      s += ' ]\n';
+    }
+    return s;
+  }
+
   /*
   Ref: Golub-Loan 3.1.1
   System of equations that forms lower triangular system can be solved by

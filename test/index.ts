@@ -22,7 +22,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 import {utils, basic, geom, linalg} from '../src'
 
-let {Vector, Matrix, Vector2, PermutationVector} = basic;
+let {Vector, Matrix, Vector2, PermutationVector, BandMatrix} = basic;
 let {BSplineCurve2D} = geom.nurbs;
 
 /// <reference path="qunit/index.d.ts" />
@@ -533,7 +533,48 @@ window.onload = () => {
           [0,1,0,0]
         ])));
       });
-    })
+    });
+
+    QUnit.module('BandMatrix', () => {
+      QUnit.test('4x4, upper=1, lower=0', assert => {
+        let bm = new BandMatrix({
+          rows : 4, cols : 4,
+          lowerbandwidth : 0,
+          upperbandwidth : 1,
+          data : new Float32Array([
+            NaN,2,2,2,
+            1,1,1,1
+          ])
+        });
+        let rm = new Matrix([
+          [1,2,0,0],
+          [0,1,2,0],
+          [0,0,1,2],
+          [0,0,0,1]
+        ]);
+        assert.ok(bm.toRectangularMatrix().isEqual(rm));
+      });
+      QUnit.test('4x4, upper=1, lower=2', assert => {
+        let bm = new BandMatrix({
+          rows : 4, cols : 4,
+          lowerbandwidth : 1,
+          upperbandwidth : 2,
+          data : new Float32Array([
+            NaN,NaN,3,3,
+            NaN,2,2,2,
+            1,1,1,1,
+            -1,-1,-1,NaN
+          ])
+        });
+        let rm = new Matrix([
+          [1,2,3,0],
+          [-1,1,2,3],
+          [0,-1,1,2],
+          [0,0,-1,1]
+        ]);
+        assert.ok(bm.toRectangularMatrix().isEqual(rm));
+      });
+    });
   });
 
   QUnit.module('BSplineCurve2D', () => {
