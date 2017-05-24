@@ -22,7 +22,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 import {utils, basic, geom, linalg} from '../src'
 
-let {Vector, Matrix, Vector2} = basic;
+let {Vector, Matrix, Vector2, PermutationVector} = basic;
 let {BSplineCurve2D} = geom.nurbs;
 
 /// <reference path="qunit/index.d.ts" />
@@ -101,6 +101,7 @@ window.onload = () => {
       v.swap(3,4);
       assert.ok(v.isEqual(new Vector([3,7,5,9,32,78])));
     });
+    /*
     QUnit.test('permute', assert => {
       let v = new Vector([3,7,5,32,9,78]);
       let p = new Vector([1,4,2,0,3,5]);
@@ -113,6 +114,7 @@ window.onload = () => {
       v.permuteInverse(p);
       assert.ok(v.isEqual(new Vector([32,3,5,9,7,78])));
     });
+    */
     QUnit.test('low', assert => {
       let varr = [
         new Vector2(2,4),
@@ -366,6 +368,7 @@ window.onload = () => {
       });
     });
 
+
     /*
     QUnit.module('Inverse', () => {
       QUnit.test('3x3 (match with WolframAlpha)', assert => {
@@ -508,6 +511,29 @@ window.onload = () => {
     });
     */
 
+    QUnit.module('Permutation', () => {
+      QUnit.test('construction init', assert => {
+        let pv = new PermutationVector(4);
+        assert.ok(pv.isEqual(new Vector([0,1,2,3])));
+      });
+      QUnit.test('construction other value', assert => {
+        let pv = new PermutationVector([3,2,0,1]);
+        assert.ok(pv.isEqual(new Vector([3,2,0,1])));
+      });
+      QUnit.test('Identity matrix', assert => {
+        let pv = new PermutationVector(4);
+        assert.ok(pv.toMatrix().isEqual(Matrix.identity(4)));
+      });
+      QUnit.test('Permuted matrix', assert => {
+        let pv = new PermutationVector([3,2,0,1]);
+        assert.ok(pv.toMatrix().isEqual(new Matrix([
+          [0,0,0,1],
+          [0,0,1,0],
+          [1,0,0,0],
+          [0,1,0,0]
+        ])));
+      });
+    })
   });
 
   QUnit.module('BSplineCurve2D', () => {

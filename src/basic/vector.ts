@@ -318,6 +318,7 @@ export default class Vector {
     return array;
   }
 
+  /*
   static generatePermutationVector(length:number) : Vector {
     let perm = new Vector(length);
     for(let i=0; i<length; i++) {
@@ -325,4 +326,5 @@ export default class Vector {
     }
     return perm;
   }
+  */
 }
