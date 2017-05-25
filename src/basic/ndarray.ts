@@ -173,4 +173,10 @@ export default class NDArray {
     let addr = this._getAddress(...indices);
     return this._data[addr];
   }
+
+  set(...args:number[]) {
+    let nargs = args.length;
+    let addr = this._getAddress(...(args.slice(0,nargs-1)));
+    this._data[addr] = args[nargs-1];
+  }
 }
