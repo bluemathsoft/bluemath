@@ -26,7 +26,7 @@ type DataType = 'i8'|'ui8'|'i16'|'ui16'|'i32'|'ui32'|'f32'|'f64';
 export {DataType}
 
 export interface NDArrayOptions {
-  shape : number[];
+  shape? : number[];
   datatype? : DataType;
 }
 
@@ -40,6 +40,28 @@ function deduceShape(data:Array<any>) {
     d = data[0];
   }
   return shape;
+}
+
+function deduceDataType(data:TypedArray) : DataType {
+  if(data instanceof Float32Array) {
+    return 'f32';
+  } else if(data instanceof Float64Array) {
+    return 'f64';
+  } else if(data instanceof Int8Array) {
+    return 'i8';
+  } else if(data instanceof Uint8Array) {
+    return 'ui8';
+  } else if(data instanceof Int16Array) {
+    return 'i16';
+  } else if(data instanceof Uint16Array) {
+    return 'ui16';
+  } else if(data instanceof Int32Array) {
+    return 'i32';
+  } else if(data instanceof Uint32Array) {
+    return 'ui32';
+  } else {
+    throw new Error('Unknown datatype');
+  }
 }
 
 function populateFromArray(data:TypedArray, idx:number, arr:Array<any>) {
@@ -62,6 +84,7 @@ export default class NDArray {
 
   shape : number[];
   size : number;
+  datatype : DataType;
   private _data : TypedArray;
 
   constructor(
@@ -71,9 +94,11 @@ export default class NDArray {
     if(Array.isArray(data)) {
       this.shape = deduceShape(data);
       this._calcSize();
+      this.datatype = 'f32';
       if(options && options.datatype) {
-        this._alloc(this.size, data, options.datatype);
+        this.datatype = options.datatype;
       }
+      this._alloc(this.size, data, this.datatype);
     } else {
       this._data = data;
       if(options && options.shape) {
@@ -81,6 +106,8 @@ export default class NDArray {
       } else {
         this.shape = [data.length];
       }
+      // in this case options.datatype is ignored if supplied
+      this.datatype = deduceDataType(data);
       this._calcSize();
     }
   }
@@ -119,5 +146,31 @@ export default class NDArray {
     if(data) {
       populateFromArray(this._data, 0, data);
     }
+  }
+
+  private _getAddress(...indices:number[]) {
+    if(indices.length !== this.shape.length) {
+      throw new Error('Mismatched number of dimensions');
+    }
+    let addr = 0;
+    for (let i = 0; i < this.shape.length; i++) {
+      if (i < this.shape.length - 1) {
+        addr += this.shape[i + 1] * indices[i];
+      } else {
+        if(indices[i] < 0) {
+          throw new Error('Invalid index '+indices[i]);
+        }
+        if(indices[i] >= this.shape[i]) {
+          throw new Error('Index out of bounds '+indices[i]);
+        }
+        addr += indices[i];
+      }
+    }
+    return addr;
+  }
+
+  get(...indices:number[]) {
+    let addr = this._getAddress(...indices);
+    return this._data[addr];
   }
 }
