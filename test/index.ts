@@ -22,7 +22,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 import {utils, basic, geom, linalg} from '../src'
 
-let {Vector, Matrix, Vector2, PermutationVector, BandMatrix} = basic;
+let {NDArray, Vector, Matrix, Vector2, PermutationVector, BandMatrix} = basic;
 let {BSplineCurve2D} = geom.nurbs;
 
 /// <reference path="qunit/index.d.ts" />
@@ -36,6 +36,53 @@ window.onload = () => {
   let qunitFixtureDiv = document.createElement('div');
   qunitFixtureDiv.setAttribute('id', 'qunit-fixture');
   document.body.appendChild(qunitFixtureDiv);
+
+  QUnit.module('NDArray', () => {
+
+    QUnit.module('construction', () => {
+      QUnit.module('deduceShape and size', () => {
+        QUnit.test('3x3', assert => {
+          let A = new NDArray([
+            [2,4,6],
+            [3,5,2],
+            [1,6,5]
+          ]);
+          assert.deepEqual(A.shape, [3,3]);
+          assert.equal(A.size, 9);
+        });
+        QUnit.test('1x3', assert => {
+          let A = new NDArray([
+            [2,4,6]
+          ]);
+          assert.deepEqual(A.shape, [1,3]);
+          assert.equal(A.size, 3);
+        });
+        QUnit.test('3x1', assert => {
+          let A = new NDArray([
+            [2],[4],[6]
+          ]);
+          assert.deepEqual(A.shape, [3,1]);
+          assert.equal(A.size, 3);
+        });
+        QUnit.test('1x1', assert => {
+          let A = new NDArray([
+            [2]
+          ]);
+          assert.deepEqual(A.shape, [1,1]);
+          assert.equal(A.size, 1);
+        });
+        QUnit.test('5', assert => {
+          let A = new NDArray([
+            2,3,4,5,6
+          ]);
+          assert.deepEqual(A.shape, [5]);
+          assert.equal(A.size, 5);
+        });
+      });
+
+    });
+
+  });
 
   QUnit.module('Vector2', () => {
     QUnit.test('construction', assert => {
