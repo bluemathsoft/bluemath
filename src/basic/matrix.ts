@@ -343,6 +343,24 @@ export default class Matrix {
     }
   }
 
+  /**
+   * Algo 3.2.1 Golub and Loan
+   */
+  LUDecompose() {
+    console.assert(this.rows === this.cols);
+    let n = this.rows;
+    for(let k=0; k<n-1; k++) {
+      for(let t=k+1; t<n; t++) {
+        this.set(t,k, this.get(t,k)/this.get(k,k));
+      }
+      for(let i=k+1; i<n; i++) {
+        for(let j=k+1; j<n; j++) {
+          this.set(i,j, this.get(i,j) - this.get(i,k)*this.get(k,j));
+        }
+      }
+    }
+  }
+
   /*
   /**
    * Ref: Numerical Recipies 2.3.1

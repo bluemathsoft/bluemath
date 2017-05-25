@@ -368,6 +368,21 @@ window.onload = () => {
       });
     });
 
+    QUnit.module('LUDecompose', () => {
+      QUnit.test('test 1', assert => {
+        let m = new Matrix([
+          [1,4,7],
+          [2,5,8],
+          [3,6,10]
+        ]);
+        m.LUDecompose();
+        assert.ok(m.isEqual(new Matrix([
+          [1,4,7],
+          [2,-3,-6],
+          [3,2,1]
+        ])));
+      });
+    });
 
     /*
     QUnit.module('Inverse', () => {
