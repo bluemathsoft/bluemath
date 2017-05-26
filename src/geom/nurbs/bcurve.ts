@@ -24,7 +24,6 @@ import {
   findSpan, getBasisFunction, getBasisFunctionDerivatives                                                                                                     
 } from './helper'
 import {Vector, Vector2, Vector3} from '../../basic'
-import {NumberArray1D, NumberArray2D} from '../..'
 
 class BSplineCurve {
 
@@ -67,12 +66,12 @@ class BSplineCurve {
    * Evaluate basis function derivatives upto n'th
    */
   evaluateBasisDerivatives(span:number, n:number, t:number)
-    : NumberArray2D
+    : number[][] 
   {
     return getBasisFunctionDerivatives(this.degree, t, span, this.knots, n)
   }
 
-  evaluateBasis(span:number, t:number) : NumberArray1D {
+  evaluateBasis(span:number, t:number) : number[] {
     return getBasisFunction(this.degree, this.knots, span, t);
   }
 
@@ -80,7 +79,7 @@ class BSplineCurve {
     return findSpan(this.degree, this.knots, t);                                                                                                              
   }
 
-  protected getTermDenominator(span:number, N:NumberArray1D) : number {
+  protected getTermDenominator(span:number, N:number[]) : number {
     let p = this.degree;
 
     let denominator;

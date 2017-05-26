@@ -13,12 +13,12 @@ Usage
 
 Use in TypeScript or ES6 modules javascript code
 
-    import {linalg} from bluemath
+    import {linalg} from 'bluemath'
     console.log(linalg.eye(3));
 
 Use in Common JS environment (eg. node.js, browserify)
 
-    let linalg = require('bluemath').linalg
+    const linalg = require('bluemath').linalg
     console.log(linalg.eye(3));
 
 Development

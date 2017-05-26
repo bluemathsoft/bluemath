@@ -19,15 +19,17 @@
 
 */
 
-import {NumberType, NumberArray2D, TypedArray} from '..'
+import {TypedArray} from '..'
 import Vector from './vector'
 import {utils} from '..'
 import {EPSILON} from '../constants'
 
+type DataType = 'i8'|'ui8'|'i16'|'ui16'|'i32'|'ui32'|'f32'|'f64';
+
 export default class Matrix {
 
   private _data : TypedArray
-  private datatype : NumberType
+  private datatype : DataType
   private _rows : number;
   private _cols : number;
   // private _LU : Matrix;
@@ -41,10 +43,10 @@ export default class Matrix {
    * i.e. it's not deep copied
    */
   constructor(
-    arg0 : NumberArray2D | {rows:number,cols:number,data?:TypedArray},
-    datatype? : NumberType)
+    arg0 : number[][] | {rows:number,cols:number,data?:TypedArray},
+    datatype? : DataType)
   {
-    this.datatype = datatype || 'float32';
+    this.datatype = datatype || 'f32';
 
     if(Array.isArray(arg0)) {
       this._rows = arg0.length;
@@ -74,7 +76,7 @@ export default class Matrix {
     return this._data;
   }
 
-  static identity(size:number, datatype?:NumberType) : Matrix {
+  static identity(size:number, datatype?:DataType) : Matrix {
     let m = new Matrix({rows:size,cols:size}, datatype);
     m.fill(0);
     for(let i=0; i<size; i++) {
@@ -83,31 +85,31 @@ export default class Matrix {
     return m;
   }
 
-  private _alloc(data?:NumberArray2D|TypedArray) : void {
+  private _alloc(data?:number[][]|TypedArray) : void {
     let size = this._rows*this._cols;
     switch(this.datatype) {
-      case 'int8':
+      case 'i8':
         this._data = new Int8Array(size);
         break;
-      case 'uint8':
+      case 'ui8':
         this._data = new Uint8Array(size);
         break;
-      case 'int16':
+      case 'i16':
         this._data = new Int16Array(size);
         break;
-      case 'uint16':
+      case 'ui16':
         this._data = new Uint16Array(size);
         break;
-      case 'int32':
+      case 'i32':
         this._data = new Int32Array(size);
         break;
-      case 'uint32':
+      case 'ui32':
         this._data = new Uint32Array(size);
         break;
-      case 'float32':
+      case 'f32':
         this._data = new Float32Array(size);
         break;
-      case 'float64':
+      case 'f64':
         this._data = new Float64Array(size);
         break;
       default:
@@ -145,28 +147,28 @@ export default class Matrix {
   clone() {
     let datacopy:TypedArray;
     switch(this.datatype) {
-      case 'int8':
+      case 'i8':
         datacopy = Int8Array.from(this._data);
         break;
-      case 'uint8':
+      case 'ui8':
         datacopy = Uint8Array.from(this._data);
         break;
-      case 'int16':
+      case 'i16':
         datacopy = Int16Array.from(this._data);
         break;
-      case 'uint16':
+      case 'ui16':
         datacopy = Uint16Array.from(this._data);
         break;
-      case 'int32':
+      case 'i32':
         datacopy = Int32Array.from(this._data);
         break;
-      case 'uint32':
+      case 'ui32':
         datacopy = Uint32Array.from(this._data);
         break;
-      case 'float32':
+      case 'f32':
         datacopy = Float32Array.from(this._data);
         break;
-      case 'float64':
+      case 'f64':
         datacopy = Float64Array.from(this._data);
         break;
       default:

@@ -377,7 +377,7 @@ window.onload = () => {
         assert.ok(m instanceof Matrix);
       });
       QUnit.test('Int32 Array 2D', assert => {
-        let m = new Matrix([[4,5],[23,42]], "int32");
+        let m = new Matrix([[4,5],[23,42]], "i32");
         assert.ok(m instanceof Matrix);
         assert.equal(m.get(0,1), 5);
       });
@@ -423,42 +423,42 @@ window.onload = () => {
         assert.ok(new Matrix([
           [3,7,4],
           [4,9,12]
-        ],'int32').isEqual(new Matrix([
+        ],'i32').isEqual(new Matrix([
           [3,7,4],
           [4,9,12]
-        ],'int32')));
+        ],'i32')));
       });
       QUnit.test('Float',assert => {
         assert.ok(new Matrix([
           [3,7,4.08],
           [4,9,12],
           [0.03,4,5]
-        ],'float64').isEqual(new Matrix([
+        ],'f64').isEqual(new Matrix([
           [3,7,4.08],
           [4,9,12],
           [0.03,4,5]
-        ],'float64')));
+        ],'f64')));
       });
       QUnit.test('Failure',assert => {
         assert.notOk(new Matrix([
           [3,7,4.08],
           [4,9,12],
           [0.032,4,5]
-        ],'float64').isEqual(new Matrix([
+        ],'f64').isEqual(new Matrix([
           [3,7,4.08],
           [4,9,12],
           [0.03,4,5]
-        ],'float64')));
+        ],'f64')));
       });
       QUnit.test('Failure dimension mismatch',assert => {
         assert.notOk(new Matrix([
           [3,7,4.08],
           [4,9,12]
-        ],'float64').isEqual(new Matrix([
+        ],'f64').isEqual(new Matrix([
           [3,7,4.08],
           [4,9,12],
           [0.03,4,5]
-        ],'float64')));
+        ],'f64')));
       });
     });
 
@@ -490,8 +490,8 @@ window.onload = () => {
 
     QUnit.module("Multiplication", () => {
       QUnit.test("Square 3x3", assert => {
-        let A = new Matrix([[2,2,2],[2,2,2],[2,2,2]], 'int16');
-        let B = new Matrix([[5,5,5],[5,5,5],[5,5,5]], 'int16');
+        let A = new Matrix([[2,2,2],[2,2,2],[2,2,2]], 'i16');
+        let B = new Matrix([[5,5,5],[5,5,5],[5,5,5]], 'i16');
         let M = A.mul(B);
         if(M instanceof Matrix) {
           assert.equal(M.rows,3);
@@ -506,8 +506,8 @@ window.onload = () => {
         }
       });
       QUnit.test("3x2 mul 2x3", assert => {
-        let A = new Matrix([[1,0],[2,1],[6,9]], 'int16');
-        let B = new Matrix([[1,2,3],[1,2,9]], 'int16');
+        let A = new Matrix([[1,0],[2,1],[6,9]], 'i16');
+        let B = new Matrix([[1,2,3],[1,2,9]], 'i16');
         let M = A.mul(B);
         if(M instanceof Matrix) {
           assert.equal(M.rows,3);
@@ -521,27 +521,27 @@ window.onload = () => {
         }
       });
       QUnit.test("3x2 mul 3x3, error", assert => {
-        let A = new Matrix([[1,0],[2,1],[6,9]], 'int16');
-        let B = new Matrix([[1,2,3],[1,2,9],[4,5,3]], 'int16');
+        let A = new Matrix([[1,0],[2,1],[6,9]], 'i16');
+        let B = new Matrix([[1,2,3],[1,2,9],[4,5,3]], 'i16');
         assert.throws(() => {
           A.mul(B);
         });
       });
       QUnit.test("mul by Vector", assert => {
-        let A = new Matrix([[1,0,2]], 'int16');
+        let A = new Matrix([[1,0,2]], 'i16');
         let V = new Vector([4,4,9]);
         assert.equal(A.mul(V), 22);
       });
       QUnit.test("mul by Vector, error", assert => {
-        let A = new Matrix([[1,0,2],[3,5,6]], 'int16');
+        let A = new Matrix([[1,0,2],[3,5,6]], 'i16');
         let V = new Vector([4,4,9]);
         assert.throws(() => A.mul(V));
       });
     });
 
     QUnit.test("swaprows", assert => {
-      let A = new Matrix([[1,0],[2,1],[6,9]], 'int16');
-      let B = new Matrix([[2,1],[1,0],[6,9]], 'int16');
+      let A = new Matrix([[1,0],[2,1],[6,9]], 'i16');
+      let B = new Matrix([[2,1],[1,0],[6,9]], 'i16');
       A.swaprows(0,1);
       assert.ok(A.isEqual(B));
     });
@@ -557,44 +557,44 @@ window.onload = () => {
     });
     QUnit.module('Slicing', () => {
       QUnit.test('Row-wise 2x3', assert => {
-        let A = new Matrix([[1,0,2],[3,5,6]], 'int16');
+        let A = new Matrix([[1,0,2],[3,5,6]], 'i16');
         assert.ok(A.row(0).isEqual(new Vector([1,0,2])));
         assert.ok(A.row(1).isEqual(new Vector([3,5,6])));
       });
       QUnit.test('Row-wise 1x4', assert => {
-        let A = new Matrix([[1,0,2,29]], 'int16');
+        let A = new Matrix([[1,0,2,29]], 'i16');
         assert.ok(A.row(0).isEqual(new Vector([1,0,2,29])));
       });
       QUnit.test('Row-wise 4x1', assert => {
-        let A = new Matrix([[1],[0],[2],[29]], 'int16');
+        let A = new Matrix([[1],[0],[2],[29]], 'i16');
         assert.ok(A.row(2).isEqual(new Vector([2])));
       });
       QUnit.test('Row-wise. Check deep copy', assert => {
-        let A = new Matrix([[1,0,2],[3,5,6]], 'int16');
+        let A = new Matrix([[1,0,2],[3,5,6]], 'i16');
         let row = A.row(0);
         row.set(1, 243);
         assert.ok(row.isEqual(new Vector([1,243,2])));
-        assert.ok(A.isEqual(new Matrix([[1,0,2],[3,5,6]], 'int16')));
+        assert.ok(A.isEqual(new Matrix([[1,0,2],[3,5,6]], 'i16')));
       });
       QUnit.test('Column-wise 2x3', assert => {
-        let A = new Matrix([[1,0,2],[3,5,6]], 'int16');
+        let A = new Matrix([[1,0,2],[3,5,6]], 'i16');
         assert.ok(A.col(0).isEqual(new Vector([1,3])));
         assert.ok(A.col(2).isEqual(new Vector([2,6])));
       });
       QUnit.test('Column-wise 1x4', assert => {
-        let A = new Matrix([[1,0,2,29]], 'int16');
+        let A = new Matrix([[1,0,2,29]], 'i16');
         assert.ok(A.col(0).isEqual(new Vector([1])));
       });
       QUnit.test('Column-wise 4x1', assert => {
-        let A = new Matrix([[1],[0],[2],[29]], 'int16');
+        let A = new Matrix([[1],[0],[2],[29]], 'i16');
         assert.ok(A.row(0).isEqual(new Vector([1,0,2,29])));
       });
       QUnit.test('Column-wise. Check deep copy', assert => {
-        let A = new Matrix([[1,0,2],[3,5,6]], 'int16');
+        let A = new Matrix([[1,0,2],[3,5,6]], 'i16');
         let col = A.col(0);
         col.set(1, 243);
         assert.ok(col.isEqual(new Vector([1,243])));
-        assert.ok(A.isEqual(new Matrix([[1,0,2],[3,5,6]], 'int16')));
+        assert.ok(A.isEqual(new Matrix([[1,0,2],[3,5,6]], 'i16')));
       });
     });
 

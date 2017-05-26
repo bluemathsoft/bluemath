@@ -20,14 +20,12 @@
 
 */
 
-import {TypedArray} from '..'
+import {NumberType,TypedArray} from '..'
 
-type DataType = 'i8'|'ui8'|'i16'|'ui16'|'i32'|'ui32'|'f32'|'f64';
-export {DataType}
 
 export interface NDArrayOptions {
   shape? : number[];
-  datatype? : DataType;
+  datatype? : NumberType;
   fill? : number;
 }
 
@@ -43,7 +41,7 @@ function deduceShape(data:Array<any>) {
   return shape;
 }
 
-function deduceDataType(data:TypedArray) : DataType {
+function deduceNumberType(data:TypedArray) : NumberType {
   if(data instanceof Float32Array) {
     return 'f32';
   } else if(data instanceof Float64Array) {
@@ -85,7 +83,7 @@ export default class NDArray {
 
   shape : number[];
   size : number;
-  datatype : DataType;
+  datatype : NumberType;
   private _data : TypedArray;
 
   constructor(
@@ -109,7 +107,7 @@ export default class NDArray {
         this.shape = [arg0.length];
       }
       // in this case options.datatype is ignored if supplied
-      this.datatype = deduceDataType(arg0);
+      this.datatype = deduceNumberType(arg0);
       this._calcSize();
     } else { // must be NDArrayOption
       let options = arg0;
@@ -143,7 +141,7 @@ export default class NDArray {
     this.size = this.shape.reduce((prev,cur) => prev*cur, 1);
   }
 
-  private _alloc(size:number, data?:TypedArray|Array<any>, datatype?:DataType) {
+  private _alloc(size:number, data?:TypedArray|Array<any>, datatype?:NumberType) {
     switch(datatype) {
     case 'i8':
       this._data = new Int8Array(size);

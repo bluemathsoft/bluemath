@@ -20,34 +20,34 @@
 
 */
 
-import {NumberArray1D, NumberType, TypedArray} from '..'
+import {NumberType, TypedArray} from '..'
 import {utils} from '..'
 import {EPSILON} from '../constants'
 
 export default class Vector {
 
-  protected _data : TypedArray | NumberArray1D;
+  protected _data : TypedArray | number[];
   datatype : NumberType;
 
-  constructor(data:TypedArray | NumberArray1D | number, datatype?:NumberType) {
-    this.datatype = datatype || 'float32';
+  constructor(data:TypedArray | number[] | number, datatype?:NumberType) {
+    this.datatype = datatype || 'f32';
     if(ArrayBuffer.isView(data)) {
       this._data = data;
     } else if(Array.isArray(data)) {
       switch(this.datatype) {
-        case 'int8':
+        case 'i8':
           this._data = new Int8Array(data);
           break;
-        case 'int16':
+        case 'i16':
           this._data = new Int16Array(data);
           break;
-        case 'int32':
+        case 'i32':
           this._data = new Int32Array(data);
           break;
-        case 'float32':
+        case 'f32':
           this._data = new Float32Array(data);
           break;
-        case 'float64':
+        case 'f64':
           this._data = new Float64Array(data);
           break;
         default:
@@ -55,19 +55,19 @@ export default class Vector {
       }
     } else {
       switch(this.datatype) {
-        case 'int8':
+        case 'i8':
           this._data = new Int8Array(data);
           break;
-        case 'int16':
+        case 'i16':
           this._data = new Int16Array(data);
           break;
-        case 'int32':
+        case 'i32':
           this._data = new Int32Array(data);
           break;
-        case 'float32':
+        case 'f32':
           this._data = new Float32Array(data);
           break;
-        case 'float64':
+        case 'f64':
           this._data = new Float64Array(data);
           break;
         default:
@@ -212,7 +212,7 @@ export default class Vector {
       v[i] = Math.round(this._data[i]);
     }
     this._data = v;
-    this.datatype = 'int32';
+    this.datatype = 'i32';
     return this;
   }
 
@@ -281,7 +281,7 @@ export default class Vector {
         lows[i] = Math.min(point._data[i], lows[i]);
       }
     }
-    return new Vector(lows, 'float32');
+    return new Vector(lows, 'f32');
   }
 
   /**
@@ -296,7 +296,7 @@ export default class Vector {
         highs[i] = Math.max(point._data[i], highs[i]);
       }
     }
-    return new Vector(highs, 'float32');
+    return new Vector(highs, 'f32');
   }
 
   /**

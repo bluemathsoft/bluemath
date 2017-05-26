@@ -1,8 +1,8 @@
 
-import {DataType} from '../basic/ndarray'
+import {NumberType} from '../'
 import NDArray from '../basic/ndarray'
 
-export function eye(arg0:number|number[], datatype?:DataType) {
+export function eye(arg0:number|number[], datatype?:NumberType) {
   let n,m;
   if(Array.isArray(arg0)) {
     n = arg0[0];

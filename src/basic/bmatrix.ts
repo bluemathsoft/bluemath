@@ -52,7 +52,7 @@ export default class BandMatrix extends Matrix {
     let m = new Matrix({
       rows:this._def.rows,
       cols:this._def.cols
-    }, 'float32');
+    }, 'f32');
     let q = this._def.upperbandwidth;
     for(let i=0; i<m.rows; i++) {
       for(let j=0; j<m.cols; j++) {
