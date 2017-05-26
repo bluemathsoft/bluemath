@@ -21,6 +21,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {utils, basic, geom, linalg} from '../src'
+import * as blas from '../src/linalg/blas'
 
 let {NDArray, Vector, Matrix, Vector2, PermutationVector, BandMatrix} = basic;
 let {BSplineCurve2D} = geom.nurbs;
@@ -40,46 +41,46 @@ window.onload = () => {
   QUnit.module('NDArray', () => {
 
     QUnit.module('construction', () => {
-      QUnit.module('deduceShape and size', () => {
-        QUnit.test('3x3', assert => {
-          let A = new NDArray([
-            [2,4,6],
-            [3,5,2],
-            [1,6,5]
-          ]);
-          assert.deepEqual(A.shape, [3,3]);
-          assert.equal(A.size, 9);
+      QUnit.module('From Array', () => {
+        QUnit.module('deduceShape and size', () => {
+          QUnit.test('3x3', assert => {
+            let A = new NDArray([
+              [2,4,6],
+              [3,5,2],
+              [1,6,5]
+            ]);
+            assert.deepEqual(A.shape, [3,3]);
+            assert.equal(A.size, 9);
+          });
+          QUnit.test('1x3', assert => {
+            let A = new NDArray([
+              [2,4,6]
+            ]);
+            assert.deepEqual(A.shape, [1,3]);
+            assert.equal(A.size, 3);
+          });
+          QUnit.test('3x1', assert => {
+            let A = new NDArray([
+              [2],[4],[6]
+            ]);
+            assert.deepEqual(A.shape, [3,1]);
+            assert.equal(A.size, 3);
+          });
+          QUnit.test('1x1', assert => {
+            let A = new NDArray([
+              [2]
+            ]);
+            assert.deepEqual(A.shape, [1,1]);
+            assert.equal(A.size, 1);
+          });
+          QUnit.test('5', assert => {
+            let A = new NDArray([
+              2,3,4,5,6
+            ]);
+            assert.deepEqual(A.shape, [5]);
+            assert.equal(A.size, 5);
+          });
         });
-        QUnit.test('1x3', assert => {
-          let A = new NDArray([
-            [2,4,6]
-          ]);
-          assert.deepEqual(A.shape, [1,3]);
-          assert.equal(A.size, 3);
-        });
-        QUnit.test('3x1', assert => {
-          let A = new NDArray([
-            [2],[4],[6]
-          ]);
-          assert.deepEqual(A.shape, [3,1]);
-          assert.equal(A.size, 3);
-        });
-        QUnit.test('1x1', assert => {
-          let A = new NDArray([
-            [2]
-          ]);
-          assert.deepEqual(A.shape, [1,1]);
-          assert.equal(A.size, 1);
-        });
-        QUnit.test('5', assert => {
-          let A = new NDArray([
-            2,3,4,5,6
-          ]);
-          assert.deepEqual(A.shape, [5]);
-          assert.equal(A.size, 5);
-        });
-      });
-      QUnit.module('from array datatype', () => {
         QUnit.test('to float32 default', assert => {
           let A = new NDArray([
             2,3,4,5,6
@@ -109,7 +110,8 @@ window.onload = () => {
           assert.notEqual(A.get(2), -4);
         });
       });
-      QUnit.module('from raw data', () => {
+
+      QUnit.module('From Raw Data', () => {
         QUnit.module('shape', () => {
           QUnit.test('default flat', assert => {
             let A = new NDArray(new Float32Array([3,7,5,6]));
@@ -135,107 +137,132 @@ window.onload = () => {
           });
         });
       });
-      QUnit.module('Indexing', () => {
-        QUnit.module('Invalid Access', () => {
-          QUnit.test('Wrong num of dim', assert => {
-            let A = new NDArray(new Float32Array([3,7,5,6]));
-            assert.throws(() => {
-              A.get(0,0);
-            });
-          });
-          QUnit.test('Invalid dim-0', assert => {
-            let A = new NDArray(new Float32Array([3,7,5,6]));
-            assert.throws(() => {
-              A.get(5);
-            });
-          });
-          QUnit.test('Invalid dim-1', assert => {
-            let A = new NDArray(new Float32Array([3,7,5,6]),{shape:[2,2]});
-            assert.throws(() => {
-              A.get(0,3);
-            });
-          });
-          QUnit.test('Negative dim-1', assert => {
-            let A = new NDArray(new Float32Array([3,7,5,6]),{shape:[2,2]});
-            assert.throws(() => {
-              A.get(0,-1);
-            });
+
+      QUnit.module('No Data', () => {
+        QUnit.test('fill with 0', assert => {
+          let A = new NDArray({shape:[2,2],fill:0})
+          assert.equal(A.size, 4);
+          assert.equal(A.get(0,0),0);
+          assert.equal(A.get(0,1),0);
+          assert.equal(A.get(1,0),0);
+          assert.equal(A.get(1,1),0);
+        });
+        QUnit.test('fill with 5', assert => {
+          let A = new NDArray({shape:[2,2],fill:5})
+          assert.equal(A.size, 4);
+          assert.equal(A.get(0,0),5);
+          assert.equal(A.get(0,1),5);
+          assert.equal(A.get(1,0),5);
+          assert.equal(A.get(1,1),5);
+        });
+      });
+    });
+
+
+
+    QUnit.module('Indexing', () => {
+      QUnit.module('Invalid Access', () => {
+        QUnit.test('Wrong num of dim', assert => {
+          let A = new NDArray(new Float32Array([3,7,5,6]));
+          assert.throws(() => {
+            A.get(0,0);
           });
         });
-        QUnit.module('Set', () => {
-          QUnit.test('flat', assert => {
-            let A = new NDArray(new Float32Array([3,7,5,6]),{shape:[4]});
-            assert.equal(A.get(1),7);
-            A.set(1,589);
-            assert.equal(A.get(1),589);
-          });
-          QUnit.test('2x2', assert => {
-            let A = new NDArray(new Float32Array([3,7,5,6]),{shape:[2,2]});
-            assert.equal(A.get(1,1),6);
-            A.set(1,1,589);
-            assert.equal(A.get(1,1),589);
-          });
-          QUnit.test('4x1', assert => {
-            let A = new NDArray(new Float32Array([3,7,5,6]),{shape:[4,1]});
-            assert.equal(A.get(2,0),5);
-            A.set(2,0,589);
-            assert.equal(A.get(2,0),589);
-          });
-          QUnit.test('1x4', assert => {
-            let A = new NDArray(new Float32Array([3,7,5,6]),{shape:[1,4]});
-            assert.equal(A.get(0,2),5);
-            A.set(0,2,589);
-            assert.equal(A.get(0,2),589);
+        QUnit.test('Invalid dim-0', assert => {
+          let A = new NDArray(new Float32Array([3,7,5,6]));
+          assert.throws(() => {
+            A.get(5);
           });
         });
-        QUnit.module('Reshape', () => {
-          QUnit.test('6 to 2x3', assert => {
-            let A = new NDArray([3,5,7,4,5,6]);
-            assert.equal(A.get(2),7);
-            assert.throws(() => {
-              A.get(0,2);
-            });
-            assert.equal(A.size, 6);
-
-            A.reshape([2,3]);
-
-            assert.equal(A.get(0,2),7);
-            assert.throws(() => {
-              A.get(2);
-            });
-            assert.equal(A.size, 6);
-          });
-          QUnit.test('2x3 to 6', assert => {
-            let A = new NDArray([
-              [3,5,7],
-              [4,5,6]
-            ]);
-            assert.equal(A.get(0,2),7);
-            assert.throws(() => {
-              A.get(2);
-            });
-            assert.equal(A.size, 6);
-
-            A.reshape([6]);
-
-            assert.equal(A.get(2),7);
-            assert.throws(() => {
-              A.get(0,2);
-            });
-            assert.equal(A.size, 6);
-          });
-          QUnit.test('6 to 4x2', assert => {
-            let A = new NDArray([3,5,7,4,5,6]);
-            assert.equal(A.size, 6);
-            assert.equal(A.get(2),7);
-            A.reshape([4,2]);
-            assert.equal(A.size, 8);
-            assert.equal(A.get(1,0),7);
-            assert.equal(A.get(2,1),6);
-            assert.equal(A.get(3,0),0);
-            assert.equal(A.get(3,1),0);
+        QUnit.test('Invalid dim-1', assert => {
+          let A = new NDArray(new Float32Array([3,7,5,6]),{shape:[2,2]});
+          assert.throws(() => {
+            A.get(0,3);
           });
         });
+        QUnit.test('Negative dim-1', assert => {
+          let A = new NDArray(new Float32Array([3,7,5,6]),{shape:[2,2]});
+          assert.throws(() => {
+            A.get(0,-1);
+          });
+        });
+      });
+      QUnit.module('Set', () => {
+        QUnit.test('flat', assert => {
+          let A = new NDArray(new Float32Array([3,7,5,6]),{shape:[4]});
+          assert.equal(A.get(1),7);
+          A.set(1,589);
+          assert.equal(A.get(1),589);
+        });
+        QUnit.test('2x2', assert => {
+          let A = new NDArray(new Float32Array([3,7,5,6]),{shape:[2,2]});
+          assert.equal(A.get(1,1),6);
+          A.set(1,1,589);
+          assert.equal(A.get(1,1),589);
+        });
+        QUnit.test('4x1', assert => {
+          let A = new NDArray(new Float32Array([3,7,5,6]),{shape:[4,1]});
+          assert.equal(A.get(2,0),5);
+          A.set(2,0,589);
+          assert.equal(A.get(2,0),589);
+        });
+        QUnit.test('1x4', assert => {
+          let A = new NDArray(new Float32Array([3,7,5,6]),{shape:[1,4]});
+          assert.equal(A.get(0,2),5);
+          A.set(0,2,589);
+          assert.equal(A.get(0,2),589);
+        });
+      });
+    });
+
+
+
+    QUnit.module('Reshape', () => {
+      QUnit.test('6 to 2x3', assert => {
+        let A = new NDArray([3,5,7,4,5,6]);
+        assert.equal(A.get(2),7);
+        assert.throws(() => {
+          A.get(0,2);
+        });
+        assert.equal(A.size, 6);
+
+        A.reshape([2,3]);
+
+        assert.equal(A.get(0,2),7);
+        assert.throws(() => {
+          A.get(2);
+        });
+        assert.equal(A.size, 6);
+      });
+      QUnit.test('2x3 to 6', assert => {
+        let A = new NDArray([
+          [3,5,7],
+          [4,5,6]
+        ]);
+        assert.equal(A.get(0,2),7);
+        assert.throws(() => {
+          A.get(2);
+        });
+        assert.equal(A.size, 6);
+
+        A.reshape([6]);
+
+        assert.equal(A.get(2),7);
+        assert.throws(() => {
+          A.get(0,2);
+        });
+        assert.equal(A.size, 6);
+      });
+      QUnit.test('6 to 4x2', assert => {
+        let A = new NDArray([3,5,7,4,5,6]);
+        assert.equal(A.size, 6);
+        assert.equal(A.get(2),7);
+        A.reshape([4,2]);
+        assert.equal(A.size, 8);
+        assert.equal(A.get(1,0),7);
+        assert.equal(A.get(2,1),6);
+        assert.equal(A.get(3,0),0);
+        assert.equal(A.get(3,1),0);
       });
     });
   });
@@ -822,16 +849,46 @@ window.onload = () => {
       }
       QUnit.test('asum', assert => {
         let X = new Float32Array([3.404,5.66,2,0,-3]);
-        let r = linalg.blas.asum(X);
+        let r = blas.asum(X);
         assert.ok(utils.isEqualFloat(r, 14.064, 1e-4));
       });
       QUnit.test('axpy', assert => {
         let X = new Float32Array([3.404,5.66,2,0,-3]);
         let Y = new Float32Array(5);
         let answer = new Float32Array([6.808,11.32,4,0,-6]);
-        linalg.blas.axpy(X,2,Y);
+        blas.axpy(X,2,Y);
         assert.ok(numberArrayEqual(Y,answer));
       });
+    });
+    
+    QUnit.module('Construction', () => {
+      QUnit.module('eye', () => {
+        QUnit.test('Square 2x2', assert => {
+          let I = linalg.eye(2);
+          assert.equal(I.get(0,0), 1);
+          assert.equal(I.get(0,1), 0);
+          assert.equal(I.get(1,0), 0);
+          assert.equal(I.get(1,1), 1);
+        });
+        QUnit.test('Rectangular 2x3', assert => {
+          let I = linalg.eye([2,3]);
+          assert.equal(I.get(0,0), 1);
+          assert.equal(I.get(0,1), 0);
+          assert.equal(I.get(1,0), 0);
+          assert.equal(I.get(1,1), 1);
+          assert.equal(I.get(0,2), 0);
+          assert.equal(I.get(1,2), 0);
+        });
+        QUnit.test('Rectangular 3x2', assert => {
+          let I = linalg.eye([3,2]);
+          assert.equal(I.get(0,0), 1);
+          assert.equal(I.get(0,1), 0);
+          assert.equal(I.get(1,0), 0);
+          assert.equal(I.get(1,1), 1);
+          assert.equal(I.get(2,0), 0);
+          assert.equal(I.get(2,1), 0);
+        });
+      })
     });
   });
 }

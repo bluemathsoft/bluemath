@@ -28,6 +28,7 @@ export {DataType}
 export interface NDArrayOptions {
   shape? : number[];
   datatype? : DataType;
+  fill? : number;
 }
 
 function deduceShape(data:Array<any>) {
@@ -119,6 +120,9 @@ export default class NDArray {
         this.shape = options.shape;
         this._calcSize();
         this._alloc(this.size, undefined, this.datatype);
+        if(options.fill) {
+          this._data.fill(options.fill);
+        }
       }
     }
   }

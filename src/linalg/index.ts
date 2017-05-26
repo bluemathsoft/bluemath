@@ -20,8 +20,8 @@
 
 */
 
-import * as blas from './blas'
+import {eye} from './construction'
 
 export {
-  blas
+  eye
 }
