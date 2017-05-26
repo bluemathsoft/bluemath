@@ -265,6 +265,31 @@ window.onload = () => {
         assert.equal(A.get(3,1),0);
       });
     });
+
+    QUnit.module('clone', () => {
+      QUnit.test('3x3', assert => {
+        let A = new NDArray([
+          [2,4,6],
+          [1,0,9],
+          [0,2,3]
+        ], {datatype:'f64'});
+        assert.equal(A.get(1,2),9)
+
+        let B = A.clone();
+        assert.equal(B.get(1,2),9)
+
+        assert.deepEqual(A.shape, B.shape);
+        assert.equal(A.datatype, B.datatype);
+
+        B.set(1,2,45);
+        assert.equal(B.get(1,2),45)
+        assert.equal(A.get(1,2),9)
+
+        A.set(1,2,186);
+        assert.equal(A.get(1,2),186)
+        assert.equal(B.get(1,2),45)
+      });
+    });
   });
 
   QUnit.module('Vector2', () => {

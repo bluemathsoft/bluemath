@@ -137,6 +137,39 @@ export default class NDArray {
     }
   }
 
+  clone() {
+    let data;
+    switch(this.datatype) {
+    case 'i8':
+      data = new Int8Array(this._data);
+      break;
+    case 'ui8':
+      data = new Uint8Array(this._data);
+      break;
+    case 'i16':
+      data = new Int16Array(this._data);
+      break;
+    case 'ui16':
+      data = new Uint16Array(this._data);
+      break;
+    case 'i32':
+      data = new Int32Array(this._data);
+      break;
+    case 'ui32':
+      data = new Uint32Array(this._data);
+      break;
+    case 'f32':
+      data = new Float32Array(this._data);
+      break;
+    case 'f64':
+      data = new Float64Array(this._data);
+      break;
+    default:
+      throw new Error('Unknown datatype');
+    }
+    return new NDArray(data,{shape:this.shape.slice()});
+  }
+
   private _calcSize() {
     this.size = this.shape.reduce((prev,cur) => prev*cur, 1);
   }
@@ -167,6 +200,8 @@ export default class NDArray {
     case 'f64':
       this._data = new Float64Array(size);
       break;
+    default:
+      throw new Error('Unknown datatype');
     }
     if(Array.isArray(data)) {
       populateFromArray(this._data, 0, data);
