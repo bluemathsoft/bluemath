@@ -105,8 +105,17 @@ export function norm(A:NDArray, p?:number|'fro') {
       throw new Error('Vector norm for '+p+' not defined');
     }
   } else if(A.shape.length === 2) { // A is matrix
-    throw new Error('TODO');
-
+    if(p === 'fro') {
+      let sum = 0;
+      for(let i=0; i<A.shape[0]; i++) {
+        for(let j=0; j<A.shape[1]; j++) {
+          sum += A.get(i,j)*A.get(i,j);
+        }
+      }
+      return Math.sqrt(sum);
+    } else {
+      throw new Error('TODO');
+    }
   } else {
     throw new Error('Norm is not defined for given NDArray');
   }

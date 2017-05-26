@@ -1005,6 +1005,17 @@ window.onload = () => {
             assert.equal(linalg.norm(A,-Infinity), 2);
           });
         });
+        QUnit.module('Matrix', () => {
+          QUnit.test('Frobenius norm', assert => {
+            let A = new NDArray([
+              [2,3,4],
+              [4,2,-9],
+              [0,3,1]
+            ]);
+            assert.ok(utils.isEqualFloat(linalg.norm(A, 'fro'),
+              11.832159566199232, 1e-6));
+          });
+        });
       });
     });
   });
