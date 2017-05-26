@@ -21,7 +21,9 @@
 */
 
 import {eye} from './construction'
+import {mmultiply} from './operations'
 
 export {
-  eye
+  eye,
+  mmultiply
 }
