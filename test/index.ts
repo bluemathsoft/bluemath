@@ -188,6 +188,54 @@ window.onload = () => {
             assert.equal(A.get(0,2),589);
           });
         });
+        QUnit.module('Reshape', () => {
+          QUnit.test('6 to 2x3', assert => {
+            let A = new NDArray([3,5,7,4,5,6]);
+            assert.equal(A.get(2),7);
+            assert.throws(() => {
+              A.get(0,2);
+            });
+            assert.equal(A.size, 6);
+
+            A.reshape([2,3]);
+
+            assert.equal(A.get(0,2),7);
+            assert.throws(() => {
+              A.get(2);
+            });
+            assert.equal(A.size, 6);
+          });
+          QUnit.test('2x3 to 6', assert => {
+            let A = new NDArray([
+              [3,5,7],
+              [4,5,6]
+            ]);
+            assert.equal(A.get(0,2),7);
+            assert.throws(() => {
+              A.get(2);
+            });
+            assert.equal(A.size, 6);
+
+            A.reshape([6]);
+
+            assert.equal(A.get(2),7);
+            assert.throws(() => {
+              A.get(0,2);
+            });
+            assert.equal(A.size, 6);
+          });
+          QUnit.test('6 to 4x2', assert => {
+            let A = new NDArray([3,5,7,4,5,6]);
+            assert.equal(A.size, 6);
+            assert.equal(A.get(2),7);
+            A.reshape([4,2]);
+            assert.equal(A.size, 8);
+            assert.equal(A.get(1,0),7);
+            assert.equal(A.get(2,1),6);
+            assert.equal(A.get(3,0),0);
+            assert.equal(A.get(3,1),0);
+          });
+        });
       });
     });
   });

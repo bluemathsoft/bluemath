@@ -88,27 +88,50 @@ export default class NDArray {
   private _data : TypedArray;
 
   constructor(
-    data:TypedArray|Array<any>,
-    options?:NDArrayOptions)
+    arg0:TypedArray|Array<any>|NDArrayOptions,
+    arg1?:NDArrayOptions)
   {
-    if(Array.isArray(data)) {
-      this.shape = deduceShape(data);
+    this.size = 0;
+    this.datatype = 'f32';
+    if(Array.isArray(arg0)) {
+      this.shape = deduceShape(arg0);
       this._calcSize();
-      this.datatype = 'f32';
-      if(options && options.datatype) {
-        this.datatype = options.datatype;
+      if(arg1 && arg1.datatype) {
+        this.datatype = arg1.datatype;
       }
-      this._alloc(this.size, data, this.datatype);
-    } else {
-      this._data = data;
-      if(options && options.shape) {
-        this.shape = options.shape;
+      this._alloc(this.size, arg0, this.datatype);
+    } else if(ArrayBuffer.isView(arg0)) {
+      this._data = arg0;
+      if(arg1 && arg1.shape) {
+        this.shape = arg1.shape;
       } else {
-        this.shape = [data.length];
+        this.shape = [arg0.length];
       }
       // in this case options.datatype is ignored if supplied
-      this.datatype = deduceDataType(data);
+      this.datatype = deduceDataType(arg0);
       this._calcSize();
+    } else { // must be NDArrayOption
+      let options = arg0;
+      if(options.datatype) {
+        this.datatype = options.datatype;
+      }
+      if(options.shape) {
+        this.shape = options.shape;
+        this._calcSize();
+        this._alloc(this.size, undefined, this.datatype);
+      }
+    }
+  }
+
+  reshape(shape:number[]) {
+    this.shape = shape;
+    let oldsize = this.size;
+    this._calcSize();
+    if(this.size > oldsize) {
+      // Rellocate a buffer of bigger size, copy old data to it
+      this._alloc(this.size, this._data, this.datatype);
+      // Fill the excess elements in new buffer with 0
+      this._data.fill(0,oldsize);
     }
   }
 
@@ -116,7 +139,7 @@ export default class NDArray {
     this.size = this.shape.reduce((prev,cur) => prev*cur, 1);
   }
 
-  private _alloc(size:number, data?:Array<any>, datatype?:DataType) {
+  private _alloc(size:number, data?:TypedArray|Array<any>, datatype?:DataType) {
     switch(datatype) {
     case 'i8':
       this._data = new Int8Array(size);
@@ -143,8 +166,10 @@ export default class NDArray {
       this._data = new Float64Array(size);
       break;
     }
-    if(data) {
+    if(Array.isArray(data)) {
       populateFromArray(this._data, 0, data);
+    } else if(ArrayBuffer.isView(data)) {
+      this._data.set(data);
     }
   }
 
