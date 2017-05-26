@@ -4,7 +4,7 @@
 Math kernel in Javascript (Work in Progress)
 
 [![NPM package](https://img.shields.io/npm/v/bluemath.svg)](https://www.npmjs.com/package/bluemath)
-[![License](https://img.shields.io/badge/license-AGPL3-blue.svg)](LICENSE.txt)
+[![License](https://img.shields.io/badge/license-AGPL3-blue.svg)](LICENSE)
 
 Usage
 ===

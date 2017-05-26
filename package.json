@@ -1,17 +1,17 @@
 {
   "name": "bluemath",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "Math kernel in Javascript",
   "main": "lib/index.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "watch": "webpack --watch --config webpack.config.js",
     "watch-logoscope": "webpack --watch --config webpack.logoscope.config.js",
-    "docs": "typedoc --out ./docs ./src"
+    "docs": "typedoc --out ./docs ./src",
+    "prepublish": "(cd src; tsc -p .)"
   },
   "keywords": [
     "Math",
-    "Geometry",
     "Linear Algebra",
     "Vector",
     "Matrix"
