@@ -978,6 +978,34 @@ window.onload = () => {
           assert.equal(M.get(1,1), 6);
         });
       });
+      QUnit.module('norm', () => {
+        QUnit.module('Vector', () => {
+          QUnit.test('1-norm', assert => {
+            let A = new NDArray([2,3,4,5]);
+            assert.equal(linalg.norm(A,1), 14);
+          });
+          QUnit.test('2-norm', assert => {
+            let A = new NDArray([2,3,4,5]);
+            assert.ok(utils.isEqualFloat(linalg.norm(A,2), 7.34847));
+          });
+          QUnit.test('3-norm', assert => {
+            let A = new NDArray([2,3,4,5]);
+            assert.ok(utils.isEqualFloat(linalg.norm(A,3), 6.07318, 1e-4));
+          });
+          QUnit.test('Infinity-norm', assert => {
+            let A = new NDArray([2,3,4,5]);
+            assert.equal(linalg.norm(A,Infinity), 5);
+            A = new NDArray([2,3,-48,5]);
+            assert.equal(linalg.norm(A,Infinity), 48);
+          });
+          QUnit.test('-Infinity-norm', assert => {
+            let A = new NDArray([2,3,4,5]);
+            assert.equal(linalg.norm(A,-Infinity), 2);
+            A = new NDArray([2,3,-48,5]);
+            assert.equal(linalg.norm(A,-Infinity), 2);
+          });
+        });
+      });
     });
   });
 }

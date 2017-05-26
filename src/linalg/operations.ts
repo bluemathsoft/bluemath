@@ -72,3 +72,42 @@ export function mmultiply(A:NDArray, B:NDArray) {
   }
   return result;
 }
+
+export function norm(A:NDArray, p?:number|'fro') {
+  if(A.shape.length === 1) { // A is vector
+    if(p === undefined) {
+      p = 2;
+    }
+    if(typeof p !== 'number') {
+      throw new Error('Vector norm for '+p+' not defined');
+    }
+    if(p === Infinity) {
+      let max = -Infinity;
+      for(let i=0; i<A.shape[0]; i++) {
+        max = Math.max(max, Math.abs(A.get(i)));
+      }
+      return max;
+    } else if(p === -Infinity) { // As defined in Matlab docs
+      let min = Infinity;
+      for(let i=0; i<A.shape[0]; i++) {
+        min = Math.min(min, Math.abs(A.get(i)));
+      }
+      return min;
+    } else if(p >= 1) {
+
+      let sum = 0;
+      for(let i=0; i<A.shape[0]; i++) {
+        sum += Math.pow(Math.abs(A.get(i)), p);
+      }
+      return Math.pow(sum, 1/p);
+
+    } else {
+      throw new Error('Vector norm for '+p+' not defined');
+    }
+  } else if(A.shape.length === 2) { // A is matrix
+    throw new Error('TODO');
+
+  } else {
+    throw new Error('Norm is not defined for given NDArray');
+  }
+}
