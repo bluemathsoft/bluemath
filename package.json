@@ -7,7 +7,7 @@
     "build": "webpack --config webpack.config.js",
     "watch": "webpack --watch --config webpack.config.js",
     "watch-logoscope": "webpack --watch --config webpack.logoscope.config.js",
-    "docs": "typedoc --out ./docs ./src",
+    "build-docs": "typedoc --out ./docs src/ --theme ./doctheme --readme ./src/index.md",
     "prepublish": "(cd src; tsc -p .)"
   },
   "keywords": [
