@@ -22,6 +22,7 @@
 import {EPSILON} from './constants'
 
 /**
+ * @hidden
  * Convert angle to degrees
  */
 export function toDeg(angleInRadians:number) : number {
@@ -29,6 +30,7 @@ export function toDeg(angleInRadians:number) : number {
 }
 
 /**
+ * @hidden
  * Convert angle to radians
  */
 export function toRad(angleInDegrees:number) : number {
@@ -50,6 +52,7 @@ export function isEqualFloat(a:number, b:number, tolerance=EPSILON) : boolean {
 }
 
 /**
+ * @hidden
  * Find cube root of given number. Math.pow return NaN while taking
  * cube root of negative number, because some of the results might
  * be complex numbers. This function only return the real cubeRoot
