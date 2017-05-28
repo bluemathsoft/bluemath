@@ -21,7 +21,7 @@
 */
 
 import {NumberType,TypedArray} from '..'
-
+import {isEqualFloat} from '../utils'
 
 export interface NDArrayOptions {
   shape? : number[];
@@ -253,5 +253,29 @@ export default class NDArray {
     let nargs = args.length;
     let addr = this._getAddress(...(args.slice(0,nargs-1)));
     this._data[addr] = args[nargs-1];
+  }
+
+  /**
+   * @hidden
+   */
+  datacompare(otherdata:TypedArray) {
+    for(let i=0; i<this._data.length; i++) {
+      if(!isEqualFloat(this._data[i], otherdata[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  isEqual(other:NDArray) : boolean {
+    if(this.shape.length !== other.shape.length) {
+      return false;
+    }
+    for(let i=0; i<this.shape.length; i++) {
+      if(this.shape[i] !== other.shape[i]) {
+        return false;
+      }
+    }
+    return other.datacompare(this._data);
   }
 }

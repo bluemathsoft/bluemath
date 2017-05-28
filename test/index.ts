@@ -159,6 +159,34 @@ window.onload = () => {
     });
 
 
+    QUnit.module('Equality', () => {
+
+      QUnit.test('2x2 equal', assert => {
+        let A = new NDArray([[4,7],[3,4]]);
+        let B = new NDArray([[4,7],[3,4]]);
+        assert.ok(A.isEqual(B));
+      });
+      QUnit.test('2x2 not equal', assert => {
+        let A = new NDArray([[4,7],[3,4]]);
+        let B = new NDArray([[4,9],[3,4]]);
+        assert.notOk(A.isEqual(B));
+      });
+      QUnit.test('2x2 and 3x3', assert => {
+        let A = new NDArray([[4,7],[3,4]]);
+        let B = new NDArray([[4,7,3],[3,4,3],[3,2,2]]);
+        assert.notOk(A.isEqual(B));
+      });
+      QUnit.test('2x2 and 1', assert => {
+        let A = new NDArray([[4,7],[3,4]]);
+        let B = new NDArray([34]);
+        assert.notOk(A.isEqual(B));
+      });
+      QUnit.test('2x2 int32 vs float32 equal', assert => {
+        let A = new NDArray([[4,7],[3,4]], {datatype:'i32'});
+        let B = new NDArray([[4,9],[3,4]], {datatype:'f32'});
+        assert.notOk(A.isEqual(B));
+      });
+    });
 
     QUnit.module('Indexing', () => {
       QUnit.module('Invalid Access', () => {
