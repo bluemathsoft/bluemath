@@ -240,6 +240,10 @@ export default class NDArray {
     return addr;
   }
 
+  fill(value:number) {
+    this._data.fill(value);
+  }
+
   get(...indices:number[]) {
     let addr = this._getAddress(...indices);
     return this._data[addr];

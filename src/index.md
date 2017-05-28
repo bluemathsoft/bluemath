@@ -11,6 +11,7 @@ linalg
   * *Construction*
 
     * [[eye]]
+    * [[zeros]]
 
   * *Operations*
 

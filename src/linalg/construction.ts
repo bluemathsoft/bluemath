@@ -21,6 +21,16 @@
 import {NumberType} from '../'
 import NDArray from '../basic/ndarray'
 
+/**
+ * Creates m-by-n Identity matrix
+ * 
+ * ``` 
+ * eye(2) // Creates 2x2 Identity matrix
+ * eye([2,2]) // Creates 2x2 Identity matrix
+ * eye([2,3]) // Create 2x3 Identity matrix with main diagonal set to 1
+ * eye(2,'i32') // Creates 2x2 Identity matrix of 32-bit integers
+ * ```
+ */
 export function eye(arg0:number|number[], datatype?:NumberType) {
   let n,m;
   if(Array.isArray(arg0)) {
@@ -38,5 +48,25 @@ export function eye(arg0:number|number[], datatype?:NumberType) {
   for(let i=0; i<ndiag; i++) {
     A.set(i,i,1);
   }
+  return A;
+}
+
+/**
+ * Creates NDArray of filled with zeros
+ * 
+ * ```
+ * zeros(2) // Creates 2x2 matrix of zeros  
+ * zeros([2,2,2]) // Create 2x2x2 matrix of zeros
+ * zeros(2,'i16') // Creates 2x2 matrix of 16-bit integers filled with zeros
+ * ```
+ */
+export function zeros(arg0:number|number[], datatype?:NumberType) {
+  let A;
+  if(Array.isArray(arg0)) {
+    A = new NDArray({shape:arg0, datatype:datatype});
+  } else {
+    A = new NDArray({shape:[arg0,arg0], datatype:datatype})
+  }
+  A.fill(0);
   return A;
 }

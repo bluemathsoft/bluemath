@@ -913,7 +913,20 @@ window.onload = () => {
           assert.equal(I.get(2,0), 0);
           assert.equal(I.get(2,1), 0);
         });
-      })
+      });
+      QUnit.module('zeros', () => {
+        QUnit.test('Rectangular 2x2', assert => {
+          let Z = linalg.zeros(2);
+          assert.equal(Z.get(0,0), 0);
+          assert.equal(Z.get(0,1), 0);
+          assert.equal(Z.get(1,0), 0);
+          assert.equal(Z.get(1,1), 0);
+        });
+        QUnit.test('Rectangular 2x2 ui32', assert => {
+          let Z = linalg.zeros([2,2], 'ui32');
+          assert.equal(Z.datatype, 'ui32');
+        });
+      });
     });
     QUnit.module('Operations', () => {
       QUnit.module('mmultiply', () => {
