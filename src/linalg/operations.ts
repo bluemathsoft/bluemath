@@ -79,7 +79,7 @@ export function norm(A:NDArray, p?:number|'fro') {
       p = 2;
     }
     if(typeof p !== 'number') {
-      throw new Error('Vector norm for '+p+' not defined');
+      throw new Error('Vector '+p+'-norm is not defined');
     }
     if(p === Infinity) {
       let max = -Infinity;
@@ -102,7 +102,7 @@ export function norm(A:NDArray, p?:number|'fro') {
       return Math.pow(sum, 1/p);
 
     } else {
-      throw new Error('Vector norm for '+p+' not defined');
+      throw new Error('Vector '+p+'-norm for is not defined');
     }
   } else if(A.shape.length === 2) { // A is matrix
     if(p === 'fro') {
