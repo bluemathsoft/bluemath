@@ -21,6 +21,13 @@
 
 import {NDArray} from '../basic'
 
+/**
+ * Matrix multiplication
+ * 
+ * At least one of the arguments has to be 2D matrix (i.e. shape mxn).
+ * The other argument could be a 1D vector. It will be implicitly used
+ * as 1xn matrix
+ */
 export function mmultiply(A:NDArray, B:NDArray) {
   let shapeA = A.shape;
   let shapeB = B.shape;
@@ -73,6 +80,26 @@ export function mmultiply(A:NDArray, B:NDArray) {
   return result;
 }
 
+/**
+ * Computes p-norm of given Matrix or Vector
+ * `A` must be a Vector (1D) or Matrix (2D)
+ * Norm is defined for certain values of `p`
+ * 
+ * If `A` is a Vector
+ *  
+ * $$ \left\Vert A \right\Vert = \max_{1 \leq i \leq n}  \lvert a_i \rvert, p = \infty  $$
+ * 
+ * $$ \left\Vert A \right\Vert = \min_{1 \leq i \leq n}  \lvert a_i \rvert, p = -\infty  $$
+ * 
+ * $$ \left\Vert A \right\Vert = \( \lvert a_1 \rvert^p + \ldots + \lvert a_n \rvert^p \)^{1/p}, p>=1 $$
+ * 
+ * If `A` is a Matrix
+ * 
+ * p = 'fro' will return Frobenius norm
+ * 
+ * $$ \left\Vert A \right\Vert\_F = \sqrt { \sum\_{i=1}^m \sum\_{j=1}^n \lvert a\_{ij} \rvert ^2 } $$
+ * 
+ */
 export function norm(A:NDArray, p?:number|'fro') {
   if(A.shape.length === 1) { // A is vector
     if(p === undefined) {
@@ -102,7 +129,7 @@ export function norm(A:NDArray, p?:number|'fro') {
       return Math.pow(sum, 1/p);
 
     } else {
-      throw new Error('Vector '+p+'-norm for is not defined');
+      throw new Error('Vector '+p+'-norm is not defined');
     }
   } else if(A.shape.length === 2) { // A is matrix
     if(p === 'fro') {
