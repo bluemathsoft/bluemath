@@ -24,6 +24,9 @@ import {NumberType, TypedArray} from '..'
 import {utils} from '..'
 import {EPSILON} from '../constants'
 
+/**
+ * @hidden
+ */
 export default class Vector {
 
   protected _data : TypedArray | number[];

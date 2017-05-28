@@ -29,6 +29,9 @@ export interface NDArrayOptions {
   fill? : number;
 }
 
+/**
+ * @hidden
+ */
 function deduceShape(data:Array<any>) {
   let dim = 0;
   let d = data;
@@ -41,6 +44,9 @@ function deduceShape(data:Array<any>) {
   return shape;
 }
 
+/**
+ * @hidden
+ */
 function deduceNumberType(data:TypedArray) : NumberType {
   if(data instanceof Float32Array) {
     return 'f32';
@@ -63,6 +69,9 @@ function deduceNumberType(data:TypedArray) : NumberType {
   }
 }
 
+/**
+ * @hidden
+ */
 function populateFromArray(data:TypedArray, idx:number, arr:Array<any>) {
   if(Array.isArray(arr[0])) {
     let len = 0;

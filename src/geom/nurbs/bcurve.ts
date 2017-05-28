@@ -25,6 +25,9 @@ import {
 } from './helper'
 import {Vector, Vector2, Vector3} from '../../basic'
 
+/**
+ * @hidden
+ */
 class BSplineCurve {
 
   degree : number;
@@ -95,6 +98,9 @@ class BSplineCurve {
   }
 }
 
+/**
+ * @hidden
+ */
 class BSplineCurve2D extends BSplineCurve {
 
   constructor(
@@ -128,6 +134,9 @@ class BSplineCurve2D extends BSplineCurve {
   }
 }
 
+/**
+ * @hidden
+ */
 class BSplineCurve3D extends BSplineCurve {
 
   constructor(

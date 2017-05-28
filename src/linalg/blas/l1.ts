@@ -21,6 +21,9 @@
 
 import {TypedArray} from '../..'
 
+/**
+ * @hidden
+ */
 export function asum(X:TypedArray) : number {
   let r = 0.0;
   for(let i=0; i<X.length; i++) {
@@ -29,6 +32,9 @@ export function asum(X:TypedArray) : number {
   return r;
 }
 
+/**
+ * @hidden
+ */
 export function axpy(X:TypedArray, a:number, Y:TypedArray) : void {
   for(let i=0; i<X.length; i++) {
     Y[i] = a * X[i];

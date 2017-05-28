@@ -2,6 +2,9 @@
 import Matrix from './matrix'
 import {TypedArray} from '..'
 
+/**
+ * @hidden
+ */
 interface BandMatrixDef {
   rows : number,
   cols : number,
@@ -12,6 +15,9 @@ interface BandMatrixDef {
 
 export {BandMatrixDef};
 
+/**
+ * @hidden
+ */
 export default class BandMatrix extends Matrix {
 
   private _def : BandMatrixDef;
