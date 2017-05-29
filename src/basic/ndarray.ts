@@ -255,6 +255,19 @@ export default class NDArray {
     this._data[addr] = args[nargs-1];
   }
 
+  swaprows(i:number, j:number) : void {
+    let nrows = this.shape[0];
+    let ncols = this.shape[1];
+    if(i >= nrows || j >= nrows) {
+      throw new Error("Index out of range");
+    }
+    for(let k=0; k<ncols; k++) {
+      let tmp = this.get(i,k);
+      this.set(i,k,this.get(j,k));
+      this.set(j,k,tmp);
+    }
+  }
+
   /**
    * @hidden
    */

@@ -188,6 +188,13 @@ window.onload = () => {
       });
     });
 
+    QUnit.test("swaprows", assert => {
+      let A = new NDArray([[1,0],[2,1],[6,9]], 'i16');
+      let B = new NDArray([[2,1],[1,0],[6,9]], 'i16');
+      A.swaprows(0,1);
+      assert.ok(A.isEqual(B));
+    });
+
     QUnit.module('Indexing', () => {
       QUnit.module('Invalid Access', () => {
         QUnit.test('Wrong num of dim', assert => {
