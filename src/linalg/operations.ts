@@ -87,17 +87,17 @@ export function mmultiply(A:NDArray, B:NDArray) {
  * 
  * If `A` is a Vector
  *  
- * $$ \left\Vert A \right\Vert = \max_{1 \leq i \leq n}  \lvert a_i \rvert, p = \infty  $$
+ * $$ \left\Vert A \right\Vert = \max_{0 \leq i < n}  \lvert a_i \rvert, p = \infty  $$
  * 
- * $$ \left\Vert A \right\Vert = \min_{1 \leq i \leq n}  \lvert a_i \rvert, p = -\infty  $$
+ * $$ \left\Vert A \right\Vert = \min_{0 \leq i < n}  \lvert a_i \rvert, p = -\infty  $$
  * 
- * $$ \left\Vert A \right\Vert = \( \lvert a_1 \rvert^p + \ldots + \lvert a_n \rvert^p \)^{1/p}, p>=1 $$
+ * $$ \left\Vert A \right\Vert = \( \lvert a_0 \rvert^p + \ldots + \lvert a_n \rvert^p \)^{1/p}, p>=1 $$
  * 
  * If `A` is a Matrix
  * 
  * p = 'fro' will return Frobenius norm
  * 
- * $$ \left\Vert A \right\Vert\_F = \sqrt { \sum\_{i=1}^m \sum\_{j=1}^n \lvert a\_{ij} \rvert ^2 } $$
+ * $$ \left\Vert A \right\Vert\_F = \sqrt { \sum\_{i=0}^m \sum\_{j=0}^n \lvert a\_{ij} \rvert ^2 } $$
  * 
  */
 export function norm(A:NDArray, p?:number|'fro') {
