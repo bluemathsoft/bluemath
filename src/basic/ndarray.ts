@@ -39,7 +39,7 @@ function deduceShape(data:Array<any>) {
   while(Array.isArray(d[0])) {
     shape.push(d[0].length);
     dim++;
-    d = data[0];
+    d = d[0];
   }
   return shape;
 }

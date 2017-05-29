@@ -80,6 +80,20 @@ window.onload = () => {
             assert.deepEqual(A.shape, [5]);
             assert.equal(A.size, 5);
           });
+          QUnit.test("2x2x2", assert => {
+            let A = new NDArray([
+              [
+                [1,0],
+                [2,1]
+              ],
+              [
+                [2,3],
+                [5,4]
+              ]
+            ], 'i16');
+            assert.deepEqual(A.shape,[2,2,2]);
+            assert.equal(A.size, 8);
+          });
         });
         QUnit.test('to float32 default', assert => {
           let A = new NDArray([
