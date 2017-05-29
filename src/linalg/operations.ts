@@ -168,6 +168,15 @@ export function lu(A:NDArray) {
 
   let n = A.shape[0];
 
+  let perm = new NDArray({shape:[n]});
+  for(let i=0; i<n; i++) { perm.set(i,i); }
+
+  function recordPermutation(ri:number,rj:number) {
+    let tmp = perm.get(ri);
+    perm.set(ri, perm.get(rj));
+    perm.set(rj, tmp);
+  }
+
   for(let k=0; k<n-1; k++) {
 
     // Find the maximum absolute entry in k'th column
@@ -183,6 +192,7 @@ export function lu(A:NDArray) {
 
     // Swap rows k and ipivot
     A.swaprows(k, ipivot);
+    recordPermutation(k, ipivot);
 
     if(isZero(pivot)) {
       throw new Error('Can\'t perform LU decomp. 0 on diagonal');
@@ -196,5 +206,7 @@ export function lu(A:NDArray) {
         A.set(i,j, A.get(i,j)-A.get(i,k)*A.get(k,j));
       }
     }
+
   }
+  return perm;
 }

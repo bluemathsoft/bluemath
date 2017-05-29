@@ -1160,6 +1160,22 @@ window.onload = () => {
           });
         });
       });
+      QUnit.module('lu', () => {
+        QUnit.test('3x3', assert => {
+          let A = new NDArray([
+            [3,17,10],
+            [2,4,-2],
+            [6,18,-12]
+          ]);
+          let P = linalg.lu(A);
+          assert.ok(P.isEqual(new NDArray([2,0,1])));
+          assert.ok(A.isEqual(new NDArray([
+            [6,18,-12],
+            [0.5,8,16],
+            [0.3333333,-0.25,6]
+          ])));
+        });
+      });
     });
   });
 }
