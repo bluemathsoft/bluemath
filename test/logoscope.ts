@@ -21,17 +21,14 @@
 */
 
 import * as blueplot from 'blueplot'
-import {Vector, Matrix} from '../src/basic'
-//import {Vector2} from '../src/basic'
-//import {BSplineCurve2D} from '../src/geom/nurbs'
+import {basic,linalg} from '../src'
+let {NDArray} = basic;
 
 window.onload = () => {
 
-  let plot1 = new blueplot.Plot(300,300);
-  document.body.appendChild(plot1.dom);
 
-  let plot2 = new blueplot.Plot(100,300);
-  document.body.appendChild(plot2.dom);
+  // let plot2 = new blueplot.Plot(100,300);
+  // document.body.appendChild(plot2.dom);
   /*
   let cpoints = [
     new Vector2(10,10),
@@ -51,6 +48,7 @@ window.onload = () => {
   plot.add(dg);
   */
 
+  /*
   let dgMatrix = new blueplot.DataGroupMN(plot1.width, plot1.height,{});
   plot1.add(dgMatrix);
 
@@ -61,6 +59,7 @@ window.onload = () => {
     dgMatrix.from2DData(data1, {type:'grid',timetrail:true});
     dgVector.from2DData(data2, {type:'grid',timetrail:true});
   };
+  */
 
   /*
   let m = new Matrix([
@@ -73,6 +72,7 @@ window.onload = () => {
   m.solveByForwardSubstitution(v);
   */
 
+  /*
   let m = new Matrix([
     [3,0,23,9],
     [0,1,76,23],
@@ -81,5 +81,30 @@ window.onload = () => {
   ]);
   let v = new Vector([10,2,30,14]);
   m.solveByBackwardSubstitution(v);
+  */
+
+  scope_LU();
+
+}
+
+function scope_LU() {
+
+  let plot = new blueplot.Plot(300,300);
+  document.body.appendChild(plot.dom);
+
+  let dg = new blueplot.DataGroupMN(plot.width, plot.height,{});
+  plot.add(dg);
+
+  let A = new NDArray([
+    [6,8,-12],
+    [2,4,-2],
+    [3,17,10]
+  ]);
+
+  linalg.lu(A);
+
+  (<any>window).plotData = function (data:number[][]) {
+    dg.from2DData(data, {type:'grid',timetrail:true});
+  };
 
 }

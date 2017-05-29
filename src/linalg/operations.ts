@@ -20,6 +20,7 @@
 */
 
 import {NDArray} from '../basic'
+import {isZero} from '../utils'
 
 /**
  * Matrix multiplication
@@ -145,5 +146,55 @@ export function norm(A:NDArray, p?:number|'fro') {
     }
   } else {
     throw new Error('Norm is not defined for given NDArray');
+  }
+}
+
+/**
+ * Perform LU decomposition
+ * 
+ * $$ A = P L U $$
+ */
+export function lu(A:NDArray) {
+
+  // Outer product LU decomposition with partial pivoting
+  // Ref: Algo 3.4.1 Golub and Van Loan
+
+  if(A.shape.length != 2) {
+    throw new Error('Input is not a Matrix (2D)');
+  }
+  if(A.shape[0] !== A.shape[1]) {
+    throw new Error('Input is not a Square Matrix');
+  }
+
+  let n = A.shape[0];
+
+  for(let k=0; k<n-1; k++) {
+
+    // Find the maximum absolute entry in k'th column
+    let ipivot:number = 0;
+    let pivot = -Infinity;
+    for(let i=k; i<n; i++) {
+      let val = Math.abs(A.get(i,k));
+      if(val > pivot) {
+        pivot = val;
+        ipivot = i;
+      }
+    }
+
+    // Swap rows k and ipivot
+    A.swaprows(k, ipivot);
+
+    if(isZero(pivot)) {
+      throw new Error('Can\'t perform LU decomp. 0 on diagonal');
+    }
+
+    for(let i=k+1; i<n; i++) {
+      A.set(i,k, A.get(i,k)/pivot);
+    }
+    for(let i=k+1; i<n; i++) {
+      for(let j=n-1; j>k; j--) {
+        A.set(i,j, A.get(i,j)-A.get(i,k)*A.get(k,j));
+      }
+    }
   }
 }
