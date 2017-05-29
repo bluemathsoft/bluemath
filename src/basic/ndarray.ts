@@ -304,6 +304,9 @@ export default class NDArray {
     if(this.shape.length !== 2) {
       throw new Error('This NDArray is not a Matrix (2D)');
     }
+    if(i === j) {
+      return; // No need to swap
+    }
     let nrows = this.shape[0];
     let ncols = this.shape[1];
     if(i >= nrows || j >= nrows) {

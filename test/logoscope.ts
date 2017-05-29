@@ -95,16 +95,17 @@ function scope_LU() {
   let dg = new blueplot.DataGroupMN(plot.width, plot.height,{});
   plot.add(dg);
 
-  let A = new NDArray([
-    [6,8,-12],
-    [2,4,-2],
-    [3,17,10]
-  ]);
-
-  linalg.lu(A);
-
   (<any>window).plotData = function (data:number[][]) {
     dg.from2DData(data, {type:'grid',timetrail:true});
   };
 
+  let A = new NDArray([
+    [3,17,10],
+    [2,4,-2],
+    [6,18,-12]
+  ]);
+
+  (<any>window).plotData(A.toArray());
+
+  linalg.lu(A);
 }
