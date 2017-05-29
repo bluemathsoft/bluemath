@@ -210,3 +210,44 @@ export function lu(A:NDArray) {
   }
   return perm;
 }
+
+/**
+ * @hidden
+ * Ref: Golub-Loan 3.1.1
+ * System of equations that forms lower triangular system can be solved by
+ * forward substitution.
+ *   [ l00  0  ] [x0]  = [b0]
+ *   [ l10 l11 ] [x1]    [b1]
+ * Caller must ensure this matrix is Lower triangular before calling this
+ * routine. Otherwise, undefined behavior
+ */
+export function solveByForwardSubstitution(A:NDArray, x:NDArray) {
+  let nrows = A.shape[0];
+  for(let i=0; i<nrows; i++) {
+    let sum = 0;
+    for(let j=0; j<i; j++) {
+      sum += x.get(j) * A.get(i,j);
+    }
+    x.set(i, (x.get(i) - sum)/A.get(i,i));
+  }
+}
+
+/**
+ * @hidden
+ * System of equations that forms upper triangular system can be solved by
+ * backward substitution.
+ *   [ u00 u01 ] [x0]  = [b0]
+ *   [ 0   u11 ] [x1]    [b1]
+ * Caller must ensure this matrix is Upper triangular before calling this
+ * routine. Otherwise, undefined behavior
+ */
+export function solveByBackwardSubstitution(A:NDArray, x:NDArray) {
+  let [nrows,ncols] = A.shape;
+  for(let i=nrows-1; i>=0; i--) {
+    let sum = 0;
+    for(let j=ncols-1;j>i;j--) {
+      sum += x.get(j) * A.get(i,j);
+    }
+    x.set(i, (x.get(i) - sum)/A.get(i,i));
+  }
+}

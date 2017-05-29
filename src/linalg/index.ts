@@ -21,12 +21,17 @@
 */
 
 import {eye, zeros} from './construction'
-import {mmultiply, norm, lu} from './operations'
+import {
+  mmultiply, norm, lu,
+  solveByBackwardSubstitution, solveByForwardSubstitution
+} from './operations'
 
 export {
   eye,
   zeros,
   mmultiply,
   norm,
-  lu
+  lu,
+  solveByBackwardSubstitution,
+  solveByForwardSubstitution
 }

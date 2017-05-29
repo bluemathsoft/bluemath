@@ -1160,7 +1160,7 @@ window.onload = () => {
           });
         });
       });
-      QUnit.module('lu', () => {
+      QUnit.module('LU Decomposition', () => {
         QUnit.test('3x3', assert => {
           let A = new NDArray([
             [3,17,10],
@@ -1174,6 +1174,27 @@ window.onload = () => {
             [0.5,8,16],
             [0.3333333,-0.25,6]
           ])));
+        });
+      });
+      QUnit.module('Solve Triangular', () => {
+        QUnit.test('Upper tri, Backward substitution', assert => {
+          let A = new NDArray([
+            [4,9],
+            [0,5]
+          ]);
+          let x = new NDArray([32,10]);
+          linalg.solveByBackwardSubstitution(A,x);
+          assert.ok(x.isEqual(new NDArray([3.5,2])));
+        });
+        QUnit.test('Lower tri, Forward substitution', assert => {
+          let A = new NDArray([
+            [3,0],
+            [11,5]
+          ]);
+          let x = new NDArray([21,99]);
+          linalg.solveByForwardSubstitution(A,x);
+          console.log(x);
+          assert.ok(x.isEqual(new NDArray([7,4.4])));
         });
       });
     });
