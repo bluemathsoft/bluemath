@@ -252,6 +252,39 @@ export default class NDArray {
     }
     return index;
   }
+
+  toArray() {
+    if(this.shape.length <= 0) {
+      throw new Error('Zero shape');
+    }
+    let aarr = [];
+    let step = 1;
+    for(let i=this.shape.length-1; i>=0; i--) {
+
+      let d = this.shape[i];
+      step = step * d;
+
+      let nelem = this.size/step;
+
+      if(i === this.shape.length-1) {
+        for(let j=0; j<nelem; j++) {
+          let arr = new Array(step);
+          for(let k=0; k<d; k++) {
+            arr[k] = this._data[j*step+k];
+          }
+          aarr.push(arr);
+        }
+      } else {
+        let darr = new Array(nelem);
+        for(let j=0; j<nelem; j++) {
+          darr[j] = aarr.slice(j*d,(j+1)*d);
+        }
+        aarr = darr;
+      }
+    }
+    return aarr[0];
+  }
+
   fill(value:number) {
     this._data.fill(value);
   }

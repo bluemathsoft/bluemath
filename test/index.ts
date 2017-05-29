@@ -209,6 +209,72 @@ window.onload = () => {
       assert.ok(A.isEqual(B));
     });
 
+    QUnit.module("toArray", () => {
+
+      QUnit.test("4", assert => {
+        let arr = [5,6,7,8];
+        let A = new NDArray(arr, 'i16');
+        assert.deepEqual(arr, A.toArray());
+      });
+      QUnit.test("3x2", assert => {
+        let arr = [[1,0],[2,1],[6,9]];
+        let A = new NDArray(arr, 'i16');
+        assert.deepEqual(arr, A.toArray());
+      });
+
+      QUnit.test("2x2x2", assert => {
+        let arr =[
+          [
+            [1,0],
+            [2,1]
+          ],
+          [
+            [2,3],
+            [5,4]
+          ]
+        ];
+        let A = new NDArray(arr, 'i16');
+        assert.deepEqual(arr, A.toArray());
+      });
+      QUnit.test("2x3x1", assert => {
+        let arr = [
+          [
+            [3],
+            [6],
+            [89]
+          ],
+          [
+            [2],
+            [-8],
+            [10]
+          ]
+        ];
+        let A = new NDArray(arr, 'i16');
+        assert.deepEqual(arr, A.toArray());
+      });
+      QUnit.test("1x4x3x2", assert => {
+        let arr = [
+          [
+            [
+              [3,5],[2,1],[3,5]
+            ],
+            [
+              [4,1],[9,8],[3,5]
+            ],
+            [
+              [2,7],[3,5],[6,1]
+            ],
+            [
+              [10,8],[6,2],[2,5]
+            ]
+          ]
+        ];
+        let A = new NDArray(arr, 'i16');
+        assert.deepEqual(arr, A.toArray());
+      });
+
+    });
+
     QUnit.module('Indexing', () => {
       QUnit.module('Invalid Access', () => {
         QUnit.test('Wrong num of dim', assert => {
