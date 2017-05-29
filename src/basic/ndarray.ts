@@ -268,6 +268,9 @@ export default class NDArray {
   }
 
   swaprows(i:number, j:number) : void {
+    if(this.shape.length !== 2) {
+      throw new Error('This NDArray is not a Matrix (2D)');
+    }
     let nrows = this.shape[0];
     let ncols = this.shape[1];
     if(i >= nrows || j >= nrows) {
