@@ -222,6 +222,21 @@ window.onload = () => {
           });
         });
       });
+
+      QUnit.module('Data index to index', () => {
+        QUnit.test('3x3x3', assert => {
+          let A = new NDArray({shape:[3,3,3]});
+          assert.deepEqual(A.dataIndexToIndex(10), [1,0,1]);
+          assert.deepEqual(A.dataIndexToIndex(11), [1,0,2]);
+          assert.deepEqual(A.dataIndexToIndex(13), [1,1,1]);
+          assert.deepEqual(A.dataIndexToIndex(14), [1,1,2]);
+        });
+        QUnit.test('1x6', assert => {
+          let A = new NDArray({shape:[1,6]});
+          assert.deepEqual(A.dataIndexToIndex(3), [0,3]);
+        });
+      });
+
       QUnit.module('Set', () => {
         QUnit.test('flat', assert => {
           let A = new NDArray(new Float32Array([3,7,5,6]),{shape:[4]});

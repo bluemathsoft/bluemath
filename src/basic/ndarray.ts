@@ -240,6 +240,18 @@ export default class NDArray {
     return addr;
   }
 
+  dataIndexToIndex(di:number) {
+    if(di >= this.size) {
+      throw new Error("Data index out of range");
+    }
+    let index = new Array(this.shape.length);
+    for(let i=this.shape.length-1; i>=0; i--) {
+      let d = this.shape[i];
+      index[i] = di%d;
+      di = Math.floor(di/d);
+    }
+    return index;
+  }
   fill(value:number) {
     this._data.fill(value);
   }
