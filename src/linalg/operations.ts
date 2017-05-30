@@ -252,6 +252,46 @@ function solveByBackwardSubstitution(A:NDArray, x:NDArray) {
   }
 }
 
+/**
+ * @hidden
+ * Apply permutation to vector 
+ * @param V Vector to undergo permutation
+ * @param p Permutation vector
+ */
+export function permuteVector(V:NDArray, p:NDArray) {
+  if(V.shape.length !== 1 || p.shape.length !== 1) {
+    throw new Error("Arguments are not vectors");
+  }
+  if(V.shape[0] !== p.shape[0]) {
+    throw new Error("Input vectors are not same length");
+  }
+  let pV = V.clone();
+  for(let i=0; i<p.shape[0]; i++) {
+    pV.set(i, V.get(p.get(i)));
+  }
+  return pV;
+}
+
+/**
+ * @hidden
+ * Apply inverse permutation to vector 
+ * @param V Vector to undergo inverse permutation
+ * @param p Permutation vector
+ */
+export function ipermuteVector(V:NDArray, p:NDArray) {
+  if(V.shape.length !== 1 || p.shape.length !== 1) {
+    throw new Error("Arguments are not vectors");
+  }
+  if(V.shape[0] !== p.shape[0]) {
+    throw new Error("Input vectors are not same length");
+  }
+  let ipV = V.clone();
+  for(let i=0; i<p.shape[0]; i++) {
+    ipV.set(p.get(i), V.get(i));
+  }
+  return ipV;
+}
+
 export interface SolveOptions {
   /**
    * Kind of matrix A (coefficient matrix in system of linear equations)

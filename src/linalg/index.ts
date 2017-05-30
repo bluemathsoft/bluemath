@@ -22,7 +22,8 @@
 
 import {eye, zeros} from './construction'
 import {
-  mmultiply, norm, lu, solve
+  mmultiply, norm, lu, solve,
+  permuteVector, ipermuteVector
 } from './operations'
 
 export {
@@ -31,5 +32,7 @@ export {
   mmultiply,
   norm,
   lu,
-  solve
+  solve,
+  permuteVector,
+  ipermuteVector
 }

@@ -1160,6 +1160,30 @@ window.onload = () => {
           });
         });
       });
+
+      QUnit.module("Permutation", () => {
+        QUnit.test("Vector", assert => {
+          let V = new NDArray([34,65,23,90]);
+          let p = new NDArray([0,2,3,1]);
+          let pV = linalg.permuteVector(V,p);
+          assert.ok(pV.isEqual(new NDArray([34,23,90,65])));
+        });
+        QUnit.test("Vector inverse", assert => {
+          // Same permutation vector, but used on original
+          let V = new NDArray([34,65,23,90]);
+          let p = new NDArray([0,2,3,1]);
+          let ipV = linalg.ipermuteVector(V,p);
+          assert.ok(ipV.isEqual(new NDArray([34,90,65,23])));
+
+          // Same permutation vector, but used on result of first test
+          V = new NDArray([34,23,90,65]);
+          p = new NDArray([0,2,3,1]);
+          ipV = linalg.ipermuteVector(V,p);
+          assert.ok(ipV.isEqual(new NDArray([34,65,23,90])));
+        });
+
+      });
+
       QUnit.module('LU Decomposition', () => {
         QUnit.test('3x3', assert => {
           let A = new NDArray([
