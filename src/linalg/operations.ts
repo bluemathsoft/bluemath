@@ -255,7 +255,7 @@ function solveByBackwardSubstitution(A:NDArray, x:NDArray) {
 /**
  * @hidden
  * Apply permutation to vector 
- * @param V Vector to undergo permutation
+ * @param V Vector to undergo permutation (changed in place)
  * @param p Permutation vector
  */
 export function permuteVector(V:NDArray, p:NDArray) {
@@ -265,17 +265,16 @@ export function permuteVector(V:NDArray, p:NDArray) {
   if(V.shape[0] !== p.shape[0]) {
     throw new Error("Input vectors are not same length");
   }
-  let pV = V.clone();
+  let orig = V.clone();
   for(let i=0; i<p.shape[0]; i++) {
-    pV.set(i, V.get(p.get(i)));
+    V.set(i, orig.get(p.get(i)));
   }
-  return pV;
 }
 
 /**
  * @hidden
  * Apply inverse permutation to vector 
- * @param V Vector to undergo inverse permutation
+ * @param V Vector to undergo inverse permutation (changed in place)
  * @param p Permutation vector
  */
 export function ipermuteVector(V:NDArray, p:NDArray) {
@@ -285,11 +284,10 @@ export function ipermuteVector(V:NDArray, p:NDArray) {
   if(V.shape[0] !== p.shape[0]) {
     throw new Error("Input vectors are not same length");
   }
-  let ipV = V.clone();
+  let orig = V.clone();
   for(let i=0; i<p.shape[0]; i++) {
-    ipV.set(p.get(i), V.get(i));
+    V.set(p.get(i), orig.get(i));
   }
-  return ipV;
 }
 
 export interface SolveOptions {
@@ -299,6 +297,11 @@ export interface SolveOptions {
   kind : 'lt'|'ut'|'sym'|'posdef'
 }
 
+/**
+ * @param A Coefficient matrix (gets modified)
+ * @param x RHS b (filled with solution x)
+ * @param opt 
+ */
 export function solve(A:NDArray, x:NDArray, opt?:SolveOptions) {
 
   if(opt && opt.kind === 'lt') {
@@ -310,7 +313,36 @@ export function solve(A:NDArray, x:NDArray, opt?:SolveOptions) {
   } else if(opt && opt.kind === 'posdef') {
     throw new Error("Not implemented");
   } else {
-    lu(A);
+    // Ax = b
+    // LUx = Pb
+    // Ly = Pb
+    let perm = lu(A);
+    console.log(JSON.stringify(A.toArray(),null,2));
+
+    // Comput Pb
+    permuteVector(x, perm);
+
+    // Compute y, by forward substituion
+    // The lower triangular matrix is in A, except for diagonal which is 1
+    // The following code is same as solveByForwardSubstitution, with (i,i)
+    // replaced by 1
+    let n = A.shape[0];
+    for(let i=0; i<n; i++) {
+      let sum = 0;
+      for(let j=0; j<i; j++) {
+        sum += x.get(j) * A.get(i,j);
+      }
+      x.set(i, x.get(i) - sum);
+    }
+
+    // Compute x, by backward substituion
+    for(let i=n-1; i>=0; i--) {
+      let sum = 0;
+      for(let j=n-1;j>i;j--) {
+        sum += x.get(j) * A.get(i,j);
+      }
+      x.set(i, (x.get(i) - sum)/A.get(i,i));
+    }
   }
 
 }

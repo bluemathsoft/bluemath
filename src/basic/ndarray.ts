@@ -22,6 +22,7 @@
 
 import {NumberType,TypedArray} from '..'
 import {isEqualFloat} from '../utils'
+import {EPSILON} from '../constants'
 
 export interface NDArrayOptions {
   shape? : number[];
@@ -322,16 +323,16 @@ export default class NDArray {
   /**
    * @hidden
    */
-  datacompare(otherdata:TypedArray) {
+  datacompare(otherdata:TypedArray, tolerance=EPSILON) {
     for(let i=0; i<this._data.length; i++) {
-      if(!isEqualFloat(this._data[i], otherdata[i])) {
+      if(!isEqualFloat(this._data[i], otherdata[i], tolerance)) {
         return false;
       }
     }
     return true;
   }
 
-  isEqual(other:NDArray) : boolean {
+  isEqual(other:NDArray, tolerance=EPSILON) : boolean {
     if(this.shape.length !== other.shape.length) {
       return false;
     }
@@ -340,6 +341,6 @@ export default class NDArray {
         return false;
       }
     }
-    return other.datacompare(this._data);
+    return other.datacompare(this._data, tolerance);
   }
 }

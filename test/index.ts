@@ -26,6 +26,12 @@ import * as blas from '../src/linalg/blas'
 let {NDArray, Vector, Matrix, Vector2, PermutationVector, BandMatrix} = basic;
 let {BSplineCurve2D} = geom.nurbs;
 
+(<any>window).bluemath = {
+  NDArray,
+  basic,
+  linalg
+}
+
 /// <reference path="qunit/index.d.ts" />
 
 window.onload = () => {
@@ -1165,21 +1171,21 @@ window.onload = () => {
         QUnit.test("Vector", assert => {
           let V = new NDArray([34,65,23,90]);
           let p = new NDArray([0,2,3,1]);
-          let pV = linalg.permuteVector(V,p);
-          assert.ok(pV.isEqual(new NDArray([34,23,90,65])));
+          linalg.permuteVector(V,p);
+          assert.ok(V.isEqual(new NDArray([34,23,90,65])));
         });
         QUnit.test("Vector inverse", assert => {
           // Same permutation vector, but used on original
           let V = new NDArray([34,65,23,90]);
           let p = new NDArray([0,2,3,1]);
-          let ipV = linalg.ipermuteVector(V,p);
-          assert.ok(ipV.isEqual(new NDArray([34,90,65,23])));
+          linalg.ipermuteVector(V,p);
+          assert.ok(V.isEqual(new NDArray([34,90,65,23])));
 
           // Same permutation vector, but used on result of first test
           V = new NDArray([34,23,90,65]);
           p = new NDArray([0,2,3,1]);
-          ipV = linalg.ipermuteVector(V,p);
-          assert.ok(ipV.isEqual(new NDArray([34,65,23,90])));
+          linalg.ipermuteVector(V,p);
+          assert.ok(V.isEqual(new NDArray([34,65,23,90])));
         });
 
       });
@@ -1218,6 +1224,95 @@ window.onload = () => {
           let x = new NDArray([21,99]);
           linalg.solve(A,x,{kind:'lt'});
           assert.ok(x.isEqual(new NDArray([7,4.4])));
+        });
+        QUnit.module('LU Solve', () => {
+          QUnit.test("Circuit matrix", assert => {
+            let A = new NDArray([
+              [11,-3,0],
+              [-3,6,-1],
+              [0,-1,3]
+            ]);
+            let x = new NDArray([30,5,-25]);
+            linalg.solve(A,x);
+            assert.ok(x.isEqual(new NDArray([3,1,-8])));
+          });
+          QUnit.test("From numpy tests", assert => {
+            let A = new NDArray([
+              [3,1],
+              [1,2]
+            ]);
+            let x = new NDArray([9,8]);
+            linalg.solve(A,x);
+            assert.ok(x.isEqual(new NDArray([2,3])));
+          });
+          QUnit.test("From GSL tests", assert => {
+            let A = new NDArray([
+              [0.18, 0.60, 0.57, 0.96],
+              [0.41, 0.24, 0.99, 0.58],
+              [0.14, 0.30, 0.97, 0.66],
+              [0.51, 0.13, 0.19, 0.85]
+            ],{datatype:'f64'});
+            let x = new NDArray([1,2,3,4])
+            linalg.solve(A,x);
+            assert.ok(x.isEqual(new NDArray(
+              [-4.05205, -12.6056, 1.66091, 8.69377],{datatype:'f64'}),1e-4));
+          });
+          QUnit.test("Random tests 1 (match with numpy)", assert => {
+            let A = new NDArray([
+              [4, 7, 5, 12], [4, 3, 2, 1], [6, 2, 9, 3], [4, 1, 8, 8]])
+            let x = new NDArray([13, 15, 2, 90]);
+            linalg.solve(A,x);
+            console.log(x.toArray());
+            assert.ok(x.isEqual(
+                new NDArray([40.50877193, -39.30526316, -25.02807018, 20.93684211]),1e-4));
+          });
+          /*
+          QUnit.test("Random tests 2 (match with numpy)", assert => {
+            let A = new NDArray([
+              [4, 7, 5, 0.5], [4, 3, 2, 1], [6, 2, 99, 3], [4, 1, 8, 8]])
+            let x = new NDArray([13, 15, 2, 90]);
+            linalg.solve(A,x);
+            console.log(x.toArray());
+            assert.ok(x.isEqual(new NDArray(
+                  [0.19644227, 1.19044879, -0.36008822, 11.36306099])));
+          });
+          QUnit.test("Random tests 3 (match with numpy)", assert => {
+            let A = new NDArray([
+              [4, 0.0007, 5, 0.5], [4, 3, 2, 1], [6, 2, 9999, 3], [4, 1, 8, 8]])
+            let x = new NDArray([13, 15, 2, 90]);
+            linalg.solve(A,x);
+            console.log(x.toArray());
+            assert.ok(x.isEqual(new NDArray(
+                  [1.95364698e+00, -1.07265497e+00, -3.88138726e-03,
+                  1.04111398e+01])));
+          });
+          QUnit.test("Random tests 4 (match with numpy)", assert => {
+            let A = new NDArray([
+              [4, 0.0007, 5, 0.5], [4, 3, 2, 1], [6, 2, 9999, 3], [4, 1, 8, 8]])
+            let x = new NDArray([13, 0.15, 2986, 90]);
+            linalg.solve(A,x);
+            assert.ok(x.isEqual(new NDArray(
+                  [1.51620015, -5.80949758, 0.295605, 10.92248213])));
+          });
+          */
+          /*
+          QUnit.test("Solve multiple", assert => {
+            let A = new Matrix([
+              [4, 7, 5, 12], [4, 3, 2, 1], [6, 2, 9, 3], [4, 1, 8, 8]])
+            let answer = A.solve(new Matrix([
+              [13,45,3],
+              [15,66,3],
+              [2,0.02,8],
+              [90,1,0]
+            ])) as basic.Matrix;
+            assert.ok(answer.isEqual(new Matrix([
+                  [40.50877193, 31.61561404, -1.66667],
+                  [-39.30526316, -8.06736842, 2.4],
+                  [-25.02807018, -21.58596491, 1.933333],
+                  [20.93684211, 6.91157895, -1.4]
+                ]),1e-5));
+          });
+          */
         });
       });
     });
