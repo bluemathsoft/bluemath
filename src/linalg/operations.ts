@@ -221,7 +221,7 @@ export function lu(A:NDArray) {
  * Caller must ensure this matrix is Lower triangular before calling this
  * routine. Otherwise, undefined behavior
  */
-export function solveByForwardSubstitution(A:NDArray, x:NDArray) {
+function solveByForwardSubstitution(A:NDArray, x:NDArray) {
   let nrows = A.shape[0];
   for(let i=0; i<nrows; i++) {
     let sum = 0;
@@ -241,7 +241,7 @@ export function solveByForwardSubstitution(A:NDArray, x:NDArray) {
  * Caller must ensure this matrix is Upper triangular before calling this
  * routine. Otherwise, undefined behavior
  */
-export function solveByBackwardSubstitution(A:NDArray, x:NDArray) {
+function solveByBackwardSubstitution(A:NDArray, x:NDArray) {
   let [nrows,ncols] = A.shape;
   for(let i=nrows-1; i>=0; i--) {
     let sum = 0;
@@ -250,4 +250,27 @@ export function solveByBackwardSubstitution(A:NDArray, x:NDArray) {
     }
     x.set(i, (x.get(i) - sum)/A.get(i,i));
   }
+}
+
+export interface SolveOptions {
+  /**
+   * Kind of matrix A (coefficient matrix in system of linear equations)
+   */
+  kind : 'lt'|'ut'|'sym'|'posdef'
+}
+
+export function solve(A:NDArray, x:NDArray, opt?:SolveOptions) {
+
+  if(opt && opt.kind === 'lt') {
+    solveByForwardSubstitution(A,x);
+  } else if(opt && opt.kind === 'ut') {
+    solveByBackwardSubstitution(A,x);
+  } else if(opt && opt.kind === 'sym') {
+    throw new Error("Not implemented");
+  } else if(opt && opt.kind === 'posdef') {
+    throw new Error("Not implemented");
+  } else {
+    lu(A);
+  }
+
 }

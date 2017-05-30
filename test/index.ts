@@ -1176,24 +1176,23 @@ window.onload = () => {
           ])));
         });
       });
-      QUnit.module('Solve Triangular', () => {
-        QUnit.test('Upper tri, Backward substitution', assert => {
+      QUnit.module('Solve', () => {
+        QUnit.test('Upper tri', assert => {
           let A = new NDArray([
             [4,9],
             [0,5]
           ]);
           let x = new NDArray([32,10]);
-          linalg.solveByBackwardSubstitution(A,x);
+          linalg.solve(A,x,{kind:'ut'});
           assert.ok(x.isEqual(new NDArray([3.5,2])));
         });
-        QUnit.test('Lower tri, Forward substitution', assert => {
+        QUnit.test('Lower tri', assert => {
           let A = new NDArray([
             [3,0],
             [11,5]
           ]);
           let x = new NDArray([21,99]);
-          linalg.solveByForwardSubstitution(A,x);
-          console.log(x);
+          linalg.solve(A,x,{kind:'lt'});
           assert.ok(x.isEqual(new NDArray([7,4.4])));
         });
       });

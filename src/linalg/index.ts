@@ -22,8 +22,7 @@
 
 import {eye, zeros} from './construction'
 import {
-  mmultiply, norm, lu,
-  solveByBackwardSubstitution, solveByForwardSubstitution
+  mmultiply, norm, lu, solve
 } from './operations'
 
 export {
@@ -32,6 +31,5 @@ export {
   mmultiply,
   norm,
   lu,
-  solveByBackwardSubstitution,
-  solveByForwardSubstitution
+  solve
 }
