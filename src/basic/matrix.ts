@@ -19,20 +19,18 @@
 
 */
 
-import {TypedArray} from '..'
+import {TypedArray, NumberType} from '..'
 import Vector from './vector'
 import {utils} from '..'
 import {EPSILON} from '../constants'
-
-type DataType = 'i8'|'ui8'|'i16'|'ui16'|'i32'|'ui32'|'f32'|'f64';
 
 /**
  * @hidden
  */
 export default class Matrix {
 
-  private _data : TypedArray
-  private datatype : DataType
+  private _data : TypedArray;
+  private datatype : NumberType;
   private _rows : number;
   private _cols : number;
   // private _LU : Matrix;
@@ -47,7 +45,7 @@ export default class Matrix {
    */
   constructor(
     arg0 : number[][] | {rows:number,cols:number,data?:TypedArray},
-    datatype? : DataType)
+    datatype? : NumberType)
   {
     this.datatype = datatype || 'f32';
 
@@ -79,7 +77,7 @@ export default class Matrix {
     return this._data;
   }
 
-  static identity(size:number, datatype?:DataType) : Matrix {
+  static identity(size:number, datatype?:NumberType) : Matrix {
     let m = new Matrix({rows:size,cols:size}, datatype);
     m.fill(0);
     for(let i=0; i<size; i++) {
