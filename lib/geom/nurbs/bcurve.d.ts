@@ -1,5 +1,7 @@
 import { Vector, Vector2, Vector3 } from '../../basic';
-import { NumberArray1D, NumberArray2D } from '../..';
+/**
+ * @hidden
+ */
 declare class BSplineCurve {
     degree: number;
     cpoints: Array<Vector>;
@@ -13,15 +15,21 @@ declare class BSplineCurve {
     /**
      * Evaluate basis function derivatives upto n'th
      */
-    evaluateBasisDerivatives(span: number, n: number, t: number): NumberArray2D;
-    evaluateBasis(span: number, t: number): NumberArray1D;
+    evaluateBasisDerivatives(span: number, n: number, t: number): number[][];
+    evaluateBasis(span: number, t: number): number[];
     findSpan(t: number): number;
-    protected getTermDenominator(span: number, N: NumberArray1D): number;
+    protected getTermDenominator(span: number, N: number[]): number;
 }
+/**
+ * @hidden
+ */
 declare class BSplineCurve2D extends BSplineCurve {
     constructor(degree: number, cpoints: Array<Vector2>, knots: Array<number>, weights?: Array<number>);
     evaluate(t: number): Vector2;
 }
+/**
+ * @hidden
+ */
 declare class BSplineCurve3D extends BSplineCurve {
     constructor(degree: number, cpoints: Array<Vector3>, knots: Array<number>, weights?: Array<number>);
     evaluate(t: number): Vector3;

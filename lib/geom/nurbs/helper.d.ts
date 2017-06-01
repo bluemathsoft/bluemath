@@ -1,8 +1,10 @@
 /**
+ * @hidden
  * Compute all n'th degree bernstein polynomials at given parameter value
  */
 declare function bernstein(n: number, u: number): Array<number>;
 /**
+ * @hidden
  * Find the index of the knot span in which `u` lies
  * @param {number} p Degree
  * @param {Array.<number>} U Knot vector
@@ -11,6 +13,7 @@ declare function bernstein(n: number, u: number): Array<number>;
  */
 declare function findSpan(p: number, U: Array<number>, u: number): number;
 /**
+ * @hidden
  * Evaluate basis function values
  * @param {number} p Degree
  * @param {Array.<number>} U Knot vector
@@ -20,6 +23,7 @@ declare function findSpan(p: number, U: Array<number>, u: number): number;
  */
 declare function getBasisFunction(p: number, U: Array<number>, i: number, u: number): Array<number>;
 /**
+ * @hidden
  * Compute non-zero basis functions and their derivatives, upto and including
  * n'th derivative (n <= p). Output is 2-dimensional array `ders`
  * @param {number} p Degree

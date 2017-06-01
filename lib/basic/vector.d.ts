@@ -1,8 +1,11 @@
-import { NumberArray1D, NumberType, TypedArray } from '..';
+import { NumberType, TypedArray } from '..';
+/**
+ * @hidden
+ */
 export default class Vector {
-    protected _data: TypedArray | NumberArray1D;
+    protected _data: TypedArray | number[];
     datatype: NumberType;
-    constructor(data: TypedArray | NumberArray1D | number, datatype?: NumberType);
+    constructor(data: TypedArray | number[] | number, datatype?: NumberType);
     get(i: number): number;
     set(i: number, value: number): void;
     size(): number;

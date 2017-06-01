@@ -1,5 +1,8 @@
-import { NumberType, NumberArray2D, TypedArray } from '..';
+import { TypedArray, NumberType } from '..';
 import Vector from './vector';
+/**
+ * @hidden
+ */
 export default class Matrix {
     private _data;
     private datatype;
@@ -11,7 +14,7 @@ export default class Matrix {
      * `data` is assigned to the internal _data variable by reference,
      * i.e. it's not deep copied
      */
-    constructor(arg0: NumberArray2D | {
+    constructor(arg0: number[][] | {
         rows: number;
         cols: number;
         data?: TypedArray;

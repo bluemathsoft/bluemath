@@ -1,6 +1,6 @@
 import Vector from './vector';
 /**
- * 2D Vector
+ * @hidden
  */
 export default class Vector2 extends Vector {
     constructor(x?: number, y?: number);
