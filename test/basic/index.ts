@@ -1,4 +1,5 @@
 
+
 /*
 
 Copyright (C) 2017 Jayesh Salvi, Blue Math Software Inc.
@@ -20,25 +21,13 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import testBasic from './basic'
+import testNDArray from './ndarray'
+import testVector from './vector'
+import testMatrix from './matrix'
 
-import testGeom from './geom'
+export default function testBasic() {
 
-import testLinalg from './linalg'
-
-/// <reference path="qunit/index.d.ts" />
-
-window.onload = () => {
-
-  let qunitDiv = document.createElement('div');
-  qunitDiv.setAttribute('id', 'qunit');
-  document.body.appendChild(qunitDiv);
-
-  let qunitFixtureDiv = document.createElement('div');
-  qunitFixtureDiv.setAttribute('id', 'qunit-fixture');
-  document.body.appendChild(qunitFixtureDiv);
-
-  testBasic();
-  testGeom();
-  testLinalg();
+  testNDArray();
+  testVector();
+  testMatrix();
 }

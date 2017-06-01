@@ -317,7 +317,6 @@ export function solve(A:NDArray, x:NDArray, opt?:SolveOptions) {
     // LUx = Pb
     // Ly = Pb
     let perm = lu(A);
-    console.log(JSON.stringify(A.toArray(),null,2));
 
     // Comput Pb
     permuteVector(x, perm);
