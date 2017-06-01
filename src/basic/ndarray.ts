@@ -135,6 +135,10 @@ export default class NDArray {
     }
   }
 
+  get data() {
+    return this._data;
+  }
+
   reshape(shape:number[]) {
     this.shape = shape;
     let oldsize = this.size;
