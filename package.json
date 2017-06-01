@@ -28,5 +28,7 @@
     "typescript": "^2.3.2",
     "webpack": "^2.5.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "emlapack": "github:bluemathsoft/emlapack"
+  }
 }

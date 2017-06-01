@@ -25,6 +25,7 @@ import {
   mmultiply, norm, lu, solve,
   permuteVector, ipermuteVector
 } from './operations'
+import * as lapack from './lapack'
 
 export {
   eye,
@@ -34,5 +35,6 @@ export {
   lu,
   solve,
   permuteVector,
-  ipermuteVector
+  ipermuteVector,
+  lapack
 }
