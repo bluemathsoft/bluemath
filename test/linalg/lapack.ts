@@ -9,7 +9,9 @@ export default function testLAPACK() {
       assert.ok(true);
     });
     QUnit.test('dot', assert => {
-      assert.equal(linalg.lapack.dot(), 40);
+      let vx = new Float32Array([1,2,3,4]);
+      let vy = new Float32Array([2,3,4,5]);
+      assert.equal(linalg.lapack.dot(vx,vy), 40);
     });
   });
 }
