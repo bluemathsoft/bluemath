@@ -20,8 +20,10 @@
 
 */
 import {asum, dot} from './blasl1'
+import {gemv} from './blasl2'
 
 export {
   asum,
-  dot
+  dot,
+  gemv
 }
