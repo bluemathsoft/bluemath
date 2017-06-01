@@ -20,13 +20,13 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import testBLAS from './blas'
+//import testBLAS from './blas'
 import testConstruction from './construction'
 import testOperations from './operations'
 
 export default function testLinalg() {
   QUnit.module('linalg', () => {
-    testBLAS();
+    //testBLAS();
     testConstruction();
     testOperations();
   });

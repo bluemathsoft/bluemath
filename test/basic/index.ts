@@ -22,12 +22,12 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import testNDArray from './ndarray'
-import testVector from './vector'
-import testMatrix from './matrix'
+//import testVector from './vector'
+//import testMatrix from './matrix'
 
 export default function testBasic() {
 
   testNDArray();
-  testVector();
-  testMatrix();
+  //testVector();
+  //testMatrix();
 }

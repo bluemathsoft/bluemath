@@ -21,12 +21,8 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import testBasic from './basic'
-
-import testGeom from './geom'
-
+//import testGeom from './geom'
 import testLinalg from './linalg'
-
-/// <reference path="qunit/index.d.ts" />
 
 window.onload = () => {
 
@@ -39,6 +35,6 @@ window.onload = () => {
   document.body.appendChild(qunitFixtureDiv);
 
   testBasic();
-  testGeom();
+  //testGeom();
   testLinalg();
 }
