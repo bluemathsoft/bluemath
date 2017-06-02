@@ -21,10 +21,19 @@
 import {asum, dot} from './blasl1'
 import {gemv} from './blasl2'
 import {gemm} from './blasl3'
+import {gesv} from './gesv'
 
 export {
+  // BLAS level 1
   asum,
   dot,
+
+  // BLAS level 2
   gemv,
-  gemm
+
+  // BLAS level 3
+  gemm,
+
+  // LAPACK
+  gesv
 }
