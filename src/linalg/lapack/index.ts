@@ -18,14 +18,13 @@
  along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {asum, dot} from './blasl1'
+import {dot} from './blasl1'
 import {gemv} from './blasl2'
 import {gemm} from './blasl3'
 import {gesv} from './gesv'
 
 export {
   // BLAS level 1
-  asum,
   dot,
 
   // BLAS level 2

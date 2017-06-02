@@ -20,70 +20,19 @@
 */
 
 import {TypedArray} from '../..'
-import Module from 'emlapack'
+import Module from '../../../ext/lapacklite'
 let em = Module;
 
 const SIZE_INT = 4;
 const SIZE_DOUBLE = 8;
 const SIZE_SINGLE = 4;
 
-const sdot_wrap = em.cwrap('f2c_sdot',
+const sdot_wrap = em.cwrap('sdot_',
   null,
   ['number', 'number', 'number', 'number', 'number']);
-const ddot_wrap = em.cwrap('f2c_ddot',
+const ddot_wrap = em.cwrap('ddot_',
   null,
   ['number', 'number', 'number', 'number', 'number']);
-
-const sasum_wrap = em.cwrap('f2c_sasum',
-  null,
-  ['number', 'number', 'number']);
-const dasum_wrap = em.cwrap('f2c_dasum',
-  null,
-  ['number', 'number', 'number']);
-
-/**
- * @hidden
- */
-function sasum(vx:Float32Array) {
-  let n = vx.length;
-  let pn = em._malloc(SIZE_INT);
-  let psx = em._malloc(n * SIZE_SINGLE);
-  let pinc = em._malloc(SIZE_INT);
-  let sx = new Float32Array(em.HEAPF32.buffer, psx, n);
-
-  em.setValue(pn, n, 'i32');
-  em.setValue(pinc, 1, 'i32');
-
-  sx.set(vx);
-
-  return sasum_wrap(pn, psx, pinc);
-}
-
-/**
- * @hidden
- */
-function dasum(vx:Float64Array) {
-  let n = vx.length;
-  let pn = em._malloc(SIZE_INT);
-  let pdx = em._malloc(n * SIZE_DOUBLE);
-  let pinc = em._malloc(SIZE_INT);
-  let dx = new Float64Array(em.HEAPF64.buffer, pdx, n);
-
-  em.setValue(pn, n, 'i32');
-  em.setValue(pinc, 1, 'i32');
-
-  dx.set(vx);
-
-  return dasum_wrap(pn, pdx, pinc);
-}
-
-export function asum(v:TypedArray) {
-  if(v instanceof Float64Array) {
-    return dasum(v);
-  } else {
-    return sasum(v);
-  }
-}
 
 /**
  * @hidden

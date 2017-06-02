@@ -21,7 +21,7 @@
 */
 
 import {TypedArray} from '../..'
-import Module from 'emlapack'
+import Module from '../../../ext/lapacklite'
 let em = Module;
 
 const SIZE_INT = 4;

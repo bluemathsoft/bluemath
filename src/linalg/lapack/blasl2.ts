@@ -21,7 +21,7 @@
 */
 
 import {TypedArray} from '../..'
-import Module from 'emlapack'
+import Module from '../../../ext/lapacklite'
 let em = Module;
 
 const SIZE_CHAR = 1;
@@ -29,13 +29,13 @@ const SIZE_INT = 4;
 const SIZE_DOUBLE = 8;
 const SIZE_SINGLE = 4;
 
-const dgemv_wrap = em.cwrap('f2c_dgemv',
+const dgemv_wrap = em.cwrap('dgemv_',
   null,
   [
     'number', 'number', 'number', 'number', 'number',
     'number', 'number', 'number', 'number', 'number'
   ]);
-const sgemv_wrap = em.cwrap('f2c_sgemv',
+const sgemv_wrap = em.cwrap('sgemv_',
   null,
   [
     'number', 'number', 'number', 'number', 'number',

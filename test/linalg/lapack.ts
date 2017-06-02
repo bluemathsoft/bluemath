@@ -28,17 +28,6 @@ export default function testLAPACK() {
 
     QUnit.module('BLAS Level 1', () => {
 
-      QUnit.module('asum', () => {
-        QUnit.test('sasum', assert => {
-          let sx = new NDArray([1,2,3,4]);
-          assert.equal(linalg.lapack.asum(sx.data), 10);
-        });
-        QUnit.test('dasum', assert => {
-          let dx = new NDArray([1,2,3,4],{datatype:'f64'});
-          assert.equal(linalg.lapack.asum(dx.data), 10);
-        });
-      });
-
       QUnit.module('dot', () => {
         QUnit.test('sdot', assert => {
           let sx = new NDArray([1,2,3,4]);
