@@ -1,4 +1,24 @@
 
+ /*
+
+ Copyright (C) 2017 Jayesh Salvi, Blue Math Software Inc.
+
+ This file is part of bluemath.
+
+ bluemath is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ bluemath is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
+
+*/
 import {linalg, basic} from '../../src'
 let {NDArray} = basic;
 
@@ -55,6 +75,65 @@ export default function testLAPACK() {
           let y = new NDArray([1,1], {datatype:'f64'});
           linalg.lapack.gemv(2,A.data,A.shape[0],A.shape[1],x.data,y.data,5);
           assert.deepEqual(y.toArray(), [61,57]);
+        });
+      });
+    });
+
+    QUnit.module('BLAS Level 3', () => {
+      QUnit.module('gemm', () => {
+        QUnit.test('sgemm', assert => {
+          let A = new NDArray([
+            [1,1,1,1],
+            [1,1,1,1],
+            [1,1,1,1],
+            [1,1,1,1]
+          ]);
+          let B = new NDArray([
+            [1,1,1,1],
+            [1,1,1,1],
+            [1,1,1,1],
+            [1,1,1,1]
+          ]);
+          let C = new NDArray([
+            [1,1,1,1],
+            [1,1,1,1],
+            [1,1,1,1],
+            [1,1,1,1]
+          ]);
+          linalg.lapack.gemm(A.data,B.data,C.data,4,4,4,1.5,2.5);
+          assert.deepEqual(C.toArray(), [
+            [8.5,8.5,8.5,8.5],
+            [8.5,8.5,8.5,8.5],
+            [8.5,8.5,8.5,8.5],
+            [8.5,8.5,8.5,8.5]
+          ]);
+        });
+        QUnit.test('dgemm', assert => {
+          let A = new NDArray([
+            [1,1,1,1],
+            [1,1,1,1],
+            [1,1,1,1],
+            [1,1,1,1]
+          ], {datatype:'f64'});
+          let B = new NDArray([
+            [1,1,1,1],
+            [1,1,1,1],
+            [1,1,1,1],
+            [1,1,1,1]
+          ], {datatype:'f64'});
+          let C = new NDArray([
+            [1,1,1,1],
+            [1,1,1,1],
+            [1,1,1,1],
+            [1,1,1,1]
+          ], {datatype:'f64'});
+          linalg.lapack.gemm(A.data,B.data,C.data,4,4,4,1.5,3.5);
+          assert.deepEqual(C.toArray(), [
+            [9.5,9.5,9.5,9.5],
+            [9.5,9.5,9.5,9.5],
+            [9.5,9.5,9.5,9.5],
+            [9.5,9.5,9.5,9.5]
+          ]);
         });
       });
     });

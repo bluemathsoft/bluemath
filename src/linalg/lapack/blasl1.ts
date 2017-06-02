@@ -1,22 +1,21 @@
-
  /*
 
- copyright (c) 2017 jayesh salvi, blue math software inc.
+ Copyright (C) 2017 Jayesh Salvi, Blue Math Software Inc.
 
- this file is part of bluemath.
+ This file is part of bluemath.
 
  bluemath is free software: you can redistribute it and/or modify
- it under the terms of the gnu affero general public license as published by
- the free software foundation, either version 3 of the license, or
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  bluemath is distributed in the hope that it will be useful,
- but without any warranty; without even the implied warranty of
- merchantability or fitness for a particular purpose. see the
- gnu affero general public license for more details.
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
 
- you should have received a copy of the gnu affero general public license
- along with bluemath. if not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -24,6 +23,7 @@ import {TypedArray} from '../..'
 import Module from 'emlapack'
 let em = Module;
 
+const SIZE_INT = 4;
 const SIZE_DOUBLE = 8;
 const SIZE_SINGLE = 4;
 
@@ -41,11 +41,14 @@ const dasum_wrap = em.cwrap('f2c_dasum',
   null,
   ['number', 'number', 'number']);
 
+/**
+ * @hidden
+ */
 function sasum(vx:Float32Array) {
   let n = vx.length;
-  let pn = em._malloc(4);
+  let pn = em._malloc(SIZE_INT);
   let psx = em._malloc(n * SIZE_SINGLE);
-  let pinc = em._malloc(4);
+  let pinc = em._malloc(SIZE_INT);
   let sx = new Float32Array(em.HEAPF32.buffer, psx, n);
 
   em.setValue(pn, n, 'i32');
@@ -56,11 +59,14 @@ function sasum(vx:Float32Array) {
   return sasum_wrap(pn, psx, pinc);
 }
 
+/**
+ * @hidden
+ */
 function dasum(vx:Float64Array) {
   let n = vx.length;
-  let pn = em._malloc(4);
+  let pn = em._malloc(SIZE_INT);
   let pdx = em._malloc(n * SIZE_DOUBLE);
-  let pinc = em._malloc(4);
+  let pinc = em._malloc(SIZE_INT);
   let dx = new Float64Array(em.HEAPF64.buffer, pdx, n);
 
   em.setValue(pn, n, 'i32');
@@ -84,11 +90,11 @@ export function asum(v:TypedArray) {
  */
 function sdot(vx:Float32Array, vy:Float32Array) {
   let n = vx.length,
-    pn = em._malloc(4),
+    pn = em._malloc(SIZE_INT),
     psx = em._malloc(n * SIZE_SINGLE),
-    pincx = em._malloc(4),
+    pincx = em._malloc(SIZE_INT),
     psy = em._malloc(n * SIZE_SINGLE),
-    pincy = em._malloc(4),
+    pincy = em._malloc(SIZE_INT),
     sx = new Float32Array(em.HEAPF32.buffer, psx, n),
     sy = new Float32Array(em.HEAPF32.buffer, psy, n);
 
@@ -107,11 +113,11 @@ function sdot(vx:Float32Array, vy:Float32Array) {
  */
 function ddot(vx:Float64Array, vy:Float64Array) {
   let n = vx.length,
-    pn = em._malloc(4),
+    pn = em._malloc(SIZE_INT),
     pdx = em._malloc(n * SIZE_DOUBLE),
-    pincx = em._malloc(4),
+    pincx = em._malloc(SIZE_INT),
     pdy = em._malloc(n * SIZE_DOUBLE),
-    pincy = em._malloc(4),
+    pincy = em._malloc(SIZE_INT),
     dx = new Float64Array(em.HEAPF64.buffer, pdx, n),
     dy = new Float64Array(em.HEAPF64.buffer, pdy, n);
 

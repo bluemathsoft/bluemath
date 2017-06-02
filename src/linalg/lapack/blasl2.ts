@@ -1,22 +1,22 @@
 
  /*
 
- copyright (c) 2017 jayesh salvi, blue math software inc.
+ Copyright (C) 2017 Jayesh Salvi, Blue Math Software Inc.
 
- this file is part of bluemath.
+ This file is part of bluemath.
 
  bluemath is free software: you can redistribute it and/or modify
- it under the terms of the gnu affero general public license as published by
- the free software foundation, either version 3 of the license, or
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
 
  bluemath is distributed in the hope that it will be useful,
- but without any warranty; without even the implied warranty of
- merchantability or fitness for a particular purpose. see the
- gnu affero general public license for more details.
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Affero General Public License for more details.
 
- you should have received a copy of the gnu affero general public license
- along with bluemath. if not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -42,6 +42,9 @@ const sgemv_wrap = em.cwrap('f2c_sgemv',
     'number', 'number', 'number', 'number', 'number'
   ]);
 
+/**
+ * @hidden
+ */
 function sgemv(
   alpha:number,
   mA:Float32Array, m:number,n:number,
@@ -97,6 +100,9 @@ function sgemv(
   vy.set(y);
 }
 
+/**
+ * @hidden
+ */
 function dgemv(
   alpha:number,
   mA:Float64Array, m:number,n:number,
