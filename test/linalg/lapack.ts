@@ -173,5 +173,17 @@ export default function testLAPACK() {
       });
     });
 
+    QUnit.module('gesdd', () => {
+      QUnit.test('dgesdd', assert => {
+        let A = new NDArray([
+          [-3,6,-1],
+          [11,-3,0],
+          [0,-1,3]
+        ], {datatype:'f64'});
+        linalg.lapack.gesdd(A.data, 3, 3);
+        assert.ok(true);
+      });
+    });
+
   });
 }

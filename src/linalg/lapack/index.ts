@@ -22,6 +22,7 @@ import {dot} from './blasl1'
 import {gemv} from './blasl2'
 import {gemm} from './blasl3'
 import {gesv} from './gesv'
+import {gesdd} from './gesdd'
 
 export {
   // BLAS level 1
@@ -34,5 +35,6 @@ export {
   gemm,
 
   // LAPACK
-  gesv
+  gesv,
+  gesdd
 }
