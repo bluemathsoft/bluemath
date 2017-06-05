@@ -27,7 +27,6 @@ export default function testLAPACK() {
   QUnit.module('LAPACK', () => {
 
     QUnit.module('BLAS Level 1', () => {
-
       QUnit.module('dot', () => {
         QUnit.test('sdot', assert => {
           let sx = new NDArray([1,2,3,4]);
@@ -126,52 +125,51 @@ export default function testLAPACK() {
         });
       });
     });
-    QUnit.module('LAPACK', () => {
-      QUnit.module('gesv', () => {
-        QUnit.test('sgesv - no permutation', assert => {
-          let A = new NDArray([
-            [11,-3,0],
-            [-3,6,-1],
-            [0,-1,3]
-          ]);
-          let x = new NDArray([30,5,-25]);
-          let ipiv = linalg.lapack.gesv(A.data,x.data,A.shape[0],1);
-          assert.deepEqual(x.toArray(), [3,1,-8]);
-          assert.deepEqual(Array.prototype.slice.call(ipiv), [1,2,3]);
-        });
-        QUnit.test('sgesv - permutation', assert => {
-          let A = new NDArray([
-            [-3,6,-1],
-            [11,-3,0],
-            [0,-1,3]
-          ]);
-          let x = new NDArray([30,5,-25]); // TODO: why this doesn't have to change?
-          let ipiv = linalg.lapack.gesv(A.data,x.data,A.shape[0],1);
-          assert.deepEqual(x.toArray(), [1,3,-8]);
-          assert.deepEqual(Array.prototype.slice.call(ipiv), [2,2,3]);
-        });
-        QUnit.test('dgesv - no permutation', assert => {
-          let A = new NDArray([
-            [11,-3,0],
-            [-3,6,-1],
-            [0,-1,3]
-          ], {datatype:'f64'});
-          let x = new NDArray([30,5,-25], {datatype:'f64'});
-          let ipiv = linalg.lapack.gesv(A.data,x.data,A.shape[0],1);
-          assert.deepEqual(x.toArray(), [3,1,-8]);
-          assert.deepEqual(Array.prototype.slice.call(ipiv), [1,2,3]);
-        });
-        QUnit.test('dgesv - permutation', assert => {
-          let A = new NDArray([
-            [-3,6,-1],
-            [11,-3,0],
-            [0,-1,3]
-          ], {datatype:'f64'});
-          let x = new NDArray([30,5,-25], {datatype:'f64'}); // TODO: why this doesn't have to change?
-          let ipiv = linalg.lapack.gesv(A.data,x.data,A.shape[0],1);
-          assert.deepEqual(x.toArray(), [1,3,-8]);
-          assert.deepEqual(Array.prototype.slice.call(ipiv), [2,2,3]);
-        });
+
+    QUnit.module('gesv', () => {
+      QUnit.test('sgesv - no permutation', assert => {
+        let A = new NDArray([
+          [11,-3,0],
+          [-3,6,-1],
+          [0,-1,3]
+        ]);
+        let x = new NDArray([30,5,-25]);
+        let ipiv = linalg.lapack.gesv(A.data,x.data,A.shape[0],1);
+        assert.deepEqual(x.toArray(), [3,1,-8]);
+        assert.deepEqual(Array.prototype.slice.call(ipiv), [1,2,3]);
+      });
+      QUnit.test('sgesv - permutation', assert => {
+        let A = new NDArray([
+          [-3,6,-1],
+          [11,-3,0],
+          [0,-1,3]
+        ]);
+        let x = new NDArray([30,5,-25]); // TODO: why this doesn't have to change?
+        let ipiv = linalg.lapack.gesv(A.data,x.data,A.shape[0],1);
+        assert.deepEqual(x.toArray(), [1,3,-8]);
+        assert.deepEqual(Array.prototype.slice.call(ipiv), [2,2,3]);
+      });
+      QUnit.test('dgesv - no permutation', assert => {
+        let A = new NDArray([
+          [11,-3,0],
+          [-3,6,-1],
+          [0,-1,3]
+        ], {datatype:'f64'});
+        let x = new NDArray([30,5,-25], {datatype:'f64'});
+        let ipiv = linalg.lapack.gesv(A.data,x.data,A.shape[0],1);
+        assert.deepEqual(x.toArray(), [3,1,-8]);
+        assert.deepEqual(Array.prototype.slice.call(ipiv), [1,2,3]);
+      });
+      QUnit.test('dgesv - permutation', assert => {
+        let A = new NDArray([
+          [-3,6,-1],
+          [11,-3,0],
+          [0,-1,3]
+        ], {datatype:'f64'});
+        let x = new NDArray([30,5,-25], {datatype:'f64'}); // TODO: why this doesn't have to change?
+        let ipiv = linalg.lapack.gesv(A.data,x.data,A.shape[0],1);
+        assert.deepEqual(x.toArray(), [1,3,-8]);
+        assert.deepEqual(Array.prototype.slice.call(ipiv), [2,2,3]);
       });
     });
 
