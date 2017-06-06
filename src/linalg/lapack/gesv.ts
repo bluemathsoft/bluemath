@@ -24,22 +24,10 @@ import {TypedArray} from '../..'
 import Module from '../../../ext/lapacklite'
 let em = Module;
 
-const SIZE_INT = 4;
-const SIZE_DOUBLE = 8;
-const SIZE_SINGLE = 4;
-
-const sgesv_wrap = em.cwrap('sgesv_',
-  null,
-  [
-    'number', 'number', 'number', 'number', 'number',
-    'number', 'number', 'number'
-  ]);
-const dgesv_wrap = em.cwrap('dgesv_',
-  null,
-  [
-    'number', 'number', 'number', 'number', 'number',
-    'number', 'number', 'number'
-  ]);
+import {
+  SIZE_INT, SIZE_SINGLE, SIZE_DOUBLE,
+  sgesv_wrap, dgesv_wrap 
+} from './common'
 
 /**
  * @hidden
@@ -119,6 +107,9 @@ function dgesv(
   return IPIV;
 }
 
+/**
+ * @hidden
+ */
 export function gesv(
   mA:TypedArray,
   mB:TypedArray,

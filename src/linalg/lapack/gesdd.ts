@@ -23,28 +23,20 @@ import {TypedArray} from '../..'
 import Module from '../../../ext/lapacklite'
 let em = Module;
 
-const SIZE_CHAR = 1;
-const SIZE_INT = 4;
-const SIZE_DOUBLE = 8;
-// const SIZE_SINGLE = 4;
+import {
+  SIZE_CHAR, SIZE_INT, SIZE_DOUBLE,
+  dgesdd_wrap 
+} from './common'
 
-const dgesdd_wrap = em.cwrap('dgesdd_', null,
-  [
-    'number','number','number','number','number',
-    'number','number','number','number','number',
-    'number','number','number','number'
-  ]);
-// const sgesdd_wrap = em.cwrap('sgesdd_', null,
-//   [
-//     'number','number','number','number','number',
-//     'number','number','number','number','number',
-//     'number','number','number','number'
-//   ]);
+
 
 // function sgesdd(mA:TypedArray, m:number, n:number) {
 
 // }
 
+/**
+ * @hidden
+ */
 function dgesdd(mA:TypedArray, m:number, n:number) {
 
   let pjobz = em._malloc(SIZE_CHAR);
@@ -85,6 +77,9 @@ function dgesdd(mA:TypedArray, m:number, n:number) {
   console.log(em.getValue(pwork, 'i32'));
 }
 
+/**
+ * @hidden
+ */
 export function gesdd(mA:TypedArray, m:number, n:number) {
   if(mA instanceof Float64Array) {
     return dgesdd(mA,m,n);

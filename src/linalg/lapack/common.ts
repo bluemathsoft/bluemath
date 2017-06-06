@@ -19,14 +19,130 @@
 
 */
 
-const SIZE_CHAR = 1;
-const SIZE_INT = 4;
-const SIZE_DOUBLE = 8;
-const SIZE_SINGLE = 4;
+import Module from '../../../ext/lapacklite'
+let em = Module;
 
-export {
-  SIZE_CHAR,
-  SIZE_INT,
-  SIZE_DOUBLE,
-  SIZE_SINGLE
-}
+/**
+ * @hidden
+ */
+export const SIZE_CHAR = 1;
+/**
+ * @hidden
+ */
+export const SIZE_INT = 4;
+/**
+ * @hidden
+ */
+export const SIZE_DOUBLE = 8;
+/**
+ * @hidden
+ */
+export const SIZE_SINGLE = 4;
+
+/**
+ * @hidden
+ */
+export const spotrf_wrap = em.cwrap('spotrf_',null,
+  ['number','number','number','number','number']);
+
+/**
+ * @hidden
+ */
+export const dpotrf_wrap = em.cwrap('dpotrf_',null,
+  ['number','number','number','number','number']);
+
+/**
+ * @hidden
+ */
+export const sgesv_wrap = em.cwrap('sgesv_',
+  null,
+  [
+    'number', 'number', 'number', 'number', 'number',
+    'number', 'number', 'number'
+  ]);
+
+/**
+ * @hidden
+ */
+export const dgesv_wrap = em.cwrap('dgesv_',
+  null,
+  [
+    'number', 'number', 'number', 'number', 'number',
+    'number', 'number', 'number'
+  ]);
+
+/**
+ * @hidden
+ */
+export const sgemm_wrap = em.cwrap('sgemm_',
+  null,
+  [
+    'number', 'number', 'number', 'number', 'number',
+    'number', 'number', 'number', 'number', 'number',
+    'number', 'number', 'number'
+  ]);
+
+/**
+ * @hidden
+ */
+export const dgemm_wrap = em.cwrap('dgemm_',
+  null,
+  [
+    'number', 'number', 'number', 'number', 'number',
+    'number', 'number', 'number', 'number', 'number',
+    'number', 'number', 'number'
+  ]);
+
+/**
+ * @hidden
+ */
+export const dgemv_wrap = em.cwrap('dgemv_',
+  null,
+  [
+    'number', 'number', 'number', 'number', 'number',
+    'number', 'number', 'number', 'number', 'number'
+  ]);
+
+/**
+ * @hidden
+ */
+export const sgemv_wrap = em.cwrap('sgemv_',
+  null,
+  [
+    'number', 'number', 'number', 'number', 'number',
+    'number', 'number', 'number', 'number', 'number'
+  ]);
+
+/**
+ * @hidden
+ */
+export const sdot_wrap = em.cwrap('sdot_',
+  null,
+  ['number', 'number', 'number', 'number', 'number']);
+
+/**
+ * @hidden
+ */
+export const ddot_wrap = em.cwrap('ddot_',
+  null,
+  ['number', 'number', 'number', 'number', 'number']);
+
+/**
+ * @hidden
+ */
+export const dgesdd_wrap = em.cwrap('dgesdd_', null,
+  [
+    'number','number','number','number','number',
+    'number','number','number','number','number',
+    'number','number','number','number'
+  ]);
+
+/**
+ * @hidden
+ */
+export const sgesdd_wrap = em.cwrap('sgesdd_', null,
+  [
+    'number','number','number','number','number',
+    'number','number','number','number','number',
+    'number','number','number','number'
+  ]);

@@ -23,16 +23,10 @@ import {TypedArray} from '../../..'
 import Module from '../../../../ext/lapacklite'
 let em = Module;
 
-const SIZE_INT = 4;
-const SIZE_DOUBLE = 8;
-const SIZE_SINGLE = 4;
-
-const sdot_wrap = em.cwrap('sdot_',
-  null,
-  ['number', 'number', 'number', 'number', 'number']);
-const ddot_wrap = em.cwrap('ddot_',
-  null,
-  ['number', 'number', 'number', 'number', 'number']);
+import {
+  SIZE_INT, SIZE_SINGLE, SIZE_DOUBLE,
+  sdot_wrap, ddot_wrap 
+} from '../common'
 
 /**
  * @hidden
@@ -79,6 +73,9 @@ function ddot(vx:Float64Array, vy:Float64Array) {
   return ddot_wrap(pn, pdx, pincx, pdy, pincy);
 }
 
+/**
+ * @hidden
+ */
 export function dot(vx:TypedArray, vy:TypedArray) {
   if(vx.length !== vy.length) {
     throw new Error('Input vectors of different size');

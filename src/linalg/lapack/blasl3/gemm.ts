@@ -24,25 +24,11 @@ import {TypedArray} from '../../..'
 import Module from '../../../../ext/lapacklite'
 let em = Module;
 
-const SIZE_CHAR = 1;
-const SIZE_INT = 4;
-const SIZE_DOUBLE = 8;
-const SIZE_SINGLE = 4;
+import {
+  SIZE_CHAR, SIZE_INT, SIZE_SINGLE, SIZE_DOUBLE,
+  sgemm_wrap, dgemm_wrap 
+} from '../common'
 
-const sgemm_wrap = em.cwrap('sgemm_',
-  null,
-  [
-    'number', 'number', 'number', 'number', 'number',
-    'number', 'number', 'number', 'number', 'number',
-    'number', 'number', 'number'
-  ]);
-const dgemm_wrap = em.cwrap('dgemm_',
-  null,
-  [
-    'number', 'number', 'number', 'number', 'number',
-    'number', 'number', 'number', 'number', 'number',
-    'number', 'number', 'number'
-  ]);
 
 /**
  * @hidden
@@ -144,6 +130,9 @@ function dgemm(
   mC.set(c);
 }
 
+/**
+ * @hidden
+ */
 export function gemm(
   mA:TypedArray, mB:TypedArray, mC:TypedArray,
   m:number, n:number, k:number,

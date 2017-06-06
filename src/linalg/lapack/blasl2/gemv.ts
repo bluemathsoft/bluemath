@@ -24,23 +24,10 @@ import {TypedArray} from '../../..'
 import Module from '../../../../ext/lapacklite'
 let em = Module;
 
-const SIZE_CHAR = 1;
-const SIZE_INT = 4;
-const SIZE_DOUBLE = 8;
-const SIZE_SINGLE = 4;
-
-const dgemv_wrap = em.cwrap('dgemv_',
-  null,
-  [
-    'number', 'number', 'number', 'number', 'number',
-    'number', 'number', 'number', 'number', 'number'
-  ]);
-const sgemv_wrap = em.cwrap('sgemv_',
-  null,
-  [
-    'number', 'number', 'number', 'number', 'number',
-    'number', 'number', 'number', 'number', 'number'
-  ]);
+import {
+  SIZE_CHAR, SIZE_INT, SIZE_SINGLE, SIZE_DOUBLE,
+  sgemv_wrap, dgemv_wrap 
+} from '../common'
 
 /**
  * @hidden
@@ -158,6 +145,9 @@ function dgemv(
   vy.set(y);
 }
 
+/**
+ * @hidden
+ */
 export function gemv(
   alpha:number,
   mA:TypedArray, m:number,n:number,

@@ -23,13 +23,15 @@ import {TypedArray} from '../..'
 import Module from '../../../ext/lapacklite'
 let em = Module;
 
-import {SIZE_CHAR,SIZE_INT,SIZE_SINGLE,SIZE_DOUBLE} from './common'
+import {
+  SIZE_CHAR, SIZE_INT, SIZE_SINGLE, SIZE_DOUBLE,
+  spotrf_wrap, dpotrf_wrap
+} from './common'
 
-const spotrf_wrap = em.cwrap('spotrf_',null,
-  ['number','number','number','number','number']);
-const dpotrf_wrap = em.cwrap('dpotrf_',null,
-  ['number','number','number','number','number']);
 
+/**
+ * @hidden
+ */
 function spotrf(mA:TypedArray, n:number) {
   let puplo = em._malloc(SIZE_CHAR);
   let pn = em._malloc(SIZE_INT);
@@ -48,6 +50,9 @@ function spotrf(mA:TypedArray, n:number) {
   mA.set(A);
 }
 
+/**
+ * @hidden
+ */
 function dpotrf(mA:TypedArray, n:number) {
   let puplo = em._malloc(SIZE_CHAR);
   let pn = em._malloc(SIZE_INT);
@@ -66,6 +71,9 @@ function dpotrf(mA:TypedArray, n:number) {
   mA.set(A);
 }
 
+/**
+ * @hidden
+ */
 export function potrf(mA:TypedArray, n:number) {
   if(mA instanceof Float64Array) {
     return dpotrf(mA,n);
