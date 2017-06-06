@@ -20,7 +20,6 @@
 */
 
 import {NDArray} from '../basic'
-import {isZero} from '../utils'
 import {linalg} from '../../src'
 
 
@@ -31,7 +30,7 @@ import {linalg} from '../../src'
  * The other argument could be a 1D vector. It will be implicitly used
  * as 1xn matrix
  */
-export function mmultiply(A:NDArray, B:NDArray) {
+export function matmul(A:NDArray, B:NDArray) {
   let shapeA = A.shape;
   let shapeB = B.shape;
 
@@ -152,10 +151,12 @@ export function norm(A:NDArray, p?:number|'fro') {
 }
 
 /**
+ * @hidden
  * Perform LU decomposition
  * 
  * $$ A = P L U $$
  */
+/*
 export function lu(A:NDArray) {
 
   // Outer product LU decomposition with partial pivoting
@@ -212,6 +213,7 @@ export function lu(A:NDArray) {
   }
   return perm;
 }
+*/
 
 /**
  * @hidden

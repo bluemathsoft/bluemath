@@ -31,11 +31,11 @@ let {NDArray} = basic;
 export default function testOperations() {
 
   QUnit.module('Operations', () => {
-    QUnit.module('mmultiply', () => {
+    QUnit.module('matmul', () => {
       QUnit.test("Square 3x3", assert => {
         let A = new NDArray([[2,2,2],[2,2,2],[2,2,2]], {datatype:'i16'});
         let B = new NDArray([[5,5,5],[5,5,5],[5,5,5]], {datatype:'i16'});
-        let M = linalg.mmultiply(A,B);
+        let M = linalg.matmul(A,B);
         if(M instanceof NDArray) {
           assert.deepEqual(M.shape, [3,3]);
           for(let i=0; i<3; i++) {
@@ -50,7 +50,7 @@ export default function testOperations() {
       QUnit.test("3x2 mul 2x3", assert => {
         let A = new NDArray([[1,0],[2,1],[6,9]], {datatype:'i16'});
         let B = new NDArray([[1,2,3],[1,2,9]], {datatype:'i16'});
-        let M = linalg.mmultiply(A,B);
+        let M = linalg.matmul(A,B);
         if(M instanceof NDArray) {
           assert.deepEqual(M.shape, [3,3]);
           assert.equal(M.get(1,0), 3);
@@ -65,27 +65,27 @@ export default function testOperations() {
         let A = new NDArray([[1,0],[2,1],[6,9]], {datatype:'i16'});
         let B = new NDArray([[1,2,3],[1,2,9],[4,5,3]], {datatype:'i16'});
         assert.throws(() => {
-          linalg.mmultiply(A,B);
+          linalg.matmul(A,B);
         });
       });
       QUnit.test("mul by Vector (inner product)", assert => {
         let A = new NDArray([[1,0,2]], {datatype:'i16'});
         let B = new NDArray([[4,4,9]], {datatype:'i16'});
         B.reshape([3,1]);
-        let M = linalg.mmultiply(A, B);
+        let M = linalg.matmul(A, B);
         assert.deepEqual(M.shape, [1,1]);
         assert.equal(M.get(0,0), 22);
       });
       QUnit.test("mul by Vector, error", assert => {
         let A = new NDArray([[1,0,2],[3,5,6]], {datatype:'i16'});
         let B = new NDArray([[4,4,9]], {datatype:'i16'});
-        assert.throws(() => linalg.mmultiply(A,B));
+        assert.throws(() => linalg.matmul(A,B));
       });
       QUnit.test("mul by Vector (outer product)", assert => {
         let A = new NDArray([[3,3]], {datatype:'i16'});
         A.reshape([2,1]);
         let B = new NDArray([[2,2]], {datatype:'i16'});
-        let M = linalg.mmultiply(A,B);
+        let M = linalg.matmul(A,B);
         assert.deepEqual(M.shape, [2,2]);
         assert.equal(M.get(0,0), 6);
         assert.equal(M.get(0,1), 6);

@@ -22,17 +22,17 @@
 
 import {eye, zeros} from './construction'
 import {
-  mmultiply, norm, lu, solve, cholesky
+  matmul, norm, solve, cholesky
 } from './operations'
 import * as lapack from './lapack'
 
 export {
   eye,
   zeros,
-  mmultiply,
+  matmul,
   norm,
-  lu,
   solve,
   cholesky,
+
   lapack
 }
