@@ -8,7 +8,7 @@
     "build": "webpack --config webpack.config.js",
     "watch": "webpack --watch --config webpack.config.js",
     "watch-logoscope": "webpack --watch --config webpack.logoscope.config.js",
-    "build-docs": "typedoc --out ./docs --theme doctheme/ --mode file --readme src/index.md --gaID \"UA-99857402-1\"",
+    "build-docs": "typedoc --excludeNotExported --out ./docs --theme doctheme/ --mode file --readme src/index.md --gaID \"UA-99857402-1\"",
     "prepublish": "(cd src; tsc -p .)"
   },
   "keywords": [
