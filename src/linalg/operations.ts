@@ -21,6 +21,8 @@
 
 import {NDArray} from '../basic'
 import {isZero} from '../utils'
+import {linalg} from '../../src'
+
 
 /**
  * Matrix multiplication
@@ -221,16 +223,16 @@ export function lu(A:NDArray) {
  * Caller must ensure this matrix is Lower triangular before calling this
  * routine. Otherwise, undefined behavior
  */
-function solveByForwardSubstitution(A:NDArray, x:NDArray) {
-  let nrows = A.shape[0];
-  for(let i=0; i<nrows; i++) {
-    let sum = 0;
-    for(let j=0; j<i; j++) {
-      sum += x.get(j) * A.get(i,j);
-    }
-    x.set(i, (x.get(i) - sum)/A.get(i,i));
-  }
-}
+// function solveByForwardSubstitution(A:NDArray, x:NDArray) {
+//   let nrows = A.shape[0];
+//   for(let i=0; i<nrows; i++) {
+//     let sum = 0;
+//     for(let j=0; j<i; j++) {
+//       sum += x.get(j) * A.get(i,j);
+//     }
+//     x.set(i, (x.get(i) - sum)/A.get(i,i));
+//   }
+// }
 
 /**
  * @hidden
@@ -241,16 +243,16 @@ function solveByForwardSubstitution(A:NDArray, x:NDArray) {
  * Caller must ensure this matrix is Upper triangular before calling this
  * routine. Otherwise, undefined behavior
  */
-function solveByBackwardSubstitution(A:NDArray, x:NDArray) {
-  let [nrows,ncols] = A.shape;
-  for(let i=nrows-1; i>=0; i--) {
-    let sum = 0;
-    for(let j=ncols-1;j>i;j--) {
-      sum += x.get(j) * A.get(i,j);
-    }
-    x.set(i, (x.get(i) - sum)/A.get(i,i));
-  }
-}
+// function solveByBackwardSubstitution(A:NDArray, x:NDArray) {
+//   let [nrows,ncols] = A.shape;
+//   for(let i=nrows-1; i>=0; i--) {
+//     let sum = 0;
+//     for(let j=ncols-1;j>i;j--) {
+//       sum += x.get(j) * A.get(i,j);
+//     }
+//     x.set(i, (x.get(i) - sum)/A.get(i,i));
+//   }
+// }
 
 /**
  * @hidden
@@ -258,18 +260,18 @@ function solveByBackwardSubstitution(A:NDArray, x:NDArray) {
  * @param V Vector to undergo permutation (changed in place)
  * @param p Permutation vector
  */
-export function permuteVector(V:NDArray, p:NDArray) {
-  if(V.shape.length !== 1 || p.shape.length !== 1) {
-    throw new Error("Arguments are not vectors");
-  }
-  if(V.shape[0] !== p.shape[0]) {
-    throw new Error("Input vectors are not same length");
-  }
-  let orig = V.clone();
-  for(let i=0; i<p.shape[0]; i++) {
-    V.set(i, orig.get(p.get(i)));
-  }
-}
+// export function permuteVector(V:NDArray, p:NDArray) {
+//   if(V.shape.length !== 1 || p.shape.length !== 1) {
+//     throw new Error("Arguments are not vectors");
+//   }
+//   if(V.shape[0] !== p.shape[0]) {
+//     throw new Error("Input vectors are not same length");
+//   }
+//   let orig = V.clone();
+//   for(let i=0; i<p.shape[0]; i++) {
+//     V.set(i, orig.get(p.get(i)));
+//   }
+// }
 
 /**
  * @hidden
@@ -277,71 +279,60 @@ export function permuteVector(V:NDArray, p:NDArray) {
  * @param V Vector to undergo inverse permutation (changed in place)
  * @param p Permutation vector
  */
-export function ipermuteVector(V:NDArray, p:NDArray) {
-  if(V.shape.length !== 1 || p.shape.length !== 1) {
-    throw new Error("Arguments are not vectors");
-  }
-  if(V.shape[0] !== p.shape[0]) {
-    throw new Error("Input vectors are not same length");
-  }
-  let orig = V.clone();
-  for(let i=0; i<p.shape[0]; i++) {
-    V.set(p.get(i), orig.get(i));
-  }
-}
+// export function ipermuteVector(V:NDArray, p:NDArray) {
+//   if(V.shape.length !== 1 || p.shape.length !== 1) {
+//     throw new Error("Arguments are not vectors");
+//   }
+//   if(V.shape[0] !== p.shape[0]) {
+//     throw new Error("Input vectors are not same length");
+//   }
+//   let orig = V.clone();
+//   for(let i=0; i<p.shape[0]; i++) {
+//     V.set(p.get(i), orig.get(i));
+//   }
+// }
 
-export interface SolveOptions {
-  /**
-   * Kind of matrix A (coefficient matrix in system of linear equations)
-   */
-  kind : 'lt'|'ut'|'sym'|'posdef'
-}
 
 /**
  * @param A Coefficient matrix (gets modified)
  * @param x RHS b (filled with solution x)
- * @param opt 
  */
-export function solve(A:NDArray, x:NDArray, opt?:SolveOptions) {
+export function solve(A:NDArray, x:NDArray) {
+  if(A.shape[0] !== A.shape[1]) {
+    throw new Error('A is not square');
+  }
+  if(A.shape[1] !== x.shape[0]) {
+    throw new Error('x num rows not equal to A num colums');
+  }
 
-  if(opt && opt.kind === 'lt') {
-    solveByForwardSubstitution(A,x);
-  } else if(opt && opt.kind === 'ut') {
-    solveByBackwardSubstitution(A,x);
-  } else if(opt && opt.kind === 'sym') {
-    throw new Error("Not implemented");
-  } else if(opt && opt.kind === 'posdef') {
-    throw new Error("Not implemented");
-  } else {
-    // Ax = b
-    // LUx = Pb
-    // Ly = Pb
-    let perm = lu(A);
-
-    // Comput Pb
-    permuteVector(x, perm);
-
-    // Compute y, by forward substituion
-    // The lower triangular matrix is in A, except for diagonal which is 1
-    // The following code is same as solveByForwardSubstitution, with (i,i)
-    // replaced by 1
-    let n = A.shape[0];
-    for(let i=0; i<n; i++) {
-      let sum = 0;
-      for(let j=0; j<i; j++) {
-        sum += x.get(j) * A.get(i,j);
+  function swapOrder(M:NDArray) {
+    for(let i=0; i<M.shape[0]; i++) {
+      for(let j=0; j<M.shape[1]; j++) {
+        if(i > j) {
+          let tmp = M.get(i,j);
+          M.set(i,j,M.get(j,i));
+          M.set(j,i,tmp);
+        }
       }
-      x.set(i, x.get(i) - sum);
-    }
-
-    // Compute x, by backward substituion
-    for(let i=n-1; i>=0; i--) {
-      let sum = 0;
-      for(let j=n-1;j>i;j--) {
-        sum += x.get(j) * A.get(i,j);
-      }
-      x.set(i, (x.get(i) - sum)/A.get(i,i));
     }
   }
 
+  // Rearrange the data because LAPACK is column major
+  swapOrder(A);
+
+  let nrhs;
+  let xswapped = false;
+  if(x.shape.length > 1) {
+    nrhs = x.shape[1];
+    // swapOrder(x);
+    xswapped = true;
+  } else {
+    nrhs = 1;
+  }
+
+  linalg.lapack.gesv(A.data, x.data, A.shape[0], nrhs);
+  swapOrder(A);
+  if(xswapped) {
+    // swapOrder(x);
+  }
 }

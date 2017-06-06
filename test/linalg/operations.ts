@@ -24,6 +24,10 @@ import {utils, basic, linalg} from '../../src'
 
 let {NDArray} = basic;
 
+(<any>window).bluemath = {
+  NDArray
+};
+
 export default function testOperations() {
 
   QUnit.module('Operations', () => {
@@ -129,6 +133,7 @@ export default function testOperations() {
       });
     });
 
+    /*
     QUnit.module("Permutation", () => {
       QUnit.test("Vector", assert => {
         let V = new NDArray([34,65,23,90]);
@@ -151,7 +156,9 @@ export default function testOperations() {
       });
 
     });
+    */
 
+    /*
     QUnit.module('LU Decomposition', () => {
       QUnit.test('3x3', assert => {
         let A = new NDArray([
@@ -168,6 +175,7 @@ export default function testOperations() {
         ])));
       });
     });
+    */
     QUnit.module('Solve', () => {
       QUnit.test('Upper tri', assert => {
         let A = new NDArray([
@@ -175,7 +183,7 @@ export default function testOperations() {
           [0,5]
         ]);
         let x = new NDArray([32,10]);
-        linalg.solve(A,x,{kind:'ut'});
+        linalg.solve(A,x);
         assert.ok(x.isEqual(new NDArray([3.5,2])));
       });
       QUnit.test('Lower tri', assert => {
@@ -184,7 +192,7 @@ export default function testOperations() {
           [11,5]
         ]);
         let x = new NDArray([21,99]);
-        linalg.solve(A,x,{kind:'lt'});
+        linalg.solve(A,x);
         assert.ok(x.isEqual(new NDArray([7,4.4])));
       });
       QUnit.module('LU Solve', () => {
@@ -219,13 +227,11 @@ export default function testOperations() {
           assert.ok(x.isEqual(new NDArray(
             [-4.05205, -12.6056, 1.66091, 8.69377],{datatype:'f64'}),1e-4));
         });
-        /*
         QUnit.test("Random tests 1 (match with numpy)", assert => {
           let A = new NDArray([
             [4, 7, 5, 12], [4, 3, 2, 1], [6, 2, 9, 3], [4, 1, 8, 8]])
           let x = new NDArray([13, 15, 2, 90]);
           linalg.solve(A,x);
-          console.log(x.toArray());
           assert.ok(x.isEqual(
               new NDArray([40.50877193, -39.30526316, -25.02807018, 20.93684211]),1e-4));
         });
@@ -234,7 +240,6 @@ export default function testOperations() {
             [4, 7, 5, 0.5], [4, 3, 2, 1], [6, 2, 99, 3], [4, 1, 8, 8]])
           let x = new NDArray([13, 15, 2, 90]);
           linalg.solve(A,x);
-          console.log(x.toArray());
           assert.ok(x.isEqual(new NDArray(
                 [0.19644227, 1.19044879, -0.36008822, 11.36306099])));
         });
@@ -243,7 +248,6 @@ export default function testOperations() {
             [4, 0.0007, 5, 0.5], [4, 3, 2, 1], [6, 2, 9999, 3], [4, 1, 8, 8]])
           let x = new NDArray([13, 15, 2, 90]);
           linalg.solve(A,x);
-          console.log(x.toArray());
           assert.ok(x.isEqual(new NDArray(
                 [1.95364698e+00, -1.07265497e+00, -3.88138726e-03,
                 1.04111398e+01])));
@@ -254,27 +258,27 @@ export default function testOperations() {
           let x = new NDArray([13, 0.15, 2986, 90]);
           linalg.solve(A,x);
           assert.ok(x.isEqual(new NDArray(
-                [1.51620015, -5.80949758, 0.295605, 10.92248213])));
+                [1.51620015, -5.80949758, 0.295605, 10.92248213]),1e-5));
         });
-        */
-        /*
+
         QUnit.test("Solve multiple", assert => {
-          let A = new Matrix([
+          let A = new NDArray([
             [4, 7, 5, 12], [4, 3, 2, 1], [6, 2, 9, 3], [4, 1, 8, 8]])
-          let answer = A.solve(new Matrix([
+          let x = new NDArray([
             [13,45,3],
             [15,66,3],
             [2,0.02,8],
             [90,1,0]
-          ])) as basic.Matrix;
-          assert.ok(answer.isEqual(new Matrix([
+          ]);
+          linalg.solve(A,x);
+          console.log(x.data);
+          assert.ok(x.isEqual(new NDArray([
                 [40.50877193, 31.61561404, -1.66667],
                 [-39.30526316, -8.06736842, 2.4],
                 [-25.02807018, -21.58596491, 1.933333],
                 [20.93684211, 6.91157895, -1.4]
               ]),1e-5));
         });
-        */
       });
     });
   });

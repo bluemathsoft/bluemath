@@ -22,8 +22,7 @@
 
 import {eye, zeros} from './construction'
 import {
-  mmultiply, norm, lu, solve,
-  permuteVector, ipermuteVector
+  mmultiply, norm, lu, solve
 } from './operations'
 import * as lapack from './lapack'
 
@@ -34,7 +33,5 @@ export {
   norm,
   lu,
   solve,
-  permuteVector,
-  ipermuteVector,
   lapack
 }
