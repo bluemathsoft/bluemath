@@ -20,8 +20,8 @@
 
 */
 
-import {TypedArray} from '../..'
-import Module from '../../../ext/lapacklite'
+import {TypedArray} from '../../..'
+import Module from '../../../../ext/lapacklite'
 let em = Module;
 
 const SIZE_CHAR = 1;

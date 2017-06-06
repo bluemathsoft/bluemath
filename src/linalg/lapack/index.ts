@@ -18,9 +18,9 @@
  along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {dot} from './blasl1'
-import {gemv} from './blasl2'
-import {gemm} from './blasl3'
+import {dot} from './blasl1/dot'
+import {gemv} from './blasl2/gemv'
+import {gemm} from './blasl3/gemm'
 import {gesv} from './gesv'
 import {gesdd} from './gesdd'
 import {potrf} from './potrf'

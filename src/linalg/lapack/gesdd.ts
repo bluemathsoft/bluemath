@@ -71,7 +71,7 @@ function dgesdd(mA:TypedArray, m:number, n:number) {
   em.setValue(pn, n, 'i32');
 
   em.setValue(plda, m, 'i32');
-  em.setValue(pldu, 1, 'i32');
+  em.setValue(pldu, n, 'i32');
   em.setValue(pldvt, n, 'i32');
 
   em.setValue(plwork, -1, 'i32');
