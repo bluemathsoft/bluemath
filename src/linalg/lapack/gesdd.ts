@@ -73,8 +73,6 @@ function dgesdd(mA:TypedArray, m:number, n:number) {
 
   dgesdd_wrap(pjobz, pm, pn, pA, plda, pS, pU, pldu, pVT, pldvt,
     pwork, plwork, piwork, pinfo);
-
-  console.log(em.getValue(pwork, 'i32'));
 }
 
 /**

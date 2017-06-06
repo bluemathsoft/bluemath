@@ -10,6 +10,7 @@ export default class NDArray {
     datatype: NumberType;
     private _data;
     constructor(arg0: TypedArray | Array<any> | NDArrayOptions, arg1?: NDArrayOptions);
+    readonly data: TypedArray;
     reshape(shape: number[]): void;
     clone(): NDArray;
     private _calcSize();
@@ -26,4 +27,6 @@ export default class NDArray {
      */
     datacompare(otherdata: TypedArray, tolerance?: number): boolean;
     isEqual(other: NDArray, tolerance?: number): boolean;
+    swapOrder(): void;
+    toString(): string;
 }

@@ -1,25 +1,45 @@
 
 ## bluemath
 
-Math kernel in Javascript (Work in Progress)
+Math in Javascript (Work in Progress)
 
 [![NPM package](https://img.shields.io/npm/v/bluemath.svg)](https://www.npmjs.com/package/bluemath)
-[![License](https://img.shields.io/badge/license-AGPL3-blue.svg)](LICENSE)
 
 Usage
 ===
 
     npm install bluemath
 
-Use in TypeScript or ES6 modules javascript code
+Usage in TypeScript or ES6 modules javascript code
 
-    import {linalg} from 'bluemath'
-    console.log(linalg.eye(3));
+``` typescript
+import {linalg} from 'bluemath'
+console.log(linalg.eye(3));
+```
 
-Use in Common JS environment (eg. node.js, browserify)
+Usage in Common JS environment (eg. node.js, browserify)
 
-    const linalg = require('bluemath').linalg
-    console.log(linalg.eye(3));
+``` javascript
+const linalg = require('bluemath').linalg
+console.log(linalg.eye(3));
+```
+
+
+linalg example
+===
+
+```javascript
+import {linalg, basic} from 'bluemath'
+let A = new basic.NDArray([
+	[11,-3,0],
+	[-3,6,-1],
+	[0,-1,3]
+]);
+let B = new basic.NDArray([30,5,-25]);
+linalg.solve(A,B);
+console.log(B.toArray()); // [3,1,-8]
+```
+
 
 Development
 ===
@@ -35,3 +55,5 @@ Development
 
     # For automatic rebuilds during development
     npm run watch
+
+

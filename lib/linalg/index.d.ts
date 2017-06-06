@@ -1,4 +1,4 @@
 import { eye, zeros } from './construction';
-import { mmultiply, norm, lu, solve, permuteVector, ipermuteVector } from './operations';
+import { matmul, norm, solve, cholesky, inner, outer } from './operations';
 import * as lapack from './lapack';
-export { eye, zeros, mmultiply, norm, lu, solve, permuteVector, ipermuteVector, lapack };
+export { eye, zeros, inner, outer, matmul, cholesky, norm, solve, lapack };
