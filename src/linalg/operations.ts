@@ -305,34 +305,24 @@ export function solve(A:NDArray, x:NDArray) {
     throw new Error('x num rows not equal to A num colums');
   }
 
-  function swapOrder(M:NDArray) {
-    for(let i=0; i<M.shape[0]; i++) {
-      for(let j=0; j<M.shape[1]; j++) {
-        if(i > j) {
-          let tmp = M.get(i,j);
-          M.set(i,j,M.get(j,i));
-          M.set(j,i,tmp);
-        }
-      }
-    }
-  }
-
   // Rearrange the data because LAPACK is column major
-  swapOrder(A);
+  A.swapOrder();
 
   let nrhs;
   let xswapped = false;
   if(x.shape.length > 1) {
     nrhs = x.shape[1];
-    // swapOrder(x);
+    // x.swapOrder();
     xswapped = true;
   } else {
     nrhs = 1;
   }
 
   linalg.lapack.gesv(A.data, x.data, A.shape[0], nrhs);
-  swapOrder(A);
+  A.swapOrder();
   if(xswapped) {
-    // swapOrder(x);
+    // x.swapOrder();
   }
+}
+
 }

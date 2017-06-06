@@ -348,6 +348,23 @@ export default class NDArray {
     return other.datacompare(this._data, tolerance);
   }
 
+  swapOrder() {
+    if(this.shape.length !== 2) {
+      throw new Error(
+        'swapOrder is not defined for ndarrays other than dim 2');
+    }
+
+    for(let i=0; i<this.shape[0]; i++) {
+      for(let j=0; j<this.shape[1]; j++) {
+        if(i > j) {
+          let tmp = this.get(i,j);
+          this.set(i,j,this.get(j,i));
+          this.set(j,i,tmp);
+        }
+      }
+    }
+  }
+
   toString() {
     return JSON.stringify(this.toArray(),null,2);
   }
