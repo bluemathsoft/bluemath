@@ -40,15 +40,15 @@ export function toRad(angleInDegrees:number) : number {
 /**
  * Check if input equals zero within given tolerance
  */
-export function isZero(x:number, tolerance=EPSILON) : boolean {
+export function iszero(x:number, tolerance=EPSILON) : boolean {
   return Math.abs(x) < tolerance;
 }
 
 /**
  * Check if two input numbers are equal within given tolerance
  */
-export function isEqualFloat(a:number, b:number, tolerance=EPSILON) : boolean {
-  return isZero(a-b, tolerance);
+export function isequal(a:number, b:number, tolerance=EPSILON) : boolean {
+  return iszero(a-b, tolerance);
 }
 
 /**
@@ -58,6 +58,6 @@ export function isEqualFloat(a:number, b:number, tolerance=EPSILON) : boolean {
  * be complex numbers. This function only return the real cubeRoot
  * of given number
  */
-export function cubeRoot(x:number) : number {
+export function cuberoot(x:number) : number {
   return x<0 ? -Math.pow(-x,1/3) : Math.pow(x,1/3);
 }

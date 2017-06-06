@@ -275,7 +275,7 @@ export default class Matrix {
     if(this.cols !== other.cols) { return false; }
     for(let i=0; i<this.rows; i++) {
       for(let j=0; j<this.cols; j++) {
-        if(!utils.isEqualFloat(this.get(i,j), other.get(i,j), tolerance)) {
+        if(!utils.isequal(this.get(i,j), other.get(i,j), tolerance)) {
           return false;
         }
       }

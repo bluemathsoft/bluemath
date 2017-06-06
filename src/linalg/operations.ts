@@ -296,14 +296,19 @@ export function lu(A:NDArray) {
 
 
 /**
+ * Solves a system of linear scalar equations,
+ * Ax = B
+ * It computes the 'exact' solution for x. A is supposed to be well-
+ * determined, i.e. full rank.
+ * (Uses LAPACK routine `gesv`)
  * @param A Coefficient matrix (gets modified)
- * @param x RHS b (filled with solution x)
+ * @param B RHS (populated with solution x upon return)
  */
-export function solve(A:NDArray, x:NDArray) {
+export function solve(A:NDArray, B:NDArray) {
   if(A.shape[0] !== A.shape[1]) {
     throw new Error('A is not square');
   }
-  if(A.shape[1] !== x.shape[0]) {
+  if(A.shape[1] !== B.shape[0]) {
     throw new Error('x num rows not equal to A num colums');
   }
 
@@ -312,19 +317,68 @@ export function solve(A:NDArray, x:NDArray) {
 
   let nrhs;
   let xswapped = false;
-  if(x.shape.length > 1) {
-    nrhs = x.shape[1];
+  if(B.shape.length > 1) {
+    nrhs = B.shape[1];
     // x.swapOrder();
     xswapped = true;
   } else {
     nrhs = 1;
   }
 
-  linalg.lapack.gesv(A.data, x.data, A.shape[0], nrhs);
+  linalg.lapack.gesv(A.data, B.data, A.shape[0], nrhs);
   A.swapOrder();
   if(xswapped) {
     // x.swapOrder();
   }
+}
+
+/**
+ * Computes inner product of two 1D vectors (same as dot product).
+ * Both inputs are supposed to be 1 dimensional arrays of same length.
+ * If they are not same length, A.data.length must be <= B.data.length
+ * Only first A.data.length elements of array B are used in case it's 
+ * longer than A 
+ * @param A 1D Vector
+ * @param B 1D Vector
+ */
+export function inner(A:NDArray, B:NDArray) {
+  if(A.data.length > B.data.length) {
+    throw new Error("A.data.length should be <= B.data.length");
+  }
+  let dot = 0.0;
+  for(let i=0; i<A.data.length; i++) {
+    dot += A.data[i] * B.data[i];
+  }
+  return dot;
+}
+
+export function outer(A:NDArray, B:NDArray) {
+
+  if(A.shape.length === 1) {
+    A.reshape([A.shape[0],1]);
+  } else if(A.shape.length === 2) {
+    if(A.shape[1] !== 1) {
+      throw new Error('A is not a column vector');
+    }
+  } else {
+    throw new Error('A has invalid dimensions');
+  }
+
+  if(B.shape.length === 1) {
+    B.reshape([1,B.shape[0]]);
+  } else if(B.shape.length === 2) {
+    if(B.shape[0] !== 1) {
+      throw new Error('B is not a row vector');
+    }
+  } else {
+    throw new Error('B has invalid dimensions');
+  }
+
+  if(A.shape[0] !== B.shape[1]) {
+    throw new Error('Sizes of A and B are not compatible');
+  }
+
+  return matmul(A,B);
 }
 
 export function cholesky(A:NDArray) {

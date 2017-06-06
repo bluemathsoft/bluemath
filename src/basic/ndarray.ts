@@ -21,7 +21,7 @@
 */
 
 import {NumberType,TypedArray} from '..'
-import {isEqualFloat} from '../utils'
+import {isequal} from '../utils'
 import {EPSILON} from '../constants'
 
 export interface NDArrayOptions {
@@ -329,7 +329,7 @@ export default class NDArray {
    */
   datacompare(otherdata:TypedArray, tolerance=EPSILON) {
     for(let i=0; i<this._data.length; i++) {
-      if(!isEqualFloat(this._data[i], otherdata[i], tolerance)) {
+      if(!isequal(this._data[i], otherdata[i], tolerance)) {
         return false;
       }
     }

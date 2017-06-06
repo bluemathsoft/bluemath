@@ -19,7 +19,7 @@
 
  */
 
-import {isEqualFloat} from '../../utils'
+import {isequal} from '../../utils'
 
 /**
  * @hidden
@@ -54,7 +54,7 @@ function findSpan(p:number, U:Array<number>, u:number)
 {
   let m = U.length-1;
   let n = m-p-1;
-  if(isEqualFloat(u, U[n+1])) {
+  if(isequal(u, U[n+1])) {
     return n;
   }
   let low = p;

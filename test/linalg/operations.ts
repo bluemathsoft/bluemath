@@ -93,6 +93,49 @@ export default function testOperations() {
         assert.equal(M.get(1,1), 6);
       });
     });
+
+    QUnit.module('inner', () => {
+      QUnit.test('A(3), B(3)', assert => {
+        let A = new NDArray([3,4,5]);
+        let B = new NDArray([1,2,5]);
+        assert.equal(linalg.inner(A,B), 36);
+      });
+      QUnit.test('A(3), B(4)', assert => {
+        let A = new NDArray([3,4,5]);
+        let B = new NDArray([1,2,5,7]);
+        assert.equal(linalg.inner(A,B), 36);
+      });
+      QUnit.test('A(4), B(3)', assert => {
+        let A = new NDArray([3,4,5,6]);
+        let B = new NDArray([1,2,5]);
+        assert.throws(() => linalg.inner(A,B));
+      });
+    });
+
+    QUnit.module('outer', () => {
+      QUnit.test('A(3), B(3)', assert => {
+        let A = new NDArray([1,1,1]);
+        let B = new NDArray([1,1,1]);
+        assert.deepEqual(linalg.outer(A,B).toArray(),[
+          [1,1,1],[1,1,1],[1,1,1]
+        ]);
+      });
+
+      QUnit.test('A(3x1), B(1x3)', assert => {
+        let A = new NDArray([[1],[1],[1]]);
+        let B = new NDArray([1,1,1]);
+        assert.deepEqual(linalg.outer(A,B).toArray(),[
+          [1,1,1],[1,1,1],[1,1,1]
+        ]);
+      });
+
+      QUnit.test('A(1x3), B(3x1)', assert => {
+        let A = new NDArray([1,1,1]);
+        let B = new NDArray([[1],[1],[1]]);
+        assert.throws(() => linalg.outer(A,B));
+      });
+    });
+
     QUnit.module('norm', () => {
       QUnit.module('Vector', () => {
         QUnit.test('1-norm', assert => {
@@ -101,11 +144,11 @@ export default function testOperations() {
         });
         QUnit.test('2-norm', assert => {
           let A = new NDArray([2,3,4,5]);
-          assert.ok(utils.isEqualFloat(linalg.norm(A,2), 7.34847));
+          assert.ok(utils.isequal(linalg.norm(A,2), 7.34847));
         });
         QUnit.test('3-norm', assert => {
           let A = new NDArray([2,3,4,5]);
-          assert.ok(utils.isEqualFloat(linalg.norm(A,3), 6.07318, 1e-4));
+          assert.ok(utils.isequal(linalg.norm(A,3), 6.07318, 1e-4));
         });
         QUnit.test('Infinity-norm', assert => {
           let A = new NDArray([2,3,4,5]);
@@ -127,7 +170,7 @@ export default function testOperations() {
             [4,2,-9],
             [0,3,1]
           ]);
-          assert.ok(utils.isEqualFloat(linalg.norm(A, 'fro'),
+          assert.ok(utils.isequal(linalg.norm(A, 'fro'),
             11.832159566199232, 1e-6));
         });
       });
