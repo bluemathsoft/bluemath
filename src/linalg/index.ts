@@ -22,7 +22,7 @@
 
 import {eye, zeros} from './construction'
 import {
-  mmultiply, norm, lu, solve
+  mmultiply, norm, lu, solve, cholesky
 } from './operations'
 import * as lapack from './lapack'
 
@@ -33,5 +33,6 @@ export {
   norm,
   lu,
   solve,
+  cholesky,
   lapack
 }

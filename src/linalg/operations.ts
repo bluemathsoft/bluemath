@@ -325,4 +325,7 @@ export function solve(A:NDArray, x:NDArray) {
   }
 }
 
+export function cholesky(A:NDArray) {
+  // TODO : do checks on A before calling lapack
+  linalg.lapack.potrf(A.data,A.shape[0]);
 }

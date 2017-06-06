@@ -271,7 +271,6 @@ export default function testOperations() {
             [90,1,0]
           ]);
           linalg.solve(A,x);
-          console.log(x.data);
           assert.ok(x.isEqual(new NDArray([
                 [40.50877193, 31.61561404, -1.66667],
                 [-39.30526316, -8.06736842, 2.4],
@@ -279,6 +278,24 @@ export default function testOperations() {
                 [20.93684211, 6.91157895, -1.4]
               ]),1e-5));
         });
+      });
+    });
+    QUnit.module('Cholesky', () => {
+      QUnit.test('3x3', assert => {
+        let A = new NDArray([
+          [4,12,-16],
+          [12,37,-43],
+          [-16,-43,98]
+        ]);
+        linalg.cholesky(A);
+        //TODO: this only passes if internally 'L' is specified for UPLO
+        assert.equal(A.get(0,0), 2);
+        assert.equal(A.get(0,1), 6);
+        assert.equal(A.get(0,2), -8);
+        assert.equal(A.get(1,1), 1);
+        assert.equal(A.get(1,2), 5);
+        assert.equal(A.get(2,2), 3);
+
       });
     });
   });
