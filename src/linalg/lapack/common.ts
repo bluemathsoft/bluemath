@@ -1,5 +1,5 @@
-
  /*
+
  Copyright (C) 2017 Jayesh Salvi, Blue Math Software Inc.
 
  This file is part of bluemath.
@@ -18,25 +18,15 @@
  along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {dot} from './blasl1'
-import {gemv} from './blasl2'
-import {gemm} from './blasl3'
-import {gesv} from './gesv'
-import {gesdd} from './gesdd'
-import {potrf} from './potrf'
+
+const SIZE_CHAR = 1;
+const SIZE_INT = 4;
+const SIZE_DOUBLE = 8;
+const SIZE_SINGLE = 4;
 
 export {
-  // BLAS level 1
-  dot,
-
-  // BLAS level 2
-  gemv,
-
-  // BLAS level 3
-  gemm,
-
-  // LAPACK
-  gesv,
-  gesdd,
-  potrf
+  SIZE_CHAR,
+  SIZE_INT,
+  SIZE_DOUBLE,
+  SIZE_SINGLE
 }

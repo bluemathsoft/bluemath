@@ -347,4 +347,8 @@ export default class NDArray {
     }
     return other.datacompare(this._data, tolerance);
   }
+
+  toString() {
+    return JSON.stringify(this.toArray(),null,2);
+  }
 }

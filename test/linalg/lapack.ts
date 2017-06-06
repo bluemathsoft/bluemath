@@ -173,6 +173,7 @@ export default function testLAPACK() {
       });
     });
 
+    // TODO
     QUnit.module('gesdd', () => {
       QUnit.test('dgesdd', assert => {
         let A = new NDArray([
@@ -182,6 +183,25 @@ export default function testLAPACK() {
         ], {datatype:'f64'});
         linalg.lapack.gesdd(A.data, 3, 3);
         assert.ok(true);
+      });
+    });
+
+    QUnit.module('potrf', () => {
+      QUnit.test('dpotrf', assert => {
+        // From wikipedia
+        let A = new NDArray([
+          [4,12,-16],
+          [12,37,-43],
+          [-16,-43,98]
+        ]);
+        linalg.lapack.potrf(A.data, 3);
+        //TODO: this only passes if internally 'L' is specified for UPLO
+        assert.equal(A.get(0,0), 2);
+        assert.equal(A.get(0,1), 6);
+        assert.equal(A.get(0,2), -8);
+        assert.equal(A.get(1,1), 1);
+        assert.equal(A.get(1,2), 5);
+        assert.equal(A.get(2,2), 3);
       });
     });
 
