@@ -304,7 +304,7 @@ export default function testOperations() {
                 [1.51620015, -5.80949758, 0.295605, 10.92248213]),1e-5));
         });
 
-        QUnit.test("Solve multiple", assert => {
+        QUnit.skip("Solve multiple", assert => {
           let A = new NDArray([
             [4, 7, 5, 12], [4, 3, 2, 1], [6, 2, 9, 3], [4, 1, 8, 8]])
           let x = new NDArray([

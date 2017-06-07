@@ -182,6 +182,7 @@ export default function testLAPACK() {
           [0,-1,3]
         ], {datatype:'f64'});
         linalg.lapack.gesdd(A.data, 3, 3);
+        console.log(A.toString());
         assert.ok(true);
       });
     });

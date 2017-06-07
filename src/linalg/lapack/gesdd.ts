@@ -47,12 +47,12 @@ function dgesdd(mA:TypedArray, m:number, n:number) {
   let plda = em._malloc(SIZE_INT);
 
   let pS = em._malloc(Math.min(m,n)*SIZE_DOUBLE);
-  let pU = em._malloc(1*m*SIZE_DOUBLE);
+  let pU = em._malloc(m*n*SIZE_DOUBLE);
   let pldu = em._malloc(SIZE_INT);
 
   let pVT = em._malloc(n*n*SIZE_DOUBLE);
   let pldvt = em._malloc(SIZE_INT);
-  let piwork = em._malloc(8*Math.min(m,n)*SIZE_DOUBLE);
+  let piwork = em._malloc(8*Math.min(m,n)*SIZE_INT);
   let pwork = em._malloc(1*SIZE_DOUBLE);
   let pinfo = em._malloc(SIZE_INT);
 
@@ -68,11 +68,35 @@ function dgesdd(mA:TypedArray, m:number, n:number) {
 
   em.setValue(plwork, -1, 'i32');
 
-  let a = new Float64Array(em.HEAPF64.buffer, pA, m*n);
-  a.set(mA);
+  let A = new Float64Array(em.HEAPF64.buffer, pA, m*n);
+  let U = new Float64Array(em.HEAPF64.buffer, pU, m*n);
+  let VT = new Float64Array(em.HEAPF64.buffer, pVT, n*n);
+  A.set(mA);
 
   dgesdd_wrap(pjobz, pm, pn, pA, plda, pS, pU, pldu, pVT, pldvt,
     pwork, plwork, piwork, pinfo);
+
+  let worksize = em.getValue(pwork, 'double');
+  pwork = em._malloc(worksize * SIZE_DOUBLE);
+  let WORK = new Float64Array(em.HEAPF64.buffer, pwork, worksize);
+  em.setValue(plwork,worksize,'i32');
+
+  dgesdd_wrap(pjobz, pm, pn, pA, plda, pS, pU, pldu, pVT, pldvt,
+    pwork, plwork, piwork, pinfo);
+
+  let info = em.getValue(pinfo,'i32');
+  if(info < 0) {
+    console.error('Invalid argument',-info);
+  }
+  if(info > 0) {
+    console.error('DBDSDC did not converge', info);
+  }
+  console.log(A);
+  console.log(U);
+  console.log(VT);
+  console.log(WORK);
+
+  mA.set(A);
 }
 
 /**
