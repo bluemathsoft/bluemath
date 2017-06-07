@@ -20,7 +20,7 @@
 */
 
 import {NDArray} from '../basic'
-import {linalg} from '../../src'
+import {linalg} from '..'
 
 
 /**
