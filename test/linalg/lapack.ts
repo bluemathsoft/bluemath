@@ -181,9 +181,22 @@ export default function testLAPACK() {
           [11,-3,0],
           [0,-1,3]
         ], {datatype:'f64'});
-        linalg.lapack.gesdd(A.data, 3, 3);
-        console.log(A.toString());
-        assert.ok(true);
+        A.swapOrder();
+        let U = new NDArray({shape:[3,3]});
+        let VT = new NDArray({shape:[3,3]});
+        linalg.lapack.gesdd(A.data, 3, 3,U.data,VT.data,'A');
+        U.swapOrder();
+        VT.swapOrder();
+        assert.ok(U.isEqual(new NDArray([
+          [-0.42847299, -0.81649658, 0.386968],
+          [0.90241006, -0.40824829, 0.1378021],
+          [0.04546408, 0.40824829, 0.91173809]
+        ])));
+        assert.ok(VT.isEqual(new NDArray([
+          [0.90241006, -0.42847299, 0.04546408],
+          [-0.40824829, -0.81649658, 0.40824829],
+          [0.1378021, 0.386968, 0.91173809]
+        ])));
       });
     });
 

@@ -28,6 +28,7 @@ import {
   dgesdd_wrap 
 } from './common'
 
+export type GESDD_JOBS = 'A'|'N'|'S';
 
 
 // function sgesdd(mA:TypedArray, m:number, n:number) {
@@ -37,7 +38,10 @@ import {
 /**
  * @hidden
  */
-function dgesdd(mA:TypedArray, m:number, n:number) {
+function dgesdd(
+  mA:TypedArray, m:number, n:number,
+  mU:TypedArray, mVT:TypedArray,
+  job:GESDD_JOBS) {
 
   let pjobz = em._malloc(SIZE_CHAR);
   let pm = em._malloc(SIZE_INT);
@@ -58,7 +62,7 @@ function dgesdd(mA:TypedArray, m:number, n:number) {
 
   let plwork = em._malloc(SIZE_INT);
 
-  em.setValue(pjobz,'A'.charCodeAt(0), 'i8');
+  em.setValue(pjobz,job.charCodeAt(0), 'i8');
   em.setValue(pm, m, 'i32');
   em.setValue(pn, n, 'i32');
 
@@ -78,7 +82,7 @@ function dgesdd(mA:TypedArray, m:number, n:number) {
 
   let worksize = em.getValue(pwork, 'double');
   pwork = em._malloc(worksize * SIZE_DOUBLE);
-  let WORK = new Float64Array(em.HEAPF64.buffer, pwork, worksize);
+  new Float64Array(em.HEAPF64.buffer, pwork, worksize);
   em.setValue(plwork,worksize,'i32');
 
   dgesdd_wrap(pjobz, pm, pn, pA, plda, pS, pU, pldu, pVT, pldvt,
@@ -91,20 +95,23 @@ function dgesdd(mA:TypedArray, m:number, n:number) {
   if(info > 0) {
     console.error('DBDSDC did not converge', info);
   }
-  console.log(A);
-  console.log(U);
-  console.log(VT);
-  console.log(WORK);
 
   mA.set(A);
+  mU.set(U);
+  mVT.set(VT);
 }
 
 /**
  * @hidden
  */
-export function gesdd(mA:TypedArray, m:number, n:number) {
+export function gesdd(
+  mA:TypedArray, m:number, n:number,
+  mU:TypedArray, mVT:TypedArray,
+  job:GESDD_JOBS
+)
+{
   if(mA instanceof Float64Array) {
-    return dgesdd(mA,m,n);
+    return dgesdd(mA,m,n,mU,mVT,job);
   } else {
     //return sgesdd(mA,m,n);
   }
