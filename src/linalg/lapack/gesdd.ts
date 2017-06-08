@@ -20,8 +20,8 @@
 */
 
 import {TypedArray} from '../..'
-import Module from '../../../ext/lapacklite'
-let em = Module;
+import * as lapacklite from '../../../ext/lapacklite'
+let em = lapacklite.Module;
 
 import {
   SIZE_CHAR, SIZE_INT, SIZE_DOUBLE,

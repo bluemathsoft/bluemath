@@ -21,8 +21,8 @@
 */
 
 import {TypedArray} from '../..'
-import Module from '../../../ext/lapacklite'
-let em = Module;
+import * as lapacklite from '../../../ext/lapacklite'
+let em = lapacklite.Module;
 
 import {
   SIZE_INT, SIZE_SINGLE, SIZE_DOUBLE,

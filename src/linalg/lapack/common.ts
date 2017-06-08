@@ -19,8 +19,8 @@
 
 */
 
-import Module from '../../../ext/lapacklite'
-let em = Module;
+import * as lapacklite from '../../../ext/lapacklite'
+let em = lapacklite.Module;
 
 /**
  * @hidden
