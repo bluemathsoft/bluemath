@@ -24,40 +24,52 @@ import * as lapacklite from '../../../ext/lapacklite'
 let em = lapacklite.Module;
 
 import {
-  SIZE_CHAR, SIZE_INT, SIZE_DOUBLE,
-  dgesdd_wrap 
+  SIZE_CHAR, SIZE_INT, SIZE_SINGLE, SIZE_DOUBLE,
+  sgesdd_wrap, dgesdd_wrap 
 } from './common'
 
 export type GESDD_JOBS = 'A'|'N'|'S';
+type NUMTYPE = 'f32'|'f64';
 
 
-// function sgesdd(mA:TypedArray, m:number, n:number) {
-
-// }
 
 /**
  * @hidden
  */
-function dgesdd(
+function gesdd_internal(
   mA:TypedArray, m:number, n:number,
   mU:TypedArray, mVT:TypedArray,
-  job:GESDD_JOBS) {
-
+  job:GESDD_JOBS, numtype:NUMTYPE)
+{
+  let NUMSIZE, NUMBUF, NUMDESC, fn, TYPARR;
+  if(numtype === 'f32') {
+    NUMSIZE = SIZE_SINGLE;
+    NUMBUF = em.HEAPF32.buffer;
+    NUMDESC = 'float';
+    fn = sgesdd_wrap;
+    TYPARR = Float32Array;
+  } else {
+    NUMSIZE = SIZE_DOUBLE;
+    NUMBUF = em.HEAPF64.buffer;
+    NUMDESC = 'double';
+    fn = dgesdd_wrap;
+    TYPARR = Float64Array;
+  }
   let pjobz = em._malloc(SIZE_CHAR);
   let pm = em._malloc(SIZE_INT);
   let pn = em._malloc(SIZE_INT);
 
-  let pA = em._malloc(m*n*SIZE_DOUBLE);
+  let pA = em._malloc(m*n*NUMSIZE);
   let plda = em._malloc(SIZE_INT);
 
-  let pS = em._malloc(Math.min(m,n)*SIZE_DOUBLE);
-  let pU = em._malloc(m*n*SIZE_DOUBLE);
+  let pS = em._malloc(Math.min(m,n)*NUMSIZE);
+  let pU = em._malloc(m*n*NUMSIZE);
   let pldu = em._malloc(SIZE_INT);
 
-  let pVT = em._malloc(n*n*SIZE_DOUBLE);
+  let pVT = em._malloc(n*n*NUMSIZE);
   let pldvt = em._malloc(SIZE_INT);
   let piwork = em._malloc(8*Math.min(m,n)*SIZE_INT);
-  let pwork = em._malloc(1*SIZE_DOUBLE);
+  let pwork = em._malloc(1*NUMSIZE);
   let pinfo = em._malloc(SIZE_INT);
 
   let plwork = em._malloc(SIZE_INT);
@@ -65,27 +77,25 @@ function dgesdd(
   em.setValue(pjobz,job.charCodeAt(0), 'i8');
   em.setValue(pm, m, 'i32');
   em.setValue(pn, n, 'i32');
-
   em.setValue(plda, m, 'i32');
   em.setValue(pldu, n, 'i32');
   em.setValue(pldvt, n, 'i32');
-
   em.setValue(plwork, -1, 'i32');
 
-  let A = new Float64Array(em.HEAPF64.buffer, pA, m*n);
-  let U = new Float64Array(em.HEAPF64.buffer, pU, m*n);
-  let VT = new Float64Array(em.HEAPF64.buffer, pVT, n*n);
+  let A = new TYPARR(NUMBUF, pA, m*n);
+  let U = new TYPARR(NUMBUF, pU, m*n);
+  let VT = new TYPARR(NUMBUF, pVT, n*n);
   A.set(mA);
 
-  dgesdd_wrap(pjobz, pm, pn, pA, plda, pS, pU, pldu, pVT, pldvt,
+  fn(pjobz, pm, pn, pA, plda, pS, pU, pldu, pVT, pldvt,
     pwork, plwork, piwork, pinfo);
 
-  let worksize = em.getValue(pwork, 'double');
-  pwork = em._malloc(worksize * SIZE_DOUBLE);
-  new Float64Array(em.HEAPF64.buffer, pwork, worksize);
+  let worksize = em.getValue(pwork, NUMDESC);
+  pwork = em._malloc(worksize * NUMSIZE);
+  new TYPARR(NUMBUF, pwork, worksize);
   em.setValue(plwork,worksize,'i32');
 
-  dgesdd_wrap(pjobz, pm, pn, pA, plda, pS, pU, pldu, pVT, pldvt,
+  fn(pjobz, pm, pn, pA, plda, pS, pU, pldu, pVT, pldvt,
     pwork, plwork, piwork, pinfo);
 
   let info = em.getValue(pinfo,'i32');
@@ -93,7 +103,7 @@ function dgesdd(
     console.error('Invalid argument',-info);
   }
   if(info > 0) {
-    console.error('DBDSDC did not converge', info);
+    console.error('DBDSDC did not converge',info);
   }
 
   mA.set(A);
@@ -110,9 +120,12 @@ export function gesdd(
   job:GESDD_JOBS
 )
 {
-  if(mA instanceof Float64Array) {
-    return dgesdd(mA,m,n,mU,mVT,job);
+  if(mA instanceof Float64Array ||
+    mU instanceof Float64Array ||
+    mVT instanceof Float64Array)
+  {
+    return gesdd_internal(mA,m,n,mU,mVT,job,'f64');
   } else {
-    //return sgesdd(mA,m,n);
+    return gesdd_internal(mA,m,n,mU,mVT,job,'f32');
   }
 }

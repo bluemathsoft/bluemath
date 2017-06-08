@@ -367,7 +367,8 @@ export default class NDArray {
 
   toString() {
     let precision = 4;
-    return JSON.stringify(this.toArray(), function (key, val) {
+    return JSON.stringify(this.toArray(), function (key, val) { 
+      !key; // to avoid unused variable warning
       if(val.toFixed) {
         return Number(val.toFixed(3));
       } else if(Array.isArray(val) && !Array.isArray(val[0])) {
