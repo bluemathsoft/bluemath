@@ -366,6 +366,15 @@ export default class NDArray {
   }
 
   toString() {
-    return JSON.stringify(this.toArray(),null,2);
+    let precision = 4;
+    return JSON.stringify(this.toArray(), function (key, val) {
+      if(val.toFixed) {
+        return Number(val.toFixed(3));
+      } else if(Array.isArray(val) && !Array.isArray(val[0])) {
+        return '['+val.map(v=>v.toFixed(precision)).join(',')+']';
+      } else {
+        return val;
+      }
+    },precision);
   }
 }
