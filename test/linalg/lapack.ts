@@ -187,6 +187,7 @@ export default function testLAPACK() {
         linalg.lapack.gesdd(A.data, 3, 3,U.data,VT.data,'A');
         U.swapOrder();
         VT.swapOrder();
+        // Results generated from numpy
         assert.ok(U.isEqual(new NDArray([
           [-0.42847299, -0.81649658, 0.386968],
           [0.90241006, -0.40824829, 0.1378021],
