@@ -167,34 +167,37 @@ export const dgeqrf_wrap = em.cwrap('dgeqrf_', null,
     'number','number','number'
   ]);
 
+/**
+ * @hidden
+ */
 export function defineEmVariable(
-  arg0:'i8'|'i32'|'f32'|'f64',
-  arg1?:number)
+  type:'i8'|'i32'|'f32'|'f64',
+  init?:number)
 {
   let p;
-  switch(arg0) {
+  switch(type) {
     case 'i32':
       p = em._malloc(SIZE_INT);
-      if(arg1) {
-        em.setValue(p, arg1, arg0);
+      if(init) {
+        em.setValue(p, init, type);
       }
       break;
     case 'i8':
       p = em._malloc(SIZE_CHAR);
-      if(arg1) {
-        em.setValue(p, arg1, arg0);
+      if(init) {
+        em.setValue(p, init, type);
       }
       break;
     case 'f32':
       p = em._malloc(SIZE_SINGLE);
-      if(arg1) {
-        em.setValue(p, arg1, arg0);
+      if(init) {
+        em.setValue(p, init, 'float');
       }
       break;
     case 'f64':
       p = em._malloc(SIZE_DOUBLE);
-      if(arg1) {
-        em.setValue(p, arg1, arg0);
+      if(init) {
+        em.setValue(p, init, 'double');
       }
       break;
     default:
@@ -203,6 +206,9 @@ export function defineEmVariable(
   return p;
 }
 
+/**
+ * @hidden
+ */
 export function defineEmArrayVariable(
   type:'i8'|'i32'|'f32'|'f64',
   len:number,

@@ -21,113 +21,43 @@
 */
 
 import {TypedArray} from '../../..'
-import * as lapacklite from '../../../../ext/lapacklite'
-let em = lapacklite.Module;
 
 import {
-  SIZE_CHAR, SIZE_INT, SIZE_SINGLE, SIZE_DOUBLE,
+  defineEmArrayVariable, defineEmVariable,
   sgemm_wrap, dgemm_wrap 
 } from '../common'
 
-
-/**
- * @hidden
- */
-function sgemm(
+function gemm_internal(
   mA:TypedArray, mB:TypedArray, mC:TypedArray,
   m:number, n:number, k:number,
-  alpha:number, beta:number)
+  alpha:number, beta:number, numtype:'f32'|'f64')
 {
-  let ptransa = em._malloc(SIZE_CHAR);
-  let ptransb = em._malloc(SIZE_CHAR);
+  let ptransa = defineEmVariable('i8', 'N'.charCodeAt(0));
+  let ptransb = defineEmVariable('i8', 'N'.charCodeAt(0));
 
-  let pm = em._malloc(SIZE_INT);
-  let pn = em._malloc(SIZE_INT);
-  let pk = em._malloc(SIZE_INT);
+  let pm = defineEmVariable('i32',m);
+  let pn = defineEmVariable('i32',n);
+  let pk = defineEmVariable('i32',k);
 
-  let palpha = em._malloc(SIZE_SINGLE);
-  let pbeta = em._malloc(SIZE_SINGLE);
+  let palpha = defineEmVariable(numtype, alpha);
+  let pbeta = defineEmVariable(numtype, beta);
 
-  let pA = em._malloc(m*k*SIZE_SINGLE);
-  let pB = em._malloc(k*n*SIZE_SINGLE);
-  let pC = em._malloc(m*n*SIZE_SINGLE);
+  let [pA] = defineEmArrayVariable(numtype, m*k, mA);
+  let [pB] = defineEmArrayVariable(numtype, k*n, mB);
+  let [pC,C] = defineEmArrayVariable(numtype, m*n, mC);
 
-  let plda = em._malloc(SIZE_INT);
-  let pldb = em._malloc(SIZE_INT);
-  let pldc = em._malloc(SIZE_INT);
+  let plda = defineEmVariable('i32', m);
+  let pldb = defineEmVariable('i32', k);
+  let pldc = defineEmVariable('i32', m);
 
-  em.setValue(ptransa, 'N'.charCodeAt(0), 'i8');
-  em.setValue(ptransb, 'N'.charCodeAt(0), 'i8');
-  em.setValue(pm, m, 'i32');
-  em.setValue(pn, n, 'i32');
-  em.setValue(pk, k, 'i32');
-  em.setValue(palpha, alpha, 'float');
-  em.setValue(pbeta, beta, 'float');
-  em.setValue(plda, m, 'i32');
-  em.setValue(pldb, k, 'i32');
-  em.setValue(pldc, m, 'i32');
-
-  let a = new Float32Array(em.HEAPF32.buffer, pA, m*k);
-  let b = new Float32Array(em.HEAPF32.buffer, pB, k*n);
-  let c = new Float32Array(em.HEAPF32.buffer, pC, m*n);
-
-  a.set(mA);
-  b.set(mB);
-  c.set(mC);
-
-  sgemm_wrap(ptransa, ptransb, pm, pn, pk,
-    palpha, pA, plda, pB, pldb, pbeta, pC, pldc);
-  mC.set(c);
-}
-
-/**
- * @hidden
- */
-function dgemm(
-  mA:TypedArray, mB:TypedArray, mC:TypedArray,
-  m:number, n:number, k:number,
-  alpha:number, beta:number)
-{
-  let ptransa = em._malloc(SIZE_CHAR);
-  let ptransb = em._malloc(SIZE_CHAR);
-
-  let pm = em._malloc(SIZE_INT);
-  let pn = em._malloc(SIZE_INT);
-  let pk = em._malloc(SIZE_INT);
-
-  let palpha = em._malloc(SIZE_DOUBLE);
-  let pbeta = em._malloc(SIZE_DOUBLE);
-
-  let pA = em._malloc(m*k*SIZE_DOUBLE);
-  let pB = em._malloc(k*n*SIZE_DOUBLE);
-  let pC = em._malloc(m*n*SIZE_DOUBLE);
-
-  let plda = em._malloc(SIZE_INT);
-  let pldb = em._malloc(SIZE_INT);
-  let pldc = em._malloc(SIZE_INT);
-
-  em.setValue(ptransa, 'N'.charCodeAt(0), 'i8');
-  em.setValue(ptransb, 'N'.charCodeAt(0), 'i8');
-  em.setValue(pm, m, 'i32');
-  em.setValue(pn, n, 'i32');
-  em.setValue(pk, k, 'i32');
-  em.setValue(palpha, alpha, 'double');
-  em.setValue(pbeta, beta, 'double');
-  em.setValue(plda, m, 'i32');
-  em.setValue(pldb, k, 'i32');
-  em.setValue(pldc, m, 'i32');
-
-  let a = new Float64Array(em.HEAPF64.buffer, pA, m*k);
-  let b = new Float64Array(em.HEAPF64.buffer, pB, k*n);
-  let c = new Float64Array(em.HEAPF64.buffer, pC, m*n);
-
-  a.set(mA);
-  b.set(mB);
-  c.set(mC);
-
-  dgemm_wrap(ptransa, ptransb, pm, pn, pk,
-    palpha, pA, plda, pB, pldb, pbeta, pC, pldc);
-  mC.set(c);
+  if(numtype === 'f32') {
+    sgemm_wrap(ptransa, ptransb, pm, pn, pk,
+      palpha, pA, plda, pB, pldb, pbeta, pC, pldc);
+  } else {
+    dgemm_wrap(ptransa, ptransb, pm, pn, pk,
+      palpha, pA, plda, pB, pldb, pbeta, pC, pldc);
+  }
+  mC.set(C);
 }
 
 /**
@@ -142,9 +72,8 @@ export function gemm(
     mB instanceof Float64Array ||
     mC instanceof Float64Array)
   {
-    dgemm(mA,mB,mC,m,n,k,alpha,beta);
+    gemm_internal(mA,mB,mC,m,n,k,alpha,beta,'f64');
   } else {
-    sgemm(mA,mB,mC,m,n,k,alpha,beta);
+    gemm_internal(mA,mB,mC,m,n,k,alpha,beta,'f32');
   }
-
 }
