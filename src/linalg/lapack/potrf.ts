@@ -20,54 +20,26 @@
 */
 
 import {TypedArray} from '../..'
-import * as lapacklite from '../../../ext/lapacklite'
-let em = lapacklite.Module;
 
 import {
-  SIZE_CHAR, SIZE_INT, SIZE_SINGLE, SIZE_DOUBLE,
+  defineEmVariable, defineEmArrayVariable,
   spotrf_wrap, dpotrf_wrap
 } from './common'
 
-
 /**
  * @hidden
  */
-function spotrf(mA:TypedArray, n:number) {
-  let puplo = em._malloc(SIZE_CHAR);
-  let pn = em._malloc(SIZE_INT);
-  let pA = em._malloc(n*n*SIZE_SINGLE)
-  let plda = em._malloc(SIZE_INT);
-  let pinfo = em._malloc(SIZE_INT);
+function potrf_internal(
+  mA:TypedArray, n:number, numtype:'f32'|'f64')
+{
+  let puplo = defineEmVariable('i8', 'L'.charCodeAt(0));
+  let pn = defineEmVariable('i32', n);
+  let plda = defineEmVariable('i32',n);
+  let pinfo = defineEmVariable('i32');
+  let [pA,A] = defineEmArrayVariable(numtype, n*n, mA);
 
-  em.setValue(puplo, 'L'.charCodeAt(0), 'i8');
-  em.setValue(pn, n, 'i32');
-  em.setValue(plda, n, 'i32');
-
-  let A = new Float32Array(em.HEAPF32.buffer, pA, n*n);
-  A.set(mA);
-
-  spotrf_wrap(puplo, pn, pA, plda, pinfo);
-  mA.set(A);
-}
-
-/**
- * @hidden
- */
-function dpotrf(mA:TypedArray, n:number) {
-  let puplo = em._malloc(SIZE_CHAR);
-  let pn = em._malloc(SIZE_INT);
-  let pA = em._malloc(n*n*SIZE_DOUBLE)
-  let plda = em._malloc(SIZE_INT);
-  let pinfo = em._malloc(SIZE_INT);
-
-  em.setValue(puplo, 'L'.charCodeAt(0), 'i8');
-  em.setValue(pn, n, 'i32');
-  em.setValue(plda, n, 'i32');
-
-  let A = new Float64Array(em.HEAPF64.buffer, pA, n*n);
-  A.set(mA);
-
-  dpotrf_wrap(puplo, pn, pA, plda, pinfo);
+  let fn = numtype === 'f32' ? spotrf_wrap : dpotrf_wrap;
+  fn(puplo, pn, pA, plda, pinfo);
   mA.set(A);
 }
 
@@ -76,8 +48,8 @@ function dpotrf(mA:TypedArray, n:number) {
  */
 export function potrf(mA:TypedArray, n:number) {
   if(mA instanceof Float64Array) {
-    return dpotrf(mA,n);
+    return potrf_internal(mA,n,'f64');
   } else {
-    return spotrf(mA,n);
+    return potrf_internal(mA,n,'f32');
   }
 }
