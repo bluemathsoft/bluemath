@@ -21,89 +21,37 @@
 */
 
 import {TypedArray} from '../..'
-import * as lapacklite from '../../../ext/lapacklite'
-let em = lapacklite.Module;
 
 import {
-  SIZE_INT, SIZE_SINGLE, SIZE_DOUBLE,
+  defineEmArrayVariable, defineEmVariable,
   sgesv_wrap, dgesv_wrap 
 } from './common'
 
-/**
- * @hidden
- */
-function sgesv(
+function gesv_internal(
   mA:TypedArray,
   mB:TypedArray,
   n:number,
-  nrhs:number)
+  nrhs:number,
+  numtype:'f32'|'f64'
+)
 {
-  let pn = em._malloc(SIZE_INT);
-  let pnrhs = em._malloc(SIZE_INT);
-  let pinfo = em._malloc(SIZE_INT);
-  let plda = em._malloc(SIZE_INT);
-  let pldb = em._malloc(SIZE_INT);
+  let pn = defineEmVariable('i32',n);
+  let pnrhs = defineEmVariable('i32', nrhs);
+  let pinfo = defineEmVariable('i32');
+  let plda = defineEmVariable('i32',n);
+  let pldb = defineEmVariable('i32',n);
 
-  let pA = em._malloc(n*n*SIZE_SINGLE);
-  let pB = em._malloc(n*nrhs*SIZE_SINGLE);
-  let pIPIV = em._malloc(n*SIZE_INT);
+  let [pA,A] = defineEmArrayVariable(numtype, n*n, mA);
+  let [pB,B] = defineEmArrayVariable(numtype, n*nrhs, mB);
+  let [pIPIV,IPIV] = defineEmArrayVariable('i32', n);
 
-  em.setValue(pn, n, 'i32');
-  em.setValue(pnrhs, nrhs, 'i32');
-  em.setValue(plda, n, 'i32');
-  em.setValue(pldb, n, 'i32');
-
-  let A = new Float32Array(em.HEAPF32.buffer, pA, n*n);
-  let B = new Float32Array(em.HEAPF32.buffer, pB, n*nrhs);
-  let IPIV = new Int32Array(em.HEAP32.buffer, pIPIV, n);
-
-  A.set(mA);
-  B.set(mB);
-
-  sgesv_wrap(pn, pnrhs, pA, plda, pIPIV, pB, pldb, pinfo);
-
+  if(numtype === 'f32') {
+    sgesv_wrap(pn, pnrhs, pA, plda, pIPIV, pB, pldb, pinfo);
+  } else {
+    dgesv_wrap(pn, pnrhs, pA, plda, pIPIV, pB, pldb, pinfo);
+  }
   mA.set(A);
   mB.set(B);
-
-  return IPIV;
-}
-
-/**
- * @hidden
- */
-function dgesv(
-  mA:TypedArray,
-  mB:TypedArray,
-  n:number,
-  nrhs:number)
-{
-  let pn = em._malloc(SIZE_INT);
-  let pnrhs = em._malloc(SIZE_INT);
-  let pinfo = em._malloc(SIZE_INT);
-  let plda = em._malloc(SIZE_INT);
-  let pldb = em._malloc(SIZE_INT);
-
-  let pA = em._malloc(n*n*SIZE_DOUBLE);
-  let pB = em._malloc(n*nrhs*SIZE_DOUBLE);
-  let pIPIV = em._malloc(n*SIZE_INT);
-
-  em.setValue(pn, n, 'i32');
-  em.setValue(pnrhs, nrhs, 'i32');
-  em.setValue(plda, n, 'i32');
-  em.setValue(pldb, n, 'i32');
-
-  let A = new Float64Array(em.HEAPF64.buffer, pA, n*n);
-  let B = new Float64Array(em.HEAPF64.buffer, pB, n*nrhs);
-  let IPIV = new Int32Array(em.HEAP32.buffer, pIPIV, n);
-
-  A.set(mA);
-  B.set(mB);
-
-  dgesv_wrap(pn, pnrhs, pA, plda, pIPIV, pB, pldb, pinfo);
-
-  mA.set(A);
-  mB.set(B);
-
   return IPIV;
 }
 
@@ -117,8 +65,8 @@ export function gesv(
   nrhs:number)
 {
   if(mA instanceof Float64Array || mB instanceof Float64Array) {
-    return dgesv(mA,mB,n,nrhs);
+    return gesv_internal(mA,mB,n,nrhs,'f64');
   } else {
-    return sgesv(mA,mB,n,nrhs);
+    return gesv_internal(mA,mB,n,nrhs,'f32');
   }
 }

@@ -218,9 +218,19 @@ export function defineEmArrayVariable(
   let p:number, arr:TypedArray;
   switch(type) {
     case 'i8':
-      throw new Error('TODO');
+      p = em._malloc(len * SIZE_CHAR);
+      arr = new Int8Array(em.HEAP8.buffer, p, len);
+      if(init) {
+        arr.set(init);
+      }
+      return [p,arr];
     case 'i32':
-      throw new Error('TODO');
+      p = em._malloc(len * SIZE_INT);
+      arr = new Int32Array(em.HEAP32.buffer, p, len);
+      if(init) {
+        arr.set(init);
+      }
+      return [p,arr];
     case 'f32':
       p = em._malloc(len * SIZE_SINGLE);
       arr = new Float32Array(em.HEAPF32.buffer, p, len);
