@@ -28,7 +28,6 @@ import {
   sgesdd_wrap, dgesdd_wrap 
 } from './common'
 
-export type GESDD_JOBS = 'A'|'N'|'S';
 type NUMTYPE = 'f32'|'f64';
 
 
@@ -39,7 +38,7 @@ type NUMTYPE = 'f32'|'f64';
 function gesdd_internal(
   mA:TypedArray, m:number, n:number,
   mU:TypedArray, mVT:TypedArray,
-  job:GESDD_JOBS, numtype:NUMTYPE)
+  job:'A'|'N'|'S', numtype:NUMTYPE)
 {
   let NUMSIZE, NUMBUF, NUMDESC, fn, TYPARR;
   if(numtype === 'f32') {
@@ -117,7 +116,7 @@ function gesdd_internal(
 export function gesdd(
   mA:TypedArray, m:number, n:number,
   mU:TypedArray, mVT:TypedArray,
-  job:GESDD_JOBS
+  job:'A'|'N'|'S'
 )
 {
   if(mA instanceof Float64Array ||

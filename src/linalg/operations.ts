@@ -20,8 +20,7 @@
 */
 
 import {NDArray} from '../basic'
-import {linalg} from '..'
-
+import * as lapack from './lapack'
 
 /**
  * Matrix multiplication
@@ -325,7 +324,7 @@ export function solve(A:NDArray, B:NDArray) {
     nrhs = 1;
   }
 
-  linalg.lapack.gesv(A.data, B.data, A.shape[0], nrhs);
+  lapack.gesv(A.data, B.data, A.shape[0], nrhs);
   A.swapOrder();
   if(xswapped) {
     // x.swapOrder();
@@ -383,5 +382,35 @@ export function outer(A:NDArray, B:NDArray) {
 
 export function cholesky(A:NDArray) {
   // TODO : do checks on A before calling lapack
-  linalg.lapack.potrf(A.data,A.shape[0]);
+  lapack.potrf(A.data,A.shape[0]);
+}
+
+export function svd(A:NDArray, full_matrices=true, compute_uv=true) {
+  if(A.shape.length !== 2) {
+    throw new Error('A is not a matrix');
+  }
+  let job:'A'|'N'|'S';
+  let [m,n] = A.shape;
+  let U = new NDArray([]);
+  let VT = new NDArray([]);
+  if(compute_uv) {
+    job = 'N';
+  } else {
+    if(full_matrices) {
+      job = 'A';
+      U.reshape([m,m]);
+      VT.reshape([n,n]);
+    } else {
+      job = 'S';
+      if(m <= n) {
+        U.reshape([m,m]);
+        VT.reshape([m,n]);
+      } else {
+        U.reshape([m,n]);
+        VT.reshape([n,n]);
+      }
+    }
+  }
+
+  lapack.gesdd(A.data,m,n,U.data,VT.data,job);
 }
