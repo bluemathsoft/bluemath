@@ -20,57 +20,30 @@
 */
 
 import {TypedArray} from '../../..'
-import * as lapacklite from '../../../../ext/lapacklite'
-let em = lapacklite.Module;
 
 import {
-  SIZE_INT, SIZE_SINGLE, SIZE_DOUBLE,
+  defineEmVariable, defineEmArrayVariable,
   sdot_wrap, ddot_wrap 
 } from '../common'
 
 /**
  * @hidden
  */
-function sdot(vx:Float32Array, vy:Float32Array) {
-  let n = vx.length,
-    pn = em._malloc(SIZE_INT),
-    psx = em._malloc(n * SIZE_SINGLE),
-    pincx = em._malloc(SIZE_INT),
-    psy = em._malloc(n * SIZE_SINGLE),
-    pincy = em._malloc(SIZE_INT),
-    sx = new Float32Array(em.HEAPF32.buffer, psx, n),
-    sy = new Float32Array(em.HEAPF32.buffer, psy, n);
+function dot_internal(vx:TypedArray, vy:TypedArray, ntype:'f32'|'f64')
+{
+  let n = vx.length;
+  let pn = defineEmVariable('i32', n);
+  let pincx = defineEmVariable('i32',1);
+  let pincy = defineEmVariable('i32',1);
 
-  em.setValue(pn, n, 'i32');
-  em.setValue(pincx, 1, 'i32');
-  em.setValue(pincy, 1, 'i32');
+  let [px] = defineEmArrayVariable(ntype,n,vx);
+  let [py] = defineEmArrayVariable(ntype,n,vy);
 
-  sx.set(vx);
-  sy.set(vy);
-
-  return sdot_wrap(pn, psx, pincx, psy, pincy);
-}
-
-/**
- * @hidden
- */
-function ddot(vx:Float64Array, vy:Float64Array) {
-  let n = vx.length,
-    pn = em._malloc(SIZE_INT),
-    pdx = em._malloc(n * SIZE_DOUBLE),
-    pincx = em._malloc(SIZE_INT),
-    pdy = em._malloc(n * SIZE_DOUBLE),
-    pincy = em._malloc(SIZE_INT),
-    dx = new Float64Array(em.HEAPF64.buffer, pdx, n),
-    dy = new Float64Array(em.HEAPF64.buffer, pdy, n);
-
-  em.setValue(pn, n, 'i32');
-  em.setValue(pincx, 1, 'i32');
-  em.setValue(pincy, 1, 'i32');
-  dx.set(vx);
-  dy.set(vy);
-
-  return ddot_wrap(pn, pdx, pincx, pdy, pincy);
+  if(ntype === 'f32') {
+    return sdot_wrap(pn, px, pincx, py, pincy);
+  } else {
+    return ddot_wrap(pn, px, pincx, py, pincy);
+  }
 }
 
 /**
@@ -81,8 +54,8 @@ export function dot(vx:TypedArray, vy:TypedArray) {
     throw new Error('Input vectors of different size');
   }
   if(vx instanceof Float64Array || vy instanceof Float64Array) {
-    return ddot(vx,vy);
+    return dot_internal(vx,vy,'f64');
   } else {
-    return sdot(vx,vy);
+    return dot_internal(vx,vy,'f32');
   }
 }

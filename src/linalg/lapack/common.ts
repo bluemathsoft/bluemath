@@ -22,6 +22,8 @@
 import * as lapacklite from '../../../ext/lapacklite'
 let em = lapacklite.Module;
 
+import {TypedArray} from '../..'
+
 /**
  * @hidden
  */
@@ -146,3 +148,88 @@ export const sgesdd_wrap = em.cwrap('sgesdd_', null,
     'number','number','number','number','number',
     'number','number','number','number'
   ]);
+
+/**
+ * @hidden
+ */
+export const sgeqrf_wrap = em.cwrap('sgeqrf_', null,
+  [
+    'number','number','number','number','number',
+    'number','number','number'
+  ]);
+
+/**
+ * @hidden
+ */
+export const dgeqrf_wrap = em.cwrap('dgeqrf_', null,
+  [
+    'number','number','number','number','number',
+    'number','number','number'
+  ]);
+
+export function defineEmVariable(
+  arg0:'i8'|'i32'|'f32'|'f64',
+  arg1?:number)
+{
+  let p;
+  switch(arg0) {
+    case 'i32':
+      p = em._malloc(SIZE_INT);
+      if(arg1) {
+        em.setValue(p, arg1, arg0);
+      }
+      break;
+    case 'i8':
+      p = em._malloc(SIZE_CHAR);
+      if(arg1) {
+        em.setValue(p, arg1, arg0);
+      }
+      break;
+    case 'f32':
+      p = em._malloc(SIZE_SINGLE);
+      if(arg1) {
+        em.setValue(p, arg1, arg0);
+      }
+      break;
+    case 'f64':
+      p = em._malloc(SIZE_DOUBLE);
+      if(arg1) {
+        em.setValue(p, arg1, arg0);
+      }
+      break;
+    default:
+      throw new Error('Unhandled variable type');
+  }
+  return p;
+}
+
+export function defineEmArrayVariable(
+  type:'i8'|'i32'|'f32'|'f64',
+  len:number,
+  init?:TypedArray
+) : [number,TypedArray]
+{
+  let p:number, arr:TypedArray;
+  switch(type) {
+    case 'i8':
+      throw new Error('TODO');
+    case 'i32':
+      throw new Error('TODO');
+    case 'f32':
+      p = em._malloc(len * SIZE_SINGLE);
+      arr = new Float32Array(em.HEAPF32.buffer, p, len);
+      if(init) {
+        arr.set(init);
+      }
+      return [p,arr];
+    case 'f64':
+      p = em._malloc(len * SIZE_DOUBLE);
+      arr = new Float64Array(em.HEAPF64.buffer, p, len);
+      if(init) {
+        arr.set(init);
+      }
+      return [p,arr];
+    default:
+      throw new Error('Unhandled type');
+  }
+}
