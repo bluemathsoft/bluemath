@@ -391,26 +391,45 @@ export function svd(A:NDArray, full_matrices=true, compute_uv=true) {
   }
   let job:'A'|'N'|'S';
   let [m,n] = A.shape;
-  let U = new NDArray([]);
-  let VT = new NDArray([]);
+  let minmn = Math.min(m,n);
   if(compute_uv) {
     job = 'N';
   } else {
     if(full_matrices) {
       job = 'A';
-      U.reshape([m,m]);
-      VT.reshape([n,n]);
     } else {
       job = 'S';
-      if(m <= n) {
-        U.reshape([m,m]);
-        VT.reshape([m,n]);
-      } else {
-        U.reshape([m,n]);
-        VT.reshape([n,n]);
-      }
     }
   }
 
+  let urows=0,ucols=0,vtrows=0,vtcols=0;
+
+  if(job === 'N') {
+    urows = 0;
+    ucols = 0;
+    vtrows = 0;
+    vtcols = 0;
+  } else if(job === 'A') {
+    urows = m;
+    vtcols = n;
+    ucols = m;
+    vtrows = n;
+  } else if(job === 'S') {
+    urows = minmn;
+    vtcols = minmn;
+    ucols = m;
+    vtrows = n;
+  }
+
+  let U = new NDArray({shape:[urows,ucols]});
+  let VT = new NDArray({shape:[vtrows,vtcols]});
+
+  A.swapOrder();
+
   lapack.gesdd(A.data,m,n,U.data,VT.data,job);
+
+  U.swapOrder();
+  VT.swapOrder();
+
+  return [U,null,VT];
 }

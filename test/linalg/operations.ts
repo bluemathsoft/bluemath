@@ -176,6 +176,33 @@ export default function testOperations() {
       });
     });
 
+    QUnit.module('SVD', () => {
+
+      QUnit.test('svd 1', assert => {
+        let A = new NDArray([
+          [-3,6,-1],
+          [11,-3,0],
+          [0,-1,3]
+        ], {datatype:'f32'});
+
+        let [U,S,VT] = linalg.svd(A,true,false);
+
+        // Results generated from numpy
+        assert.ok(U.isEqual(new NDArray([
+          [-0.42847299, -0.81649658, 0.386968],
+          [0.90241006, -0.40824829, 0.1378021],
+          [0.04546408, 0.40824829, 0.91173809]
+        ])));
+        assert.ok(VT.isEqual(new NDArray([
+          [0.90241006, -0.42847299, 0.04546408],
+          [-0.40824829, -0.81649658, 0.40824829],
+          [0.1378021, 0.386968, 0.91173809]
+        ])));
+
+      });
+
+    });
+
     /*
     QUnit.module("Permutation", () => {
       QUnit.test("Vector", assert => {
