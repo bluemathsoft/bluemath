@@ -423,13 +423,14 @@ export function svd(A:NDArray, full_matrices=true, compute_uv=true) {
 
   let U = new NDArray({shape:[urows,ucols]});
   let VT = new NDArray({shape:[vtrows,vtcols]});
+  let S = new NDArray({shape:[minmn]});
 
   A.swapOrder();
 
-  lapack.gesdd(A.data,m,n,U.data,VT.data,job);
+  lapack.gesdd(A.data,m,n,U.data,S.data,VT.data,job);
 
   U.swapOrder();
   VT.swapOrder();
 
-  return [U,null,VT];
+  return [U,S,VT];
 }

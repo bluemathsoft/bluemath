@@ -33,7 +33,7 @@ import {
  */
 function gesdd_internal(
   mA:TypedArray, m:number, n:number,
-  mU:TypedArray, mVT:TypedArray,
+  mU:TypedArray, mS:TypedArray, mVT:TypedArray,
   job:'A'|'N'|'S', numtype:'f32'|'f64')
 {
   let fn = (numtype === 'f32') ? sgesdd_wrap : dgesdd_wrap;
@@ -47,7 +47,7 @@ function gesdd_internal(
   let plwork = defineEmVariable('i32',-1);
 
   let [pA,A] = defineEmArrayVariable(numtype, m*n, mA);
-  let [pS] = defineEmArrayVariable(numtype, Math.min(m,n)); 
+  let [pS,S] = defineEmArrayVariable(numtype, Math.min(m,n)); 
   let [pU,U] = defineEmArrayVariable(numtype, m*n);
   let [pVT,VT] = defineEmArrayVariable(numtype, n*n);
   let [piwork] = defineEmArrayVariable('i32', 8*Math.min(m,n));
@@ -75,6 +75,7 @@ function gesdd_internal(
   mA.set(A);
   mU.set(U);
   mVT.set(VT);
+  mS.set(S);
 }
 
 /**
@@ -82,7 +83,7 @@ function gesdd_internal(
  */
 export function gesdd(
   mA:TypedArray, m:number, n:number,
-  mU:TypedArray, mVT:TypedArray,
+  mU:TypedArray, mS:TypedArray, mVT:TypedArray,
   job:'A'|'N'|'S'
 )
 {
@@ -90,8 +91,8 @@ export function gesdd(
     mU instanceof Float64Array ||
     mVT instanceof Float64Array)
   {
-    return gesdd_internal(mA,m,n,mU,mVT,job,'f64');
+    return gesdd_internal(mA,m,n,mU,mS,mVT,job,'f64');
   } else {
-    return gesdd_internal(mA,m,n,mU,mVT,job,'f32');
+    return gesdd_internal(mA,m,n,mU,mS,mVT,job,'f32');
   }
 }

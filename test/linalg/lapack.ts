@@ -184,7 +184,8 @@ export default function testLAPACK() {
         A.swapOrder();
         let U = new NDArray({shape:[3,3]});
         let VT = new NDArray({shape:[3,3]});
-        linalg.lapack.gesdd(A.data, 3, 3,U.data,VT.data,'A');
+        let S = new NDArray({shape:[3]});
+        linalg.lapack.gesdd(A.data, 3, 3,U.data,S.data,VT.data,'A');
         U.swapOrder();
         VT.swapOrder();
         // Results generated from numpy
@@ -192,6 +193,9 @@ export default function testLAPACK() {
           [-0.42847299, -0.81649658, 0.386968],
           [0.90241006, -0.40824829, 0.1378021],
           [0.04546408, 0.40824829, 0.91173809]
+        ])));
+        assert.ok(S.isEqual(new NDArray([
+          12.4244289, 5.0, 2.5755711
         ])));
         assert.ok(VT.isEqual(new NDArray([
           [0.90241006, -0.42847299, 0.04546408],
@@ -208,7 +212,8 @@ export default function testLAPACK() {
         A.swapOrder();
         let U = new NDArray({shape:[3,3]});
         let VT = new NDArray({shape:[3,3]});
-        linalg.lapack.gesdd(A.data, 3, 3,U.data,VT.data,'A');
+        let S = new NDArray({shape:[3]});
+        linalg.lapack.gesdd(A.data, 3, 3,U.data,S.data,VT.data,'A');
         U.swapOrder();
         VT.swapOrder();
         // Results generated from numpy
@@ -216,6 +221,9 @@ export default function testLAPACK() {
           [-0.42847299, -0.81649658, 0.386968],
           [0.90241006, -0.40824829, 0.1378021],
           [0.04546408, 0.40824829, 0.91173809]
+        ])));
+        assert.ok(S.isEqual(new NDArray([
+          12.4244289, 5.0, 2.5755711
         ])));
         assert.ok(VT.isEqual(new NDArray([
           [0.90241006, -0.42847299, 0.04546408],
