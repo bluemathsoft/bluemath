@@ -393,13 +393,13 @@ export function svd(A:NDArray, full_matrices=true, compute_uv=true) {
   let [m,n] = A.shape;
   let minmn = Math.min(m,n);
   if(compute_uv) {
-    job = 'N';
-  } else {
     if(full_matrices) {
       job = 'A';
     } else {
       job = 'S';
     }
+  } else {
+    job = 'N';
   }
 
   let urows=0,ucols=0,vtrows=0,vtcols=0;
@@ -432,5 +432,9 @@ export function svd(A:NDArray, full_matrices=true, compute_uv=true) {
   U.swapOrder();
   VT.swapOrder();
 
-  return [U,S,VT];
+  if(job === 'N') {
+    return [S];
+  } else {
+    return [U,S,VT];
+  }
 }

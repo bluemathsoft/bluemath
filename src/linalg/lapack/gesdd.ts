@@ -73,9 +73,11 @@ function gesdd_internal(
   }
 
   mA.set(A);
-  mU.set(U);
-  mVT.set(VT);
   mS.set(S);
+  if(job !== 'N') {
+    mU.set(U);
+    mVT.set(VT);
+  }
 }
 
 /**
