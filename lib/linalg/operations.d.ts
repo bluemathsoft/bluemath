@@ -85,5 +85,26 @@ export declare function solve(A: NDArray, B: NDArray): void;
  * @param B 1D Vector
  */
 export declare function inner(A: NDArray, B: NDArray): number;
+/**
+ * Compute outer product of two vectors
+ * @param A Vector of shape [m] or [m,1]
+ * @param B Vector of shape [n] or [1,n]
+ * @returns NDArray Matrix of dimension [m,n]
+ */
 export declare function outer(A: NDArray, B: NDArray): NDArray;
+/**
+ * @hidden
+ */
 export declare function cholesky(A: NDArray): void;
+/**
+ * Singular Value Decomposition
+ * Factors the given matrix A, into U,S,VT such that
+ * A = U * diag(S) * VT
+ * U and VT are Unitary matrices, S is 1D array of singular values of A
+ * @param A Matrix to decompose Shape (m,n)
+ * @param full_matrices If true, U and VT have shapes (m,m) and (n,n) resp.
+ *  Otherwise the shapes are (m,k) and (k,n), resp. where k = min(m,n)
+ * @param compute_uv Whether or not to compute U,VT in addition to S
+ * @return [NDArray] [U,S,VT] if compute_uv = true, [S] otherwise
+ */
+export declare function svd(A: NDArray, full_matrices?: boolean, compute_uv?: boolean): NDArray[];

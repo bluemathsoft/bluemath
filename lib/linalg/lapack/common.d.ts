@@ -1,3 +1,4 @@
+import { TypedArray } from '../..';
 /**
  * @hidden
  */
@@ -62,3 +63,19 @@ export declare const dgesdd_wrap: any;
  * @hidden
  */
 export declare const sgesdd_wrap: any;
+/**
+ * @hidden
+ */
+export declare const sgeqrf_wrap: any;
+/**
+ * @hidden
+ */
+export declare const dgeqrf_wrap: any;
+/**
+ * @hidden
+ */
+export declare function defineEmVariable(type: 'i8' | 'i32' | 'f32' | 'f64', init?: number): number;
+/**
+ * @hidden
+ */
+export declare function defineEmArrayVariable(type: 'i8' | 'i32' | 'f32' | 'f64', len: number, init?: TypedArray): [number, TypedArray];
