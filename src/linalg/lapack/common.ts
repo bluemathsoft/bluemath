@@ -170,6 +170,26 @@ export const dgeqrf_wrap = em.cwrap('dgeqrf_', null,
 /**
  * @hidden
  */
+export const dgelsd_wrap = em.cwrap('dgelsd_', null,
+  [
+    'number','number','number','number','number',
+    'number','number','number','number','number',
+    'number','number','number','number'
+  ]);
+
+/**
+ * @hidden
+ */
+export const sgelsd_wrap = em.cwrap('sgelsd_', null,
+  [
+    'number','number','number','number','number',
+    'number','number','number','number','number',
+    'number','number','number','number'
+  ]);
+
+/**
+ * @hidden
+ */
 export function defineEmVariable(
   type:'i8'|'i32'|'f32'|'f64',
   init?:number)
