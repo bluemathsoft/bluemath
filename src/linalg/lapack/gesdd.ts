@@ -41,8 +41,8 @@ function gesdd_internal(
   let pjobz = defineEmVariable('i8', job.charCodeAt(0));
   let pm = defineEmVariable('i32',m);
   let pn = defineEmVariable('i32',n);
-  let plda = defineEmVariable('i32',m);
-  let pldu = defineEmVariable('i32',n);
+  let plda = defineEmVariable('i32',Math.max(m,1));
+  let pldu = defineEmVariable('i32',Math.max(m,1));
   let pldvt = defineEmVariable('i32',n);
   let plwork = defineEmVariable('i32',-1);
 
