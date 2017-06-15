@@ -121,6 +121,14 @@ export function norm(A:NDArray, p?:number|'fro') {
         min = Math.min(min, Math.abs(A.get(i)));
       }
       return min;
+    } else if(p === 0) {
+      let nonzerocount = 0;
+      for(let i=0; i<A.shape[0]; i++) {
+        if(A.get(i) !== 0) {
+          nonzerocount++;
+        }
+      }
+      return nonzerocount;
     } else if(p >= 1) {
 
       let sum = 0;

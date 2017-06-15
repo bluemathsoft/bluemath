@@ -138,6 +138,10 @@ export default function testOperations() {
 
     QUnit.module('norm', () => {
       QUnit.module('Vector', () => {
+        QUnit.test('0-norm', assert => {
+          let A = new NDArray([0,3,0,5]);
+          assert.equal(linalg.norm(A,0), 2);
+        });
         QUnit.test('1-norm', assert => {
           let A = new NDArray([2,3,4,5]);
           assert.equal(linalg.norm(A,1), 14);
