@@ -354,13 +354,16 @@ export default class NDArray {
         'swapOrder is not defined for ndarrays other than dim 2');
     }
 
-    for(let i=0; i<this.shape[0]; i++) {
-      for(let j=0; j<this.shape[1]; j++) {
-        if(i > j) {
-          let tmp = this.get(i,j);
-          this.set(i,j,this.get(j,i));
-          this.set(j,i,tmp);
-        }
+    let clone = this.clone();
+
+    let I = this.shape[0];
+    let J = this.shape[1];
+
+    this.reshape([J,I]);
+
+    for(let i=0; i<J; i++) {
+      for(let j=0; j<I; j++) {
+        this.set(i,j, clone.get(j,i));
       }
     }
   }
