@@ -179,7 +179,7 @@ export default function testOperations() {
     QUnit.module('SVD', () => {
 
       QUnit.test(
-        'svd 3x3 - full_matrices:true, complete_uv=true', assert => {
+        'svd 3x3 - full_matrices=true, complete_uv=true', assert => {
         let A = new NDArray([
           [-3,6,-1],
           [11,-3,0],
@@ -202,10 +202,10 @@ export default function testOperations() {
           [-0.40824829, -0.81649658, 0.40824829],
           [0.1378021, 0.386968, 0.91173809]
         ])));
-
       });
+
       QUnit.test(
-        'svd 3x3 - full_matrices:false, complete_uv=false', assert => {
+        'svd 3x3 - full_matrices=false, complete_uv=false', assert => {
         let A = new NDArray([
           [-3,6,-1],
           [11,-3,0],
@@ -216,7 +216,20 @@ export default function testOperations() {
         assert.ok(S.isEqual(new NDArray([
           12.4244289, 5.0, 2.5755711
         ])));
+      });
 
+      QUnit.test(
+        'svd 4x3 - full_matrices=false, complete_uv=false', assert => {
+        let A = new NDArray([
+          [-3,6,-1],
+          [11,-3,0],
+          [0,-1,3],
+          [4,4,4]
+        ], {datatype:'f32'});
+        let [S] = linalg.svd(A,true,false);
+        assert.ok(S.isEqual(new NDArray([
+          12.66786356, 7.40286577, 4.32698638
+        ])));
       });
 
     });
