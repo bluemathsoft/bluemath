@@ -25,38 +25,61 @@ let em = lapacklite.Module;
 
 import {
   defineEmVariable, defineEmArrayVariable,
-  sgelsd_wrap, dgelsd_wrap 
+  dgelsd_wrap 
 } from './common'
 
 function gelsd_internal(
-  mA:TypedArray, m:number, n:number, nrhs:number,
-  mB:TypedArray, mS:TypedArray, numtype:'f32'|'f64'
+  mA:TypedArray, m:number, n:number, nrhs:number, rcond:number,
+  mB:TypedArray, mS:TypedArray
 )
 {
-  let fn = numtype === 'f32' ? sgelsd_wrap : dgelsd_wrap;
+  let fn = dgelsd_wrap;
 
   let rank;
+  let lda = Math.max(1,m);
+  let ldb = Math.max(1,m,n);
+  let nlvl = Math.max(0,Math.round(Math.log(Math.min(m,n)/2.))+1)
+  let iworksize = 3*Math.min(m,n)*nlvl + 11*Math.min(m,n);
 
   let pm = defineEmVariable('i32',m);
   let pn = defineEmVariable('i32',n);
   let pnrhs = defineEmVariable('i32',nrhs);
-  let plda = defineEmVariable('i32',Math.max(1,m));
-  let pldb = defineEmVariable('i32',Math.max(1,m,n));
+  let plda = defineEmVariable('i32',lda);
+  let pldb = defineEmVariable('i32',ldb);
   let prank = defineEmVariable('i32',rank);
   let plwork = defineEmVariable('i32',-1);
+  let prcond = defineEmVariable('f64', rcond);
 
-  let [pwork] = defineEmArrayVariable(numtype,1);
+  console.assert(mB.length === ldb*nrhs);
+
+  let [pA,A] = defineEmArrayVariable('f64', m*n, mA);
+  let [pB,B] = defineEmArrayVariable('f64', ldb*nrhs, mB);
+  let [pS,S] = defineEmArrayVariable('f64', Math.min(m,n));
+  let [piwork] = defineEmArrayVariable('i32',iworksize);
+
+  let [pwork] = defineEmArrayVariable('f64',1);
   let pinfo = defineEmVariable('i32');
+
+  // work size query
+  fn(pm,pn,pnrhs,pA,plda,
+    pB,pldb,pS,prcond,prank,pwork,plwork,piwork,pinfo);
+
+  let worksize = em.getValue(pwork, 'double');
+  pwork = defineEmArrayVariable('f64', worksize)[0];
+  em.setValue(plwork,worksize,'i32');
+
+  fn(pm,pn,pnrhs,pA,plda,
+    pB,pldb,pS,prcond,prank,pwork,plwork,piwork,pinfo);
+
+  mA.set(A);
+  mB.set(B);
+  mS.set(S);
 }
 
 export function gelsd(
-  mA:TypedArray, m:number, n:number, nrhs:number,
+  mA:TypedArray, m:number, n:number, nrhs:number, rcond:number,
   mB:TypedArray, mS:TypedArray
 )
 {
-  if(mA instanceof Float64Array) {
-    gelsd_internal(mA,m,n,nrhs,mB,mS,'f64');
-  } else {
-    gelsd_internal(mA,m,n,nrhs,mB,mS,'f32');
-  }
+  gelsd_internal(mA,m,n,nrhs,rcond,mB,mS);
 }

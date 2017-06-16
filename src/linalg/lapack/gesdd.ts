@@ -54,6 +54,7 @@ function gesdd_internal(
   let [pwork] = defineEmArrayVariable(numtype,1);
   let pinfo = defineEmVariable('i32');
 
+  // work size query
   fn(pjobz, pm, pn, pA, plda, pS, pU, pldu, pVT, pldvt,
     pwork, plwork, piwork, pinfo);
 

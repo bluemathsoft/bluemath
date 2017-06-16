@@ -23,6 +23,7 @@ import {gemv} from './blasl2/gemv'
 import {gemm} from './blasl3/gemm'
 import {gesv} from './gesv'
 import {gesdd} from './gesdd'
+import {gelsd} from './gelsd'
 import {potrf} from './potrf'
 
 export {
@@ -38,5 +39,6 @@ export {
   // LAPACK
   gesv,
   gesdd,
+  gelsd,
   potrf
 }

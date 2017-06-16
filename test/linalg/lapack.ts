@@ -232,6 +232,17 @@ export default function testLAPACK() {
         ])));
       });
     });
+    QUnit.module('gelsd', () => {
+      QUnit.test('dgelsd', assert => {
+        let Y = new NDArray([-1,0.2,0.9,2.1]);
+        let A = new NDArray([
+          [0,1], [1,1], [2,1], [3,1]
+        ]);
+        let S = new NDArray({shape:[2]});
+        linalg.lapack.gelsd(A.data,4,2,1,-1,Y.data,S.data);
+        assert.ok(true); // TODO
+      });
+    });
 
     QUnit.module('potrf', () => {
       QUnit.test('dpotrf', assert => {
