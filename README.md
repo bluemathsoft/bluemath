@@ -40,6 +40,7 @@ linalg.solve(A,B);
 console.log(B.toArray()); // [3,1,-8]
 ```
 
+[**API Reference**](http://www.bluemathsoftware.com/docs/index.html)
 
 Development
 ===
