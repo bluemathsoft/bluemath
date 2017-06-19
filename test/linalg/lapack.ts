@@ -240,7 +240,17 @@ export default function testLAPACK() {
         ]);
         let S = new NDArray({shape:[2]});
         linalg.lapack.gelsd(A.data,4,2,1,-1,Y.data,S.data);
-        assert.ok(true); // TODO
+        // Test output computed from numpy.linalg.lapack_lite.dgelsd execution
+        // with same input data
+        assert.ok(A.isEqual(new NDArray([
+          [-1.73205081, 0.],
+          [0.57735027, 0.57735027],
+          [-2.88675135, 2.5819889],
+          [-0.04056742, 0.41363159]
+        ])));
+        assert.ok(Y.isEqual(new NDArray([
+          1.65, -0.35, 0.4356074, 1.35655674
+        ])));
       });
     });
 
