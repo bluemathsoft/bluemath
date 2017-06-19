@@ -38,7 +38,7 @@ function gelsd_internal(
   let rank;
   let lda = Math.max(1,m);
   let ldb = Math.max(1,m,n);
-  let nlvl = Math.max(0,Math.round(Math.log(Math.min(m,n)/2.))+1)
+  let nlvl = Math.max(0,Math.round(Math.log(Math.min(m,n)/2.))+1);
   let iworksize = 3*Math.min(m,n)*nlvl + 11*Math.min(m,n);
 
   let pm = defineEmVariable('i32',m);
@@ -70,6 +70,14 @@ function gelsd_internal(
 
   fn(pm,pn,pnrhs,pA,plda,
     pB,pldb,pS,prcond,prank,pwork,plwork,piwork,pinfo);
+
+  let info = em.getValue(pinfo,'i32');
+  if(info < 0) {
+    throw new Error('Invalid argument ('+(-info)+')');
+  }
+  if(info > 0) {
+    throw new Error('SVD algorithm failed to converge ('+info+')');
+  }
 
   mA.set(A);
   mB.set(B);

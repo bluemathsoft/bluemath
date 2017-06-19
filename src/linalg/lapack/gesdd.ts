@@ -67,10 +67,10 @@ function gesdd_internal(
 
   let info = em.getValue(pinfo,'i32');
   if(info < 0) {
-    console.error('Invalid argument',-info);
+    throw new Error('Invalid argument ('+(-info)+')');
   }
   if(info > 0) {
-    console.error('DBDSDC did not converge',info);
+    throw new Error('DBDSDC did not converge ('+info+')');
   }
 
   mA.set(A);
