@@ -22,7 +22,7 @@
 
 import {eye, zeros} from './construction'
 import {
-  matmul, norm, solve, cholesky, inner, outer, svd
+  matmul, norm, solve, cholesky, inner, outer, svd, rank
 } from './operations'
 import * as lapack from './lapack'
 
@@ -39,6 +39,7 @@ export {
   svd,
   norm,
   solve,
+  rank,
 
   lapack
 }

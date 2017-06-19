@@ -180,6 +180,27 @@ export default function testOperations() {
       });
     });
 
+    QUnit.module('rank', () => {
+      QUnit.test('Full rank 3x3', assert => {
+        let A = new NDArray([
+          [3,5,6],[3,2,1],[7,8,16]
+        ]);
+        assert.equal(linalg.rank(A), 3);
+      });
+      QUnit.test('Rank 2 for 3x3', assert => {
+        let A = new NDArray([
+          [3,5,6],[3,2,6],[6,8,12]
+        ]);
+        assert.equal(linalg.rank(A), 2);
+      });
+      QUnit.test('Rank 1 for 3x3', assert => {
+        let A = new NDArray([
+          [3,5,6],[3,5,6],[6,10,12]
+        ]);
+        assert.equal(linalg.rank(A), 1);
+      });
+    });
+
     QUnit.module('SVD', () => {
 
       QUnit.test(

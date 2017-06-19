@@ -21,6 +21,7 @@
 
 import {NDArray} from '../basic'
 import * as lapack from './lapack'
+import {EPSILON} from '../constants'
 
 /**
  * Matrix multiplication
@@ -465,4 +466,24 @@ export function svd(A:NDArray, full_matrices=true, compute_uv=true) {
   } else {
     return [U,S,VT];
   }
+}
+
+/**
+ * Rank of a matrix is defined by number of singular values of the matrix that
+ * are non-zero (within given tolerance)
+ * @param A Matrix to determine rank of
+ * @param tol Tolerance for zero-check of singular values
+ */
+export function rank(A:NDArray,tol?:number) {
+  let [S] = svd(A,false,false);
+  if(tol === undefined) {
+    tol = EPSILON; // TODO : use numpy's formula
+  }
+  let rank = 0;
+  for(let n of S.toArray()) {
+    if(n > tol) {
+      rank++;
+    }
+  }
+  return rank;
 }
