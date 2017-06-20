@@ -204,7 +204,7 @@ export default function testOperations() {
         assert.ok(utils.isequal(x.get(1, 0), 1.16556005));
         assert.equal(rank, 2);
         assert.ok(residuals.isEqual(new NDArray([4.1707015])));
-        assert.ok(singulars.isEqual(new NDArray([5.94059051, 2.42680538]));
+        assert.ok(singulars.isEqual(new NDArray([5.94059051, 2.42680538])));
       });
     });
 
