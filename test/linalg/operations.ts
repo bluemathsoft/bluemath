@@ -180,14 +180,31 @@ export default function testOperations() {
       });
     });
     QUnit.module('lstsq', () => {
-      QUnit.test('Line fitting', assert => {
+      QUnit.test('Line fitting 1', assert => {
         let Y = new NDArray([-1,0.2,0.9,2.1]);
         let A = new NDArray([
           [0,1], [1,1], [2,1], [3,1]
         ]);
-        let [x] = linalg.lstsq(A,Y);
+        let {x,residuals,rank,singulars} = linalg.lstsq(A,Y);
         assert.ok(utils.isequal(x.get(0,0),1));
         assert.ok(utils.isequal(x.get(1,0),-0.95));
+        assert.equal(rank, 2);
+        assert.ok(residuals.isEqual(new NDArray([0.05])));
+        assert.ok(singulars.isEqual(new NDArray([4.10003045, 1.09075677])));
+      });
+
+      QUnit.test('Line fitting 2', assert => {
+        let Y = new NDArray([3.9, 2.3, 2, -1.4, -1, -0.1]);
+        let A = new NDArray([
+          [-3, 1], [-0.9, 1], [-1.8, 1],
+          [3.2, 1], [1, 1], [3.3, 1]
+        ]);
+        let {x,residuals,rank,singulars} = linalg.lstsq(A,Y);
+        assert.ok(utils.isequal(x.get(0, 0), -0.71853349));
+        assert.ok(utils.isequal(x.get(1, 0), 1.16556005));
+        assert.equal(rank, 2);
+        assert.ok(residuals.isEqual(new NDArray([4.1707015])));
+        assert.ok(singulars.isEqual(new NDArray([5.94059051, 2.42680538]));
       });
     });
 

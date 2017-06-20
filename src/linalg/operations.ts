@@ -488,24 +488,96 @@ export function rank(A:NDArray,tol?:number) {
   return rank;
 }
 
+export interface lstsq_return {
+  /**
+   * Least-squares solution. If `b` is two-dimensional,
+   * the solutions are in the `K` columns of `x`.
+   */
+  x : NDArray,
+  /**
+   * Sums of residuals; squared Euclidean 2-norm for each column in
+   * ``b - a*x``.
+   * If the rank of `a` is < N or m <= n, this is an empty array.
+   * If `b` is 1-dimensional, this is a (1,) shape array.
+   * Otherwise the shape is (k,).
+   * TODO: WIP
+   */
+  residuals : NDArray,
+  /**
+   * Rank of coefficient matrix A
+   */
+  rank : number,
+  /**
+   * Singular values of coefficient matrix A
+   */
+  singulars : NDArray
+};
+
 /**
- * TBD
- * @param A 
- * @param B 
- * @param rcond 
+ * Return the least-squares solution to a linear matrix equation.
+ * 
+ * Solves the equation `a x = b` by computing a vector `x` that
+ * minimizes the Euclidean 2-norm `|| b - a x ||^2`.  The equation may
+ * be under-, well-, or over- determined (i.e., the number of
+ * linearly independent rows of `a` can be less than, equal to, or
+ * greater than its number of linearly independent columns).  If `a`
+ * is square and of full rank, then `x` (but for round-off error) is
+ * the "exact" solution of the equation.
+ * 
+ * @param A Coefficient matrix (m-by-n)
+ * @param B Values on RHS of equation system. Could be array of length
+ *          m or it could be 2D with dimensions m-by-k
+ * @param rcond Cut-off ratio for small singular values of `a`
  */
-export function lstsq(A:NDArray, B:NDArray, rcond=-1) {
+export function lstsq(A:NDArray, B:NDArray, rcond=-1) : lstsq_return {
   let copyA = A.clone();
   let copyB = B.clone(); 
+  let is_1d = false;
   if(copyB.shape.length === 1) {
     copyB.reshape([copyB.shape[0],1]);
+    is_1d = true;
   }
-  let [m,n] = copyA.shape;
+  let m:number;
+  let n:number;
+  m = copyA.shape[0];
+  n = copyA.shape[1];
   let nrhs = copyB.shape[1];
   copyA.swapOrder();
   copyB.swapOrder();
   let S = new NDArray({shape:[Math.min(m,n)]});
-  lapack.gelsd(copyA.data,m,n,nrhs,rcond,copyB.data,S.data);
+  let rank = lapack.gelsd(copyA.data,m,n,nrhs,rcond,copyB.data,S.data);
   copyB.swapOrder();
-  return [copyB];
+
+  // Residuals - TODO: test more
+  let residuals = new NDArray([]);
+  if(rank === n && m>n) {
+    let i:number;
+    if(is_1d) {
+      residuals = new NDArray({shape:[1]});
+      let sum = 0;
+      for(i=n; i<m; i++) {
+        let K = copyB.shape[1];
+        for(let j=0; j<K; j++) {
+          sum += copyB.get(i,j) * copyB.get(i,j);
+        }
+      }
+      residuals.set(0,sum);
+    } else {
+      residuals = new NDArray({shape:[m-<number>n]});
+      for(i=n; i<m; i++) {
+        let K = copyB.shape[1];
+        let sum = 0;
+        for(let j=0; j<K; j++) {
+          sum += copyB.get(i,j) * copyB.get(i,j);
+        }
+        residuals.set(i-<number>n,sum);
+      }
+    }
+  }
+  return {
+    x:copyB,
+    residuals,
+    rank,
+    singulars:S
+  };
 }

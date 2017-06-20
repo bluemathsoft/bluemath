@@ -35,7 +35,6 @@ function gelsd_internal(
 {
   let fn = dgelsd_wrap;
 
-  let rank;
   let lda = Math.max(1,m);
   let ldb = Math.max(1,m,n);
   let nlvl = Math.max(0,Math.round(Math.log(Math.min(m,n)/2.))+1);
@@ -46,9 +45,9 @@ function gelsd_internal(
   let pnrhs = defineEmVariable('i32',nrhs);
   let plda = defineEmVariable('i32',lda);
   let pldb = defineEmVariable('i32',ldb);
-  let prank = defineEmVariable('i32',rank);
+  let prank = defineEmVariable('i32');
   let plwork = defineEmVariable('i32',-1);
-  let prcond = defineEmVariable('f64', rcond);
+  let prcond = defineEmVariable('f64',rcond);
 
   console.assert(mB.length === ldb*nrhs);
 
@@ -79,9 +78,12 @@ function gelsd_internal(
     throw new Error('SVD algorithm failed to converge ('+info+')');
   }
 
+  let rank = em.getValue(prank,'i32');
+
   mA.set(A);
   mB.set(B);
   mS.set(S);
+  return rank;
 }
 
 export function gelsd(
@@ -89,5 +91,5 @@ export function gelsd(
   mB:TypedArray, mS:TypedArray
 )
 {
-  gelsd_internal(mA,m,n,nrhs,rcond,mB,mS);
+  return gelsd_internal(mA,m,n,nrhs,rcond,mB,mS);
 }
