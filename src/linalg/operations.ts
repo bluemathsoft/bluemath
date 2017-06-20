@@ -487,3 +487,25 @@ export function rank(A:NDArray,tol?:number) {
   }
   return rank;
 }
+
+/**
+ * TBD
+ * @param A 
+ * @param B 
+ * @param rcond 
+ */
+export function lstsq(A:NDArray, B:NDArray, rcond=-1) {
+  let copyA = A.clone();
+  let copyB = B.clone(); 
+  if(copyB.shape.length === 1) {
+    copyB.reshape([copyB.shape[0],1]);
+  }
+  let [m,n] = copyA.shape;
+  let nrhs = copyB.shape[1];
+  copyA.swapOrder();
+  copyB.swapOrder();
+  let S = new NDArray({shape:[Math.min(m,n)]});
+  lapack.gelsd(copyA.data,m,n,nrhs,rcond,copyB.data,S.data);
+  copyB.swapOrder();
+  return [copyB];
+}

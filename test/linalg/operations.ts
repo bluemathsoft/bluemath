@@ -179,6 +179,17 @@ export default function testOperations() {
         });
       });
     });
+    QUnit.module('lstsq', () => {
+      QUnit.test('Line fitting', assert => {
+        let Y = new NDArray([-1,0.2,0.9,2.1]);
+        let A = new NDArray([
+          [0,1], [1,1], [2,1], [3,1]
+        ]);
+        let [x] = linalg.lstsq(A,Y);
+        assert.ok(utils.isequal(x.get(0,0),1));
+        assert.ok(utils.isequal(x.get(1,0),-0.95));
+      });
+    });
 
     QUnit.module('rank', () => {
       QUnit.test('Full rank 3x3', assert => {
