@@ -24,6 +24,8 @@ const linalg = require('bluemath').linalg
 console.log(linalg.eye(3));
 ```
 
+[**API Reference**](http://www.bluemathsoftware.com/docs/index.html)
+[**Unit Tests**](http://www.bluemathsoftware.com/tests/index.html)
 
 linalg example
 ===
@@ -40,7 +42,6 @@ linalg.solve(A,B);
 console.log(B.toArray()); // [3,1,-8]
 ```
 
-[**API Reference**](http://www.bluemathsoftware.com/docs/index.html)
 
 Development
 ===
