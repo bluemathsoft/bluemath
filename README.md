@@ -25,6 +25,7 @@ console.log(linalg.eye(3));
 ```
 
 [**API Reference**](http://www.bluemathsoftware.com/docs/index.html)
+
 [**Unit Tests**](http://www.bluemathsoftware.com/tests/index.html)
 
 linalg example
