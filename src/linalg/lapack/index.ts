@@ -24,6 +24,7 @@ import {gemm} from './blasl3/gemm'
 import {gesv} from './gesv'
 import {gesdd} from './gesdd'
 import {gelsd} from './gelsd'
+import {getrf} from './getrf'
 import {potrf} from './potrf'
 
 export {
@@ -40,5 +41,6 @@ export {
   gesv,
   gesdd,
   gelsd,
+  getrf,
   potrf
 }

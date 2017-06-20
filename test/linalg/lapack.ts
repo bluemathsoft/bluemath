@@ -258,6 +258,22 @@ export default function testLAPACK() {
         ])));
       });
     });
+    QUnit.module('getrf', () => {
+      QUnit.skip('dgetrf', assert => { // TODO
+        let A = new NDArray([
+          [3,6,2],
+          [1,7,6],
+          [9,3,2]
+        ],{datatype:'f64'});
+        let ipiv = new NDArray({shape:[3],datatype:'i32'});
+        A.swapOrder();
+        linalg.lapack.getrf(A.data,3,3,ipiv.data);
+        A.swapOrder();
+        console.log(A.toString());
+        console.log(ipiv.toString());
+        assert.ok(true);
+      });
+    });
 
     QUnit.module('potrf', () => {
       QUnit.test('dpotrf', assert => {

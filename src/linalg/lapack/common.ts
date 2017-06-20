@@ -180,6 +180,22 @@ export const dgelsd_wrap = em.cwrap('dgelsd_', null,
 /**
  * @hidden
  */
+export const sgetrf_wrap = em.cwrap('sgetrf_', null,
+  [
+    'number','number','number','number','number','number'
+  ]);
+
+/**
+ * @hidden
+ */
+export const dgetrf_wrap = em.cwrap('dgetrf_', null,
+  [
+    'number','number','number','number','number','number'
+  ]);
+
+/**
+ * @hidden
+ */
 export function defineEmVariable(
   type:'i8'|'i32'|'f32'|'f64',
   init?:number)
