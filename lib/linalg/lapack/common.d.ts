@@ -74,6 +74,18 @@ export declare const dgeqrf_wrap: any;
 /**
  * @hidden
  */
+export declare const dgelsd_wrap: any;
+/**
+ * @hidden
+ */
+export declare const sgetrf_wrap: any;
+/**
+ * @hidden
+ */
+export declare const dgetrf_wrap: any;
+/**
+ * @hidden
+ */
 export declare function defineEmVariable(type: 'i8' | 'i32' | 'f32' | 'f64', init?: number): number;
 /**
  * @hidden

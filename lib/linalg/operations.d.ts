@@ -108,3 +108,51 @@ export declare function cholesky(A: NDArray): void;
  * @return [NDArray] [U,S,VT] if compute_uv = true, [S] otherwise
  */
 export declare function svd(A: NDArray, full_matrices?: boolean, compute_uv?: boolean): NDArray[];
+/**
+ * Rank of a matrix is defined by number of singular values of the matrix that
+ * are non-zero (within given tolerance)
+ * @param A Matrix to determine rank of
+ * @param tol Tolerance for zero-check of singular values
+ */
+export declare function rank(A: NDArray, tol?: number): number;
+export interface lstsq_return {
+    /**
+     * Least-squares solution. If `b` is two-dimensional,
+     * the solutions are in the `K` columns of `x`.
+     */
+    x: NDArray;
+    /**
+     * Sums of residuals; squared Euclidean 2-norm for each column in
+     * ``b - a*x``.
+     * If the rank of `a` is < N or m <= n, this is an empty array.
+     * If `b` is 1-dimensional, this is a (1,) shape array.
+     * Otherwise the shape is (k,).
+     * TODO: WIP
+     */
+    residuals: NDArray;
+    /**
+     * Rank of coefficient matrix A
+     */
+    rank: number;
+    /**
+     * Singular values of coefficient matrix A
+     */
+    singulars: NDArray;
+}
+/**
+ * Return the least-squares solution to a linear matrix equation.
+ *
+ * Solves the equation `a x = b` by computing a vector `x` that
+ * minimizes the Euclidean 2-norm `|| b - a x ||^2`.  The equation may
+ * be under-, well-, or over- determined (i.e., the number of
+ * linearly independent rows of `a` can be less than, equal to, or
+ * greater than its number of linearly independent columns).  If `a`
+ * is square and of full rank, then `x` (but for round-off error) is
+ * the "exact" solution of the equation.
+ *
+ * @param A Coefficient matrix (m-by-n)
+ * @param B Values on RHS of equation system. Could be array of length
+ *          m or it could be 2D with dimensions m-by-k
+ * @param rcond Cut-off ratio for small singular values of `a`
+ */
+export declare function lstsq(A: NDArray, B: NDArray, rcond?: number): lstsq_return;
