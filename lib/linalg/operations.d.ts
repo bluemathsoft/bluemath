@@ -34,6 +34,7 @@ export declare function norm(A: NDArray, p?: number | 'fro'): number;
  *
  * $$ A = P L U $$
  */
+export declare function lu_custom(A: NDArray): NDArray;
 /**
  * @hidden
  * Ref: Golub-Loan 3.1.1
@@ -156,3 +157,17 @@ export interface lstsq_return {
  * @param rcond Cut-off ratio for small singular values of `a`
  */
 export declare function lstsq(A: NDArray, B: NDArray, rcond?: number): lstsq_return;
+/**
+ * Compute sign and natural logarithm of the determinant of given Matrix
+ * If an array has a very small or very large determinant, then a call to
+ * `det` may overflow or underflow. This routine is more robust against such
+ * issues, because it computes the logarithm of the determinant rather than
+ * the determinant itself.
+ * @param A Square matrix to compute sign and log-determinant of
+ */
+export declare function slogdet(A: NDArray): number[];
+/**
+ * Compute determinant of a matrix
+ * @param A Square matrix to compute determinant
+ */
+export declare function det(A: NDArray): number;
