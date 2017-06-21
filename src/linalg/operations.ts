@@ -612,7 +612,7 @@ export function slogdet(A:NDArray) {
   }
 
   for(let i=0; i<m; i++) {
-    let e = A.get(i,i);
+    let e = copyA.get(i,i);
     let e_abs = Math.abs(e);
     let e_sign = e/e_abs;
     sign_acc *= e_sign;
