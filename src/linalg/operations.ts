@@ -581,6 +581,14 @@ export function lstsq(A:NDArray, B:NDArray, rcond=-1) : lstsq_return {
   };
 }
 
+/**
+ * Compute sign and natural logarithm of the determinant of given Matrix
+ * If an array has a very small or very large determinant, then a call to
+ * `det` may overflow or underflow. This routine is more robust against such
+ * issues, because it computes the logarithm of the determinant rather than
+ * the determinant itself.
+ * @param A Square matrix to compute sign and log-determinant of
+ */
 export function slogdet(A:NDArray) {
   if(A.shape.length !== 2) {
     throw new Error('Input is not matrix');
@@ -621,6 +629,10 @@ export function slogdet(A:NDArray) {
   return [sign_acc,log_acc];
 }
 
+/**
+ * Compute determinant of a matrix
+ * @param A Square matrix to compute determinant
+ */
 export function det(A:NDArray) {
   let [sign,log] = slogdet(A);
   return sign * Math.exp(log);
