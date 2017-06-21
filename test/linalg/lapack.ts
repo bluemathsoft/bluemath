@@ -258,8 +258,9 @@ export default function testLAPACK() {
         ])));
       });
     });
+
     QUnit.module('getrf', () => {
-      QUnit.skip('dgetrf', assert => { // TODO
+      QUnit.test('dgetrf', assert => { // TODO
         let A = new NDArray([
           [3,6,2],
           [1,7,6],
@@ -269,9 +270,15 @@ export default function testLAPACK() {
         A.swapOrder();
         linalg.lapack.getrf(A.data,3,3,ipiv.data);
         A.swapOrder();
-        console.log(A.toString());
-        console.log(ipiv.toString());
-        assert.ok(true);
+
+        let customLU = new NDArray([
+          [3,6,2],
+          [1,7,6],
+          [9,3,2]
+        ],{datatype:'f64'});
+        linalg.lu_custom(customLU);
+
+        assert.ok(A.isEqual(customLU,1e-4));
       });
     });
 

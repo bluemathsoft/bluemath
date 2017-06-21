@@ -22,6 +22,7 @@
 import {NDArray} from '../basic'
 import * as lapack from './lapack'
 import {EPSILON} from '../constants'
+import {iszero} from '../utils'
 
 /**
  * Matrix multiplication
@@ -164,8 +165,7 @@ export function norm(A:NDArray, p?:number|'fro') {
  * 
  * $$ A = P L U $$
  */
-/*
-export function lu(A:NDArray) {
+export function lu_custom(A:NDArray) {
 
   // Outer product LU decomposition with partial pivoting
   // Ref: Algo 3.4.1 Golub and Van Loan
@@ -205,7 +205,7 @@ export function lu(A:NDArray) {
     A.swaprows(k, ipivot);
     recordPermutation(k, ipivot);
 
-    if(isZero(pivot)) {
+    if(iszero(pivot)) {
       throw new Error('Can\'t perform LU decomp. 0 on diagonal');
     }
 
@@ -221,7 +221,6 @@ export function lu(A:NDArray) {
   }
   return perm;
 }
-*/
 
 /**
  * @hidden
