@@ -20,6 +20,7 @@
 */
 
 import {NDArray} from '../basic'
+import {eye} from './construction'
 import * as lapack from './lapack'
 import {EPSILON} from '../constants'
 import {iszero} from '../utils'
@@ -636,4 +637,25 @@ export function slogdet(A:NDArray) {
 export function det(A:NDArray) {
   let [sign,log] = slogdet(A);
   return sign * Math.exp(log);
+}
+
+/**
+ * Compute (multiplicative) inverse of given matrix
+ * @param A Square matrix whose inverse is to be found
+ */
+export function inv(A:NDArray) {
+  if(A.shape.length !== 2) {
+    throw new Error('Input is not matrix');
+  }
+  if(A.shape[0] !== A.shape[1]) {
+    throw new Error('Input is not square matrix');
+  }
+  let copyA = A.clone();
+  copyA.swapOrder();
+  let n = A.shape[0];
+  let I = eye(n);
+
+  lapack.gesv(copyA.data, I.data, n, n);
+  I.swapOrder();
+  return I;
 }

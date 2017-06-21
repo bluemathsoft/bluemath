@@ -252,6 +252,46 @@ export default function testOperations() {
       });
     });
 
+    QUnit.module('inv', () => {
+      QUnit.test('2x2', assert => {
+        let A = new NDArray([
+          [4,5],
+          [1,3]
+        ]);
+        let invA = linalg.inv(A);
+        assert.ok(invA.isEqual(new NDArray([
+          [ 0.42857143, -0.71428571],
+          [-0.14285714,  0.57142857]
+        ])));
+      });
+      QUnit.test('3x3 test1', assert => {
+        let A = new NDArray([
+          [4,5,6],
+          [1,5,3],
+          [8,4,5]
+        ]);
+        let invA = linalg.inv(A);
+        assert.ok(invA.isEqual(new NDArray([
+          [-0.1884058 ,  0.01449275,  0.2173913 ],
+          [-0.27536232,  0.4057971 ,  0.08695652],
+          [ 0.52173913, -0.34782609, -0.2173913 ]
+        ])));
+      });
+      QUnit.test('3x3 test2', assert => {
+        let A = new NDArray([
+          [4,-5,6],
+          [1,0,3],
+          [-8,4,5]
+        ]);
+        let invA = linalg.inv(A);
+        assert.ok(invA.isEqual(new NDArray([
+          [-0.09917355,  0.40495868, -0.12396694],
+          [-0.23966942,  0.56198347, -0.04958678],
+          [ 0.03305785,  0.19834711,  0.04132231]
+        ])));
+      });
+    });
+
     QUnit.module('rank', () => {
       QUnit.test('Full rank 3x3', assert => {
         let A = new NDArray([
