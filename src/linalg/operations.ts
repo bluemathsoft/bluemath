@@ -580,3 +580,43 @@ export function lstsq(A:NDArray, B:NDArray, rcond=-1) : lstsq_return {
     singulars:S
   };
 }
+
+export function slogdet(A:NDArray) {
+  if(A.shape.length !== 2) {
+    throw new Error('Input is not matrix');
+  }
+  if(A.shape[0] !== A.shape[1]) {
+    throw new Error('Input is not square matrix');
+  }
+  let m = A.shape[0];
+  let copyA = A.clone();
+  copyA.swapOrder();
+  let ipiv = new NDArray({shape:[m],datatype:'i32'});
+  lapack.getrf(copyA.data,m,m,ipiv.data);
+  copyA.swapOrder();
+
+  // Multiply diagonal elements of Upper triangular matrix to get determinant
+  // For large matrices this value could get really big, hence we add 
+  // natural logarithms of the diagonal elements and save the sign
+  // separately
+
+  let sign_acc = 1;
+  let log_acc = 0;
+
+  // Note: The pivot vector affects the sign of the determinant
+  // I do not understand why, but this is what numpy implementation does
+  for(let i=0; i<m; i++) {
+    if(ipiv.get(i) !== i+1) { // Fortran uses 1-based index
+      sign_acc = -sign_acc;
+    }
+  }
+
+  for(let i=0; i<m; i++) {
+    let e = A.get(i,i);
+    let e_abs = Math.abs(e);
+    let e_sign = e/e_abs;
+    sign_acc *= e_sign;
+    log_acc += Math.log(e_abs);
+  }
+  return [sign_acc,log_acc];
+}

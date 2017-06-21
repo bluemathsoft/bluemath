@@ -208,6 +208,29 @@ export default function testOperations() {
       });
     });
 
+    QUnit.module('slogdet', () => {
+      QUnit.skip('3x3', assert => {
+        let A = new NDArray([
+          [4,5,6],
+          [1,5,3],
+          [8,4,5]
+        ]);
+        let [sign,logdet] = linalg.slogdet(A);
+        assert.equal(sign,-1);
+        assert.equal(logdet, Math.log(69));
+      });
+
+      QUnit.skip('2x2', assert => {
+        let A = new NDArray([
+          [4,5],
+          [1,5],
+        ]);
+        let [sign,logdet] = linalg.slogdet(A);
+        assert.equal(sign,1);
+        assert.equal(logdet, Math.log(15));
+      });
+    });
+
     QUnit.module('rank', () => {
       QUnit.test('Full rank 3x3', assert => {
         let A = new NDArray([
