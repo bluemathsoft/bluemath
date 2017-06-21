@@ -620,3 +620,8 @@ export function slogdet(A:NDArray) {
   }
   return [sign_acc,log_acc];
 }
+
+export function det(A:NDArray) {
+  let [sign,log] = slogdet(A);
+  return sign * Math.exp(log);
+}

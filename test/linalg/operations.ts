@@ -231,6 +231,27 @@ export default function testOperations() {
       });
     });
 
+    QUnit.module('det', () => {
+      QUnit.test('3x3', assert => {
+        let A = new NDArray([
+          [4,5,6],
+          [1,5,3],
+          [8,4,5]
+        ]);
+        let det = linalg.det(A);
+        assert.ok(utils.isequal(det, -69, 1e-5));
+      });
+
+      QUnit.test('2x2', assert => {
+        let A = new NDArray([
+          [4,5],
+          [1,5],
+        ]);
+        let det = linalg.det(A);
+        assert.equal(det, 15);
+      });
+    });
+
     QUnit.module('rank', () => {
       QUnit.test('Full rank 3x3', assert => {
         let A = new NDArray([
