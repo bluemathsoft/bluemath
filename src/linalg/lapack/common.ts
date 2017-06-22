@@ -196,6 +196,26 @@ export const dgetrf_wrap = em.cwrap('dgetrf_', null,
 /**
  * @hidden
  */
+export const sgeev_wrap = em.cwrap('sgeev_', null,
+  [
+    'number','number','number','number','number',
+    'number','number','number','number','number',
+    'number','number','number','number'
+  ]);
+
+/**
+ * @hidden
+ */
+export const dgeev_wrap = em.cwrap('dgeev_', null,
+  [
+    'number','number','number','number','number',
+    'number','number','number','number','number',
+    'number','number','number','number'
+  ]);
+
+/**
+ * @hidden
+ */
 export function defineEmVariable(
   type:'i8'|'i32'|'f32'|'f64',
   init?:number)

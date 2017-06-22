@@ -25,6 +25,7 @@ import {gesv} from './gesv'
 import {gesdd} from './gesdd'
 import {gelsd} from './gelsd'
 import {getrf} from './getrf'
+import {geev} from './geev'
 import {potrf} from './potrf'
 
 export {
@@ -39,6 +40,7 @@ export {
 
   // LAPACK
   gesv,
+  geev,
   gesdd,
   gelsd,
   getrf,

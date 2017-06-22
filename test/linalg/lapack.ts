@@ -282,6 +282,19 @@ export default function testLAPACK() {
       });
     });
 
+    QUnit.module('geev', () => {
+      QUnit.test('dgeev', assert => {
+        let A = new NDArray([
+          [3,6,2],
+          [1,7,6],
+          [9,3,2]
+        ],{datatype:'f64'});
+        let answer = linalg.lapack.geev(A.data,3,true,true);
+        console.log(answer);
+        assert.ok(true);
+      });
+    });
+
     QUnit.module('potrf', () => {
       QUnit.test('dpotrf', assert => {
         // From wikipedia
