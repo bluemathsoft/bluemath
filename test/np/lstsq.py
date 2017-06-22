@@ -26,4 +26,14 @@ def test_lstsq_2():
   answer = np.linalg.lstsq(A,B);
   print(answer);
 
-test_lstsq_2()
+def test_svd_4x3():
+  A = np.array([
+      [-3,6,-1],
+      [11,-3,0],
+      [0,-1,3],
+      [4,4,4]
+    ]);
+  answer = np.linalg.svd(A,full_matrices=True,compute_uv=True);
+  print(answer)
+
+test_svd_4x3()
