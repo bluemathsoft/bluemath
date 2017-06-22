@@ -327,16 +327,17 @@ export function solve(A:NDArray, B:NDArray) {
   let xswapped = false;
   if(B.shape.length > 1) {
     nrhs = B.shape[1];
-    // x.swapOrder();
     xswapped = true;
+    B.swapOrder();
   } else {
     nrhs = 1;
   }
 
   lapack.gesv(A.data, B.data, A.shape[0], nrhs);
+
   A.swapOrder();
-  if(xswapped) {
-    // x.swapOrder();
+  if(B.shape.length > 1) {
+    B.swapOrder();
   }
 }
 
