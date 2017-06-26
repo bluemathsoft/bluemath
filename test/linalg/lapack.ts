@@ -339,6 +339,22 @@ export default function testLAPACK() {
       });
     });
 
+    QUnit.module('geqrf', () => {
+      QUnit.test('dgeqrf', assert => {
+        let A = new NDArray([
+          [3, 6, 2],
+          [1, 7, 6],
+          [9, 3, 2]
+        ]);
+        let tau = new NDArray({shape:[3],datatype:'f64'});
+        A.swapOrder();
+        linalg.lapack.geqrf(A.data,3,3,tau.data);
+        console.log(A.data);
+        console.log(tau.data);
+        assert.ok(true);
+      });
+    });
+
     QUnit.module('potrf', () => {
       QUnit.test('dpotrf', assert => {
         // From wikipedia

@@ -19,45 +19,63 @@
 
 */
 
-/*
 import {TypedArray} from '../..'
 import * as lapacklite from '../../../ext/lapacklite'
 let em = lapacklite.Module;
 
 import {
-  SIZE_CHAR, SIZE_INT, SIZE_SINGLE, SIZE_DOUBLE,
+  defineEmVariable, defineEmArrayVariable,
   sgeqrf_wrap, dgeqrf_wrap
 } from './common'
 
+/**
+ * @hidden 
+ */
 function geqrf_internal(
-  mA:TypedArray, m:number, n:number, numtype:'f32'|'f64')
+  mA:TypedArray, m:number, n:number,
+  mTau:TypedArray, numtype:'f32'|'f64')
 {
-  let NUMSIZE, NUMBUF, NUMDESC, fn, TYPARR;
-  if(numtype === 'f32') {
-    NUMSIZE = SIZE_SINGLE;
-    NUMBUF = em.HEAPF32.buffer;
-    NUMDESC = 'float';
-    fn = sgeqrf_wrap;
-    TYPARR = Float32Array;
-  } else {
-    NUMSIZE = SIZE_DOUBLE;
-    NUMBUF = em.HEAPF64.buffer;
-    NUMDESC = 'double';
-    fn = dgeqrf_wrap;
-    TYPARR = Float64Array;
+  let fn = numtype === 'f32' ? sgeqrf_wrap : dgeqrf_wrap;
+
+  let lda = Math.max(1,m);
+
+  let pm = defineEmVariable('i32',m);
+  let pn = defineEmVariable('i32',n);
+  let plda = defineEmVariable('i32',lda);
+  let plwork = defineEmVariable('i32',-1);
+  let pinfo = defineEmVariable('i32');
+
+  let [pA,A] = defineEmArrayVariable(numtype,m*n,mA);
+  let [ptau,tau] = defineEmArrayVariable(numtype,Math.min(m,n));
+  let [pwork] = defineEmArrayVariable(numtype,1);
+
+  // work size query
+  fn(pm,pn,pA,plda,ptau,pwork,plwork,pinfo);
+
+  let worksize = em.getValue(pwork, numtype==='f32'?'float':'double');
+  pwork = defineEmArrayVariable(numtype, worksize)[0];
+  em.setValue(plwork,worksize,'i32');
+
+  fn(pm,pn,pA,plda,ptau,pwork,plwork,pinfo);
+
+  let info = em.getValue(pinfo,'i32');
+  if(info < 0) {
+    throw new Error('Invalid argument ('+(-info)+')');
   }
 
-  let pm = em._malloc(SIZE_INT);
-  let pn = em._malloc(SIZE_INT);
-  let pA = em._malloc(m*n*NUMSIZE);
-  let plda = em._malloc(SIZE_INT);
-
+  mA.set(A);
+  mTau.set(tau);
 }
 
-export function geqrf(mA:TypedArray,m:number,n:number) {
+/**
+ * @hidden 
+ */
+export function geqrf(
+  mA:TypedArray,m:number,n:number,mTau:TypedArray)
+{
   if(mA instanceof Float64Array) {
-    geqrf_internal(mA, m, n, 'f64');
+    geqrf_internal(mA, m, n, mTau, 'f64');
   } else {
-    geqrf_internal(mA, m, n, 'f32');
+    geqrf_internal(mA, m, n, mTau, 'f32');
   }
-}*/
+}

@@ -660,3 +660,4 @@ export function inv(A:NDArray) {
   I.swapOrder();
   return I;
 }
+

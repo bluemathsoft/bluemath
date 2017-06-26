@@ -26,6 +26,7 @@ import {gesdd} from './gesdd'
 import {gelsd} from './gelsd'
 import {getrf} from './getrf'
 import {geev} from './geev'
+import {geqrf} from './geqrf'
 import {potrf} from './potrf'
 
 export {
@@ -44,5 +45,6 @@ export {
   gesdd,
   gelsd,
   getrf,
+  geqrf,
   potrf
 }

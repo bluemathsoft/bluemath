@@ -61,13 +61,15 @@ function geev_internal(mA:TypedArray,n:number,
   let [pwork] = defineEmArrayVariable(numtype,1);
 
   // work size query
-  fn(pjobvl,pjobvr,pn,pA,plda,pwr,pwi,pVL,pldvl,pVR,pldvr,pwork,plwork,pinfo);
+  fn(pjobvl,pjobvr,pn,pA,plda,pwr,pwi,
+    pVL,pldvl,pVR,pldvr,pwork,plwork,pinfo);
 
   let worksize = em.getValue(pwork, numtype==='f32'?'float':'double');
   pwork = defineEmArrayVariable(numtype, worksize)[0];
   em.setValue(plwork,worksize,'i32');
 
-  fn(pjobvl,pjobvr,pn,pA,plda,pwr,pwi,pVL,pldvl,pVR,pldvr,pwork,plwork,pinfo);
+  fn(pjobvl,pjobvr,pn,pA,plda,pwr,pwi,
+    pVL,pldvl,pVR,pldvr,pwork,plwork,pinfo);
 
   let info = em.getValue(pinfo,'i32');
   if(info < 0) {
