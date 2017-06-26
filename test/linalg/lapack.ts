@@ -19,7 +19,7 @@
  along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {linalg, basic, utils} from '../../src'
+import {linalg, basic} from '../../src'
 let {NDArray} = basic;
 
 export default function testLAPACK() {
@@ -296,6 +296,7 @@ export default function testLAPACK() {
           [0,2,0],
           [0,0,3]
         ],{datatype:'f64'});
+        A.swapOrder();
         let [WR,WI,VL,VR] = linalg.lapack.geev(A.data,3,true,true);
         assert.ok(WR[0] === 1 && WR[1] === 2 && WR[2] === 3);
         assert.ok(WI[0] === 0 && WI[1] === 0 && WI[2] === 0);
@@ -320,31 +321,21 @@ export default function testLAPACK() {
           [3,1],
           [0,2],
         ],{datatype:'f64'});
+        A.swapOrder();
         let [WR,WI,VL,VR] = linalg.lapack.geev(A.data,2,true,true);
         let vl = new NDArray(VL,{shape:[2,2]})
         let vr = new NDArray(VR,{shape:[2,2]})
         vl.swapOrder();
         vr.swapOrder();
-        assert.equal(WR[0],2);
-        assert.equal(WR[1],3);
+        assert.equal(WR[0],3);
+        assert.equal(WR[1],2);
         assert.equal(WI[0],0);
         assert.equal(WI[1],0);
 
-        // TODO
-        // These values match with numpy's eig() results, but they
-        // are left eigen values and numpy returns right eigen values
-        // After further analysis of numpy's invocation it seems that
-        // they will get the same result if they call with 'V' for 
-        // jobvl and jobvr. Since they call only jobvr with 'V', their
-        // data allocation seems to assign same pointer to VL and VR and
-        // probably the left vectors are returned as right vectors.
-        // I don't know for sure. For now, I'm going to stick to LAPACK
-        // signature and return both left and right eigen vectors as
-        // requested by the caller
-        assert.ok(utils.isequal(vl.get(0,0), -0.7071, 1e-4));
-        assert.ok(utils.isequal(vl.get(1,0), 0.7071, 1e-4));
-        assert.ok(utils.isequal(vl.get(0,1), 1));
-        assert.ok(utils.isequal(vl.get(1,1), 0));
+        //assert.ok(vl.isEqual(new NDArray([[0.7071,0.0000],[0.7071,1.0000]]),1e-4))
+        // As returned by numpy (it only returns right eigen vectors)
+        assert.ok(vr.isEqual(new NDArray([[1.0000,-0.7071,],[0.0000,0.7071]]),1e-4))
+
       });
     });
 
