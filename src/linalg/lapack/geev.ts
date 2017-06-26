@@ -28,6 +28,9 @@ import {
   sgeev_wrap, dgeev_wrap 
 } from './common'
 
+/**
+ * @hidden
+ */
 function geev_internal(mA:TypedArray,n:number,
   compleft:boolean,compright:boolean,numtype:'f32'|'f64')
 {
@@ -77,6 +80,9 @@ function geev_internal(mA:TypedArray,n:number,
   return [WR,WI,VL,VR];
 }
 
+/**
+ * @hidden
+ */
 export function geev(A:TypedArray, n:number,
   compleft:boolean, compright:boolean)
 {

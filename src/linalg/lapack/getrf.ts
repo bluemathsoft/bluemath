@@ -62,6 +62,9 @@ function getrf_internal(
   mipiv.set(ipiv);
 }
 
+/**
+ * @hidden
+ */
 export function getrf(mA:TypedArray,m:number,n:number,mipiv:TypedArray)
 {
   if(mA instanceof Float64Array) {

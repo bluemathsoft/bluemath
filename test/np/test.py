@@ -36,7 +36,7 @@ def test_svd_4x3():
   answer = np.linalg.svd(A,full_matrices=True,compute_uv=True);
   print(answer)
 
-def test_eig():
+def test_eig_3x3():
   A = np.array([
     [3,6,2],
     [1,7,6],
@@ -45,4 +45,12 @@ def test_eig():
   answer = np.linalg.eig(A);
   print(answer);
 
-test_eig()
+def test_eig_2x2():
+  A = np.array([
+    [3,1],
+    [0,2]
+  ]);
+  answer = np.linalg.eig(A);
+  print(answer);
+
+test_eig_3x3()
