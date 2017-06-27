@@ -735,6 +735,20 @@ export default function testOperations() {
         });
       });
     });
+
+    QUnit.module('QR', () => {
+      QUnit.test('3x3', assert => {
+        let A = new NDArray([
+          [3, 6, 2],
+          [1, 7, 6],
+          [9, 3, 2]
+        ]);
+        linalg.qr(A);
+        console.log(A.toString());
+        assert.ok(true);
+      });
+    });
+
     QUnit.module('Cholesky', () => {
       QUnit.test('3x3', assert => {
         let A = new NDArray([

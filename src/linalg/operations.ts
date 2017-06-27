@@ -690,3 +690,25 @@ export function triu(A:NDArray,k=0) {
   }
   return copyA;
 }
+
+export function qr(A:NDArray)
+{
+  if(A.shape.length !== 2) {
+    throw new Error('Input is not matrix');
+  }
+  let [m,n] = A.shape;
+  if(m === 0 || n === 0) {
+    throw new Error('Empty matrix');
+  }
+
+  let minmn = Math.min(m,n);
+
+  A.swapOrder();
+
+  let tau = new NDArray({shape:[minmn]});
+
+  lapack.geqrf(A.data,m,n,tau.data);
+
+  lapack.orgqr(A.data,m,n,minmn,tau.data);
+
+}

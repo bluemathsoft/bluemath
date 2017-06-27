@@ -85,4 +85,4 @@ def test_dgeqrf_dorgqr():
 
   print(A)
 
-test_dgeqrf_dorgqr()
+test_qr()
