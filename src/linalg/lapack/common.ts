@@ -170,6 +170,24 @@ export const dgeqrf_wrap = em.cwrap('dgeqrf_', null,
 /**
  * @hidden
  */
+export const sorgqr_wrap = em.cwrap('sorgqr_', null,
+  [
+    'number','number','number','number','number',
+    'number','number','number','number'
+  ]);
+
+/**
+ * @hidden
+ */
+export const dorgqr_wrap = em.cwrap('dorgqr_', null,
+  [
+    'number','number','number','number','number',
+    'number','number','number','number'
+  ]);
+
+/**
+ * @hidden
+ */
 export const dgelsd_wrap = em.cwrap('dgelsd_', null,
   [
     'number','number','number','number','number',

@@ -63,4 +63,26 @@ def test_qr():
   print(q)
   print(r)
 
-test_qr()
+def test_dgeqrf_dorgqr():
+  A = np.array([
+    [3,6,2],
+    [1,7,6],
+    [9,3,2]
+  ], np.double);
+  tau = np.empty((3),np.double)
+  work = np.zeros(1,np.double);
+  info = 0
+  np.linalg.lapack_lite.dgeqrf(3,3,A,3,tau,work,-1,info)
+  worksize = int(work[0])
+  work = np.zeros(worksize,np.double);
+  np.linalg.lapack_lite.dgeqrf(3,3,A,3,tau,work,worksize,info)
+
+  work = np.zeros(1,np.double);
+  np.linalg.lapack_lite.dorgqr(3,3,3,A,3,tau,work,-1,info)
+  worksize = int(work[0])
+  work = np.zeros(worksize,np.double);
+  np.linalg.lapack_lite.dorgqr(3,3,3,A,3,tau,work,worksize,info)
+
+  print(A)
+
+test_dgeqrf_dorgqr()

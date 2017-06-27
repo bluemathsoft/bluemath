@@ -339,19 +339,33 @@ export default function testLAPACK() {
       });
     });
 
-    QUnit.module('geqrf', () => {
-      QUnit.test('dgeqrf', assert => {
+    QUnit.module('geqrf-orgqr', () => {
+      QUnit.test('dgeqrf-dorgqr', assert => {
         let A = new NDArray([
           [3, 6, 2],
           [1, 7, 6],
           [9, 3, 2]
         ]);
         let tau = new NDArray({shape:[3],datatype:'f64'});
-        A.swapOrder();
+
         linalg.lapack.geqrf(A.data,3,3,tau.data);
-        console.log(A.data);
-        console.log(tau.data);
-        assert.ok(true);
+
+        assert.ok(A.isEqual(new NDArray([
+          [-7.,0.6,0.2],
+          [-8.14285714,-4.43777845,0.7008373],
+          [-7.,3.38006959,5.79440502]
+        ])));
+        assert.ok(tau.isEqual(new NDArray([
+          1.42857143,1.34122607,0.
+        ])));
+
+        linalg.lapack.orgqr(A.data,3,3,3,tau.data);
+
+        assert.ok(A.isEqual(new NDArray([
+          [-0.42857143,-0.85714286,-0.28571429],
+          [0.56104557,-0.00459873,-0.82777215],
+          [0.70820506,-0.51505822,0.48286708]
+        ])));
       });
     });
 
