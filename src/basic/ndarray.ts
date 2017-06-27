@@ -89,6 +89,29 @@ function populateFromArray(data:TypedArray, idx:number, arr:Array<any>) {
   }
 }
 
+function getDataArrayType(typestr?:string) {
+  switch(typestr) {
+    case 'i8':
+      return Int8Array;
+    case 'ui8':
+      return Uint8Array;
+    case 'i16':
+      return Int16Array;
+    case 'ui16':
+      return Uint16Array;
+    case 'i32':
+      return Int32Array;
+    case 'ui32':
+      return Uint32Array;
+    case 'f32':
+      return Float32Array;
+    case 'f64':
+      return Float64Array;
+    default:
+      throw new Error('Unknown datatype');
+  }
+}
+
 export default class NDArray {
 
   shape : number[];
@@ -151,36 +174,10 @@ export default class NDArray {
     }
   }
 
+
   clone() {
-    let data;
-    switch(this.datatype) {
-    case 'i8':
-      data = new Int8Array(this._data);
-      break;
-    case 'ui8':
-      data = new Uint8Array(this._data);
-      break;
-    case 'i16':
-      data = new Int16Array(this._data);
-      break;
-    case 'ui16':
-      data = new Uint16Array(this._data);
-      break;
-    case 'i32':
-      data = new Int32Array(this._data);
-      break;
-    case 'ui32':
-      data = new Uint32Array(this._data);
-      break;
-    case 'f32':
-      data = new Float32Array(this._data);
-      break;
-    case 'f64':
-      data = new Float64Array(this._data);
-      break;
-    default:
-      throw new Error('Unknown datatype');
-    }
+    let dataArrayType = getDataArrayType(this.datatype);
+    let data = new dataArrayType(this._data);
     return new NDArray(data,{shape:this.shape.slice()});
   }
 
@@ -189,34 +186,8 @@ export default class NDArray {
   }
 
   private _alloc(size:number, data?:TypedArray|Array<any>, datatype?:NumberType) {
-    switch(datatype) {
-    case 'i8':
-      this._data = new Int8Array(size);
-      break;
-    case 'ui8':
-      this._data = new Uint8Array(size);
-      break;
-    case 'i16':
-      this._data = new Int16Array(size);
-      break;
-    case 'ui16':
-      this._data = new Uint16Array(size);
-      break;
-    case 'i32':
-      this._data = new Int32Array(size);
-      break;
-    case 'ui32':
-      this._data = new Uint32Array(size);
-      break;
-    case 'f32':
-      this._data = new Float32Array(size);
-      break;
-    case 'f64':
-      this._data = new Float64Array(size);
-      break;
-    default:
-      throw new Error('Unknown datatype');
-    }
+    let dataArrayType = getDataArrayType(datatype);
+    this._data = new dataArrayType(size);
     if(Array.isArray(data)) {
       populateFromArray(this._data, 0, data);
     } else if(ArrayBuffer.isView(data)) {
