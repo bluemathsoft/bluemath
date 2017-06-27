@@ -409,5 +409,17 @@ export default function testNDArray() {
         assert.equal(B.get(1,2),45)
       });
     });
+
+    QUnit.module('slice', () => {
+      QUnit.test('3x3', assert => {
+        let A = new NDArray([
+          [2,4,6],
+          [1,0,9],
+          [0,2,3]
+        ], {datatype:'f64'});
+        A.slice(':1',':2');
+        assert.ok(true);
+      });
+    });
   });
 }

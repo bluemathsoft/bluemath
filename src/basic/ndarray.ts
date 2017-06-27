@@ -368,6 +368,36 @@ export default class NDArray {
     }
   }
 
+  slice(...indices:(string|number|undefined|null)[]) {
+    let slice_recipe = [];
+    for(let i=0; i<indices.length; i++) {
+      let index = indices[i];
+      let max = this.shape[i];
+      if(index === undefined || index === null || index === ':') {
+        // gather all indices in this dimension
+        slice_recipe.push(null);
+      } else if(typeof index === 'string') {
+        let match = /([-\d]*)\:([-\d]*)/.exec(index);
+        let from = 0;
+        let to = max;
+        if(match) {
+          if(match[1] !== '') {
+            from = parseInt(match[1],10);
+          }
+          if(match[2] !== '') {
+            to = parseInt(match[2],10);
+          }
+        }
+        slice_recipe.push([from,to]);
+      }
+    }
+    for(let i=slice_recipe.length; i<this.shape.length; i++) {
+      slice_recipe.push([0,this.shape[i]]);
+    }
+    console.assert(slice_recipe.length === this.shape.length);
+    console.log(slice_recipe);
+  }
+
   toString() {
     let precision = 4;
     return JSON.stringify(this.toArray(), function (key, val) { 
