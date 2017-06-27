@@ -568,6 +568,173 @@ export default function testOperations() {
         });
       });
     });
+
+    QUnit.module('tri', () => {
+
+      QUnit.module('tril', () => {
+        QUnit.test('4x4', assert => {
+          let A = new NDArray([
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5]
+          ]);
+          let trilA = linalg.tril(A);
+          assert.ok(trilA.isEqual(new NDArray([
+            [5,0,0,0],
+            [5,5,0,0],
+            [5,5,5,0],
+            [5,5,5,5]
+          ])));
+        });
+        QUnit.test('4x4 diag -1', assert => {
+          let A = new NDArray([
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5]
+          ]);
+          let trilA = linalg.tril(A,-1);
+          assert.ok(trilA.isEqual(new NDArray([
+            [0,0,0,0],
+            [5,0,0,0],
+            [5,5,0,0],
+            [5,5,5,0]
+          ])));
+        });
+        QUnit.test('4x4 diag 1', assert => {
+          let A = new NDArray([
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5]
+          ]);
+          let trilA = linalg.tril(A,1);
+          assert.ok(trilA.isEqual(new NDArray([
+            [5,5,0,0],
+            [5,5,5,0],
+            [5,5,5,5],
+            [5,5,5,5]
+          ])));
+        });
+        QUnit.test('6x4', assert => {
+          let A = new NDArray([
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5]
+          ]);
+          let trilA = linalg.tril(A);
+          assert.ok(trilA.isEqual(new NDArray([
+            [5,0,0,0],
+            [5,5,0,0],
+            [5,5,5,0],
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5]
+          ])));
+        });
+        QUnit.test('4x6', assert => {
+          let A = new NDArray([
+            [5,5,5,5,5,5],
+            [5,5,5,5,5,5],
+            [5,5,5,5,5,5],
+            [5,5,5,5,5,5]
+          ]);
+          let trilA = linalg.tril(A);
+          assert.ok(trilA.isEqual(new NDArray([
+            [5,0,0,0,0,0],
+            [5,5,0,0,0,0],
+            [5,5,5,0,0,0],
+            [5,5,5,5,0,0]
+          ])));
+        });
+      });
+
+      QUnit.module('triu', () => {
+        QUnit.test('4x4', assert => {
+          let A = new NDArray([
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5]
+          ]);
+          let triuA = linalg.triu(A);
+          assert.ok(triuA.isEqual(new NDArray([
+            [5,5,5,5],
+            [0,5,5,5],
+            [0,0,5,5],
+            [0,0,0,5]
+          ])));
+        });
+        QUnit.test('4x4 diag -1', assert => {
+          let A = new NDArray([
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5]
+          ]);
+          let triuA = linalg.triu(A,-1);
+          assert.ok(triuA.isEqual(new NDArray([
+            [5,5,5,5],
+            [5,5,5,5],
+            [0,5,5,5],
+            [0,0,5,5]
+          ])));
+        });
+        QUnit.test('4x4 diag +1', assert => {
+          let A = new NDArray([
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5]
+          ]);
+          let triuA = linalg.triu(A,1);
+          assert.ok(triuA.isEqual(new NDArray([
+            [0,5,5,5],
+            [0,0,5,5],
+            [0,0,0,5],
+            [0,0,0,0]
+          ])));
+        });
+        QUnit.test('6x4', assert => {
+          let A = new NDArray([
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5],
+            [5,5,5,5]
+          ]);
+          let triuA = linalg.triu(A);
+          assert.ok(triuA.isEqual(new NDArray([
+            [5,5,5,5],
+            [0,5,5,5],
+            [0,0,5,5],
+            [0,0,0,5],
+            [0,0,0,0],
+            [0,0,0,0]
+          ])));
+        });
+        QUnit.test('4x6', assert => {
+          let A = new NDArray([
+            [5,5,5,5,5,5],
+            [5,5,5,5,5,5],
+            [5,5,5,5,5,5],
+            [5,5,5,5,5,5]
+          ]);
+          let triuA = linalg.triu(A);
+          assert.ok(triuA.isEqual(new NDArray([
+            [5,5,5,5,5,5],
+            [0,5,5,5,5,5],
+            [0,0,5,5,5,5],
+            [0,0,0,5,5,5]
+          ])));
+        });
+      });
+    });
     QUnit.module('Cholesky', () => {
       QUnit.test('3x3', assert => {
         let A = new NDArray([

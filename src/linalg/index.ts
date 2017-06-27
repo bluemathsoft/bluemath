@@ -23,7 +23,7 @@
 import {eye, zeros} from './construction'
 import {
   matmul, norm, solve, cholesky, inner, outer, svd, rank, lstsq, lu_custom,
-  slogdet, det, inv
+  slogdet, det, inv, qr, triu, tril
 } from './operations'
 import * as lapack from './lapack'
 
@@ -34,6 +34,8 @@ export {
   inner,
   outer,
   matmul,
+  triu,
+  tril,
 
   cholesky,
 
@@ -46,6 +48,7 @@ export {
   slogdet,
   det,
   inv,
+  qr,
 
   lapack
 }

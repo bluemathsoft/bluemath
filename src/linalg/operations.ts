@@ -661,3 +661,32 @@ export function inv(A:NDArray) {
   return I;
 }
 
+export function tril(A:NDArray,k=0) {
+  if(A.shape.length !== 2) {
+    throw new Error('Input is not matrix');
+  }
+  let copyA = A.clone();
+  for(let i=0; i<copyA.shape[0]; i++) {
+    for(let j=0; j<copyA.shape[1]; j++) {
+      if(i < j-k) {
+        copyA.set(i,j,0);
+      }
+    }
+  }
+  return copyA;
+}
+
+export function triu(A:NDArray,k=0) {
+  if(A.shape.length !== 2) {
+    throw new Error('Input is not matrix');
+  }
+  let copyA = A.clone();
+  for(let i=0; i<copyA.shape[0]; i++) {
+    for(let j=0; j<copyA.shape[1]; j++) {
+      if(i > j-k) {
+        copyA.set(i,j,0);
+      }
+    }
+  }
+  return copyA;
+}
