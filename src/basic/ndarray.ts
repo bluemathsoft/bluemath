@@ -195,7 +195,7 @@ export default class NDArray {
     }
   }
 
-  private _getAddress(...indices:number[]) {
+  private _indexToAddress(...indices:number[]) {
     if(indices.length !== this.shape.length) {
       throw new Error('Mismatched number of dimensions');
     }
@@ -216,7 +216,10 @@ export default class NDArray {
     return addr;
   }
 
-  dataIndexToIndex(di:number) {
+  /**
+   * @hidden
+   */
+  _addressToIndex(di:number) {
     if(di >= this.size) {
       throw new Error("Data index out of range");
     }
@@ -266,13 +269,13 @@ export default class NDArray {
   }
 
   get(...indices:number[]) {
-    let addr = this._getAddress(...indices);
+    let addr = this._indexToAddress(...indices);
     return this._data[addr];
   }
 
   set(...args:number[]) {
     let nargs = args.length;
-    let addr = this._getAddress(...(args.slice(0,nargs-1)));
+    let addr = this._indexToAddress(...(args.slice(0,nargs-1)));
     this._data[addr] = args[nargs-1];
   }
 
@@ -339,16 +342,20 @@ export default class NDArray {
     }
   }
 
-  slice(...indices:(string|number|undefined|null)[]) {
-    let slice_recipe = [];
-    for(let i=0; i<indices.length; i++) {
-      let index = indices[i];
+  slice(...slices:(string|number|undefined|null)[]):NDArray {
+    let slice_recipe:number[][] = [];
+    // Each slice specifies the index-range in that dimension to return
+    for(let i=0; i<slices.length; i++) {
+      let slice = slices[i];
       let max = this.shape[i];
-      if(index === undefined || index === null || index === ':') {
+      if(slice === undefined || slice === null || slice === ':') {
         // gather all indices in this dimension
-        slice_recipe.push(null);
-      } else if(typeof index === 'string') {
-        let match = /([-\d]*)\:([-\d]*)/.exec(index);
+        slice_recipe.push([0,max]);
+      } else if(typeof slice === 'string') {
+        // assume the slice format to be [<from_index>:<to_index>]
+        // if from_index or to_index is missing then they are replaced
+        // by 0 or max respectively
+        let match = /([-\d]*)\:([-\d]*)/.exec(slice);
         let from = 0;
         let to = max;
         if(match) {
@@ -356,17 +363,53 @@ export default class NDArray {
             from = parseInt(match[1],10);
           }
           if(match[2] !== '') {
-            to = parseInt(match[2],10);
+            to = Math.min(parseInt(match[2],10), max);
           }
         }
         slice_recipe.push([from,to]);
+      } else {
+        throw new Error('TODO')
       }
     }
+    // At this point slice_recipe contains an array of index ranges
+    // index range is an array [from_index,to_index]
+    // If slices argument has less slices than the number of dimensions
+    // of this array (i.e. this.shape.length),
+    // then we assume that lower (i.e. inner) dimensions are missing and
+    // we take that as wildcard and return all indices in those
+    // dimensions
     for(let i=slice_recipe.length; i<this.shape.length; i++) {
       slice_recipe.push([0,this.shape[i]]);
     }
     console.assert(slice_recipe.length === this.shape.length);
-    console.log(slice_recipe);
+
+    // From slice_recipe find the total size of the result array
+    // and also the shape of the result array
+    let newsize = 1;
+    let newshape = [];
+    for(let i=0; i<slice_recipe.length; i++) {
+      let recipe = slice_recipe[i];
+      let dimsize = recipe[1]-recipe[0];
+      newshape.push(dimsize);
+      newsize *= dimsize;
+    }
+
+    let newndarray;
+    let dataArrayType = getDataArrayType(this.datatype);
+    if(newsize > 0) {
+      // Create result array of the calculated size
+      newndarray = new NDArray(
+        new dataArrayType(newsize), {shape:newshape});
+      // populate the result array from the original array (i.e. this)
+      for(let i=0; i<newsize; i++) {
+        let newindices = newndarray._addressToIndex(i);
+        let oldindices = newindices.map((idx,i) => idx+slice_recipe[i][0]);
+        newndarray.set(...newindices,this.get(...oldindices)); // todo
+      }
+    } else {
+      newndarray = new NDArray({shape:[0]});
+    }
+    return newndarray;
   }
 
   toString() {

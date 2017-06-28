@@ -295,14 +295,14 @@ export default function testNDArray() {
       QUnit.module('Data index to index', () => {
         QUnit.test('3x3x3', assert => {
           let A = new NDArray({shape:[3,3,3]});
-          assert.deepEqual(A.dataIndexToIndex(10), [1,0,1]);
-          assert.deepEqual(A.dataIndexToIndex(11), [1,0,2]);
-          assert.deepEqual(A.dataIndexToIndex(13), [1,1,1]);
-          assert.deepEqual(A.dataIndexToIndex(14), [1,1,2]);
+          assert.deepEqual(A._addressToIndex(10), [1,0,1]);
+          assert.deepEqual(A._addressToIndex(11), [1,0,2]);
+          assert.deepEqual(A._addressToIndex(13), [1,1,1]);
+          assert.deepEqual(A._addressToIndex(14), [1,1,2]);
         });
         QUnit.test('1x6', assert => {
           let A = new NDArray({shape:[1,6]});
-          assert.deepEqual(A.dataIndexToIndex(3), [0,3]);
+          assert.deepEqual(A._addressToIndex(3), [0,3]);
         });
       });
 
@@ -417,9 +417,47 @@ export default function testNDArray() {
           [1,0,9],
           [0,2,3]
         ], {datatype:'f64'});
-        A.slice(':1',':2');
-        assert.ok(true);
+        assert.ok(A.slice(':1',':2').isEqual(new NDArray([
+          [2,4],
+        ])));
+        assert.ok(A.slice(':1',':3').isEqual(new NDArray([
+          [2,4,6],
+        ])));
+        assert.ok(A.slice(':1',':4').isEqual(new NDArray([
+          [2,4,6],
+        ])));
+        assert.ok(A.slice(':1',':').isEqual(new NDArray([
+          [2,4,6],
+        ])));
+        assert.ok(A.slice(':1').isEqual(new NDArray([
+          [2,4,6],
+        ])));
+        assert.ok(A.slice(':',':1').isEqual(new NDArray([
+          [2],
+          [1],
+          [0]
+        ])));
+        assert.ok(A.slice(':2',':3').isEqual(new NDArray([
+          [2,4,6],
+          [1,0,9],
+        ])));
+        assert.ok(A.slice(':',':').isEqual(new NDArray([
+          [2,4,6],
+          [1,0,9],
+          [0,2,3]
+        ])));
+        assert.ok(A.slice(':').isEqual(new NDArray([
+          [2,4,6],
+          [1,0,9],
+          [0,2,3]
+        ])));
+        assert.ok(A.slice().isEqual(new NDArray([
+          [2,4,6],
+          [1,0,9],
+          [0,2,3]
+        ])));
       });
     });
+
   });
 }
