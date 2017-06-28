@@ -701,14 +701,23 @@ export function qr(A:NDArray)
     throw new Error('Empty matrix');
   }
 
+  let copyA = A.clone();
   let minmn = Math.min(m,n);
 
-  A.swapOrder();
+  copyA.swapOrder();
 
   let tau = new NDArray({shape:[minmn]});
 
-  lapack.geqrf(A.data,m,n,tau.data);
+  lapack.geqrf(copyA.data,m,n,tau.data);
 
-  lapack.orgqr(A.data,m,n,minmn,tau.data);
+  let r = copyA.clone();
+  r.swapOrder();
+  r = triu(r.slice(':',':'+minmn));
 
+  let q = copyA.slice(':'+n);
+
+  lapack.orgqr(q.data,m,n,minmn,tau.data);
+  q.swapOrder();
+
+  return [q,r];
 }

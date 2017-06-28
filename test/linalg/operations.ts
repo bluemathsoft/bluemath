@@ -743,9 +743,65 @@ export default function testOperations() {
           [1, 7, 6],
           [9, 3, 2]
         ]);
-        linalg.qr(A);
-        console.log(A.toString());
-        assert.ok(true);
+        let [q,r] = linalg.qr(A);
+        assert.ok(q.isEqual(new NDArray([
+          [-0.31448545, -0.53452248, -0.78446454],
+          [-0.10482848, -0.80178373, 0.58834841],
+          [-0.94345635, 0.26726124, 0.19611614]
+        ])));
+        assert.ok(r.isEqual(new NDArray([
+          [-9.53939201, -5.45108115, -3.14485451],
+          [0., -8.01783726, -5.34522484],
+          [0., 0., 2.35339362]
+        ])));
+      });
+      QUnit.test('2x2', assert => {
+        let A = new NDArray([
+          [3,6],
+          [9,2]
+        ]);
+        let [q,r] = linalg.qr(A);
+        assert.ok(q.isEqual(new NDArray([
+          [-0.31622777, -0.9486833],
+          [-0.9486833, 0.31622777]
+        ])));
+        assert.ok(r.isEqual(new NDArray([
+          [-9.48683298, -3.79473319],
+          [0., -5.05964426]
+        ])));
+      });
+      QUnit.test('3x2', assert => {
+        let A = new NDArray([
+          [3,6],
+          [9,2],
+          [6,7]
+        ]);
+        let [q,r] = linalg.qr(A);
+        assert.ok(q.isEqual(new NDArray([
+          [-0.26726124, 0.64927181],
+          [-0.80178373, -0.55971708],
+          [-0.53452248, 0.51493971]
+        ])));
+        console.log(r.toString());
+        assert.ok(r.isEqual(new NDArray([
+          [-11.22497216, -6.94879229],
+          [0., 6.3807747]
+        ])));
+      });
+      QUnit.test('2x4', assert => {
+        let A = new NDArray([
+          [3,6,7,8],
+          [9,2,5,5]
+        ]);
+        let [q,r] = linalg.qr(A);
+        assert.ok(q.isEqual(new NDArray([
+          [-0.31622777, -0.9486833],
+          [-0.9486833, 0.31622777]
+        ])));
+        assert.ok(r.isEqual(new NDArray([
+          [-9.48683298, -3.79473319, -6.95701085, -7.27323862],
+          [0., -5.05964426, -5.05964426, -6.00832755]
+        ])));
       });
     });
 
@@ -764,7 +820,6 @@ export default function testOperations() {
         assert.equal(A.get(1,1), 1);
         assert.equal(A.get(1,2), 5);
         assert.equal(A.get(2,2), 3);
-
       });
     });
   });
