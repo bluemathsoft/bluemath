@@ -20,6 +20,8 @@
 */
 
 import {TypedArray} from '../..'
+import * as lapacklite from '../../../ext/lapacklite'
+let em = lapacklite.Module;
 
 import {
   defineEmVariable, defineEmArrayVariable,
@@ -40,6 +42,15 @@ function potrf_internal(
 
   let fn = numtype === 'f32' ? spotrf_wrap : dpotrf_wrap;
   fn(puplo, pn, pA, plda, pinfo);
+
+  let info = em.getValue(pinfo,'i32');
+  if(info < 0) {
+    // Fortran has 1-based indexing
+    throw new Error('Invalid argument ('+(-info)+')');
+  }
+  if(info > 0) {
+    throw new Error('Matrix is not positive definite');
+  }
   mA.set(A);
 }
 

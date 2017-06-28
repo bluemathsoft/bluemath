@@ -400,8 +400,17 @@ export function outer(A:NDArray, B:NDArray) {
  * @hidden
  */
 export function cholesky(A:NDArray) {
-  // TODO : do checks on A before calling lapack
-  lapack.potrf(A.data,A.shape[0]);
+  if(A.shape.length !== 2) {
+    throw new Error('A is not a matrix');
+  }
+  if(A.shape[0] !== A.shape[1]) {
+    throw new Error('Input is not square matrix');
+  }
+  let copyA = A.clone();
+  copyA.swapOrder();
+  lapack.potrf(copyA.data,copyA.shape[0]);
+  copyA.swapOrder();
+  return tril(copyA);
 }
 
 /**

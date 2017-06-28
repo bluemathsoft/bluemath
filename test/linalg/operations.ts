@@ -806,20 +806,35 @@ export default function testOperations() {
     });
 
     QUnit.module('Cholesky', () => {
-      QUnit.test('3x3', assert => {
+      QUnit.test('3x3 1', assert => {
         let A = new NDArray([
           [4,12,-16],
           [12,37,-43],
           [-16,-43,98]
         ]);
-        linalg.cholesky(A);
-        //TODO: this only passes if internally 'L' is specified for UPLO
-        assert.equal(A.get(0,0), 2);
-        assert.equal(A.get(0,1), 6);
-        assert.equal(A.get(0,2), -8);
-        assert.equal(A.get(1,1), 1);
-        assert.equal(A.get(1,2), 5);
-        assert.equal(A.get(2,2), 3);
+        let chA = linalg.cholesky(A);
+        assert.ok(chA.isEqual(new NDArray([
+          [2,0,0],
+          [6,1,0],
+          [-8,5,3]
+        ])))
+      });
+      QUnit.test('3x3 2', assert => {
+        let A = new NDArray([[2, -1, 0], [-1, 2, -1], [0, -1, 2]])
+        let chA = linalg.cholesky(A);
+        assert.ok(chA.isEqual(new NDArray([
+          [1.41421356, 0., 0.],
+          [-0.70710678, 1.22474487, 0.],
+          [0., -0.81649658, 1.15470054]
+        ])))
+      });
+      QUnit.test('not positive definite', assert => {
+        let A = new NDArray([
+          [4, 12, -16], [12, 0, -43], [-16, -43, 98]
+        ]);
+        assert.throws(() => {
+          linalg.cholesky(A);
+        })
       });
     });
   });
