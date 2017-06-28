@@ -420,6 +420,9 @@ export default function testNDArray() {
         assert.ok(A.slice(':1',':2').isEqual(new NDArray([
           [2,4],
         ])));
+        assert.ok(A.slice(0,':2').isEqual(new NDArray([
+          [2,4],
+        ])));
         assert.ok(A.slice(':1',':3').isEqual(new NDArray([
           [2,4,6],
         ])));
@@ -436,6 +439,16 @@ export default function testNDArray() {
           [2],
           [1],
           [0]
+        ])));
+        assert.ok(A.slice(':',0).isEqual(new NDArray([
+          [2],
+          [1],
+          [0]
+        ])));
+        assert.ok(A.slice(':',2).isEqual(new NDArray([
+          [6],
+          [9],
+          [3]
         ])));
         assert.ok(A.slice(':2',':3').isEqual(new NDArray([
           [2,4,6],

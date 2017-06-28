@@ -367,8 +367,10 @@ export default class NDArray {
           }
         }
         slice_recipe.push([from,to]);
+      } else if(typeof slice === 'number') {
+        slice_recipe.push([slice,slice+1]);
       } else {
-        throw new Error('TODO')
+        throw new Error("Unexpected slice :"+slice)
       }
     }
     // At this point slice_recipe contains an array of index ranges
