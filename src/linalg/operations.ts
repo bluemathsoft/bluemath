@@ -715,7 +715,6 @@ export function qr(A:NDArray)
   r = triu(r.slice(':',':'+minmn));
 
   let q = copyA.slice(':'+n);
-
   lapack.orgqr(q.data,m,n,minmn,tau.data);
   q.swapOrder();
 

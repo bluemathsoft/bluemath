@@ -770,7 +770,7 @@ export default function testOperations() {
           [0., -5.05964426]
         ])));
       });
-      QUnit.test('3x2', assert => {
+      QUnit.skip('3x2', assert => {
         let A = new NDArray([
           [3,6],
           [9,2],
@@ -788,7 +788,7 @@ export default function testOperations() {
           [0., 6.3807747]
         ])));
       });
-      QUnit.test('2x4', assert => {
+      QUnit.skip('2x4', assert => {
         let A = new NDArray([
           [3,6,7,8],
           [9,2,5,5]
