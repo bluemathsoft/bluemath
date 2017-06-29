@@ -19,17 +19,17 @@
 
 */
 
-import Matrix from './matrix'
-import BandMatrix from './bmatrix'
-import Vector from './vector'
-import Vector2 from './vector2'
-import Vector3 from './vector3'
-import PermutationVector from './pvector'
-import NDArray from './ndarray'
-import Complex from './complex'
+export default class Complex {
+  real : number;
+  imag : number;
 
-export {
-  NDArray,
-  Matrix, Vector, Vector2, Vector3, Complex,
-  PermutationVector, BandMatrix
-};
+  constructor(real?:number,imag?:number) {
+    this.real = real || 0;
+    this.imag = imag || 0;
+  }
+
+  toString() {
+    let sign = (this.imag >=0) ? '+' : '-';
+    return `(${this.real}${sign}${Math.abs(this.imag)}i)`;
+  }
+}

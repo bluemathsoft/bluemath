@@ -23,6 +23,7 @@
 import {NumberType,TypedArray} from '..'
 import {isequal} from '../utils'
 import {EPSILON} from '../constants'
+import Complex from './complex'
 
 export interface NDArrayOptions {
   shape? : number[];
@@ -117,7 +118,22 @@ export default class NDArray {
   shape : number[];
   size : number;
   datatype : NumberType;
+
+  /**
+   * Real part of number elements is stored in this array
+   */
   private _data : TypedArray;
+
+  /**
+   * If any number element of this array is Complex then its
+   * imaginary part is stored in _idata sparse array object
+   * indexed against its address.
+   * Note that _idata is not a TypedArray as _data. This way
+   * the storage is optimized for the use cases where real number
+   * data is common, but in some fringe cases the number could be
+   * complex.
+   */
+  private _idata : number[];
 
   constructor(
     arg0:TypedArray|Array<any>|NDArrayOptions,
@@ -268,15 +284,22 @@ export default class NDArray {
     this._data.fill(value);
   }
 
-  get(...indices:number[]) {
+  get(...indices:number[]) : number|Complex {
     let addr = this._indexToAddress(...indices);
     return this._data[addr];
   }
 
-  set(...args:number[]) {
+  set(...args:(number|Complex)[]) {
     let nargs = args.length;
-    let addr = this._indexToAddress(...(args.slice(0,nargs-1)));
-    this._data[addr] = args[nargs-1];
+    let index = <number[]>(args.slice(0,nargs-1));
+    let addr = this._indexToAddress(...index);
+    let val = args[nargs-1];
+    if(val instanceof Complex) {
+      this._data[addr] = val.real;
+      this._idata[addr] = val.imag;
+    } else {
+      this._data[addr] = val;
+    }
   }
 
   swaprows(i:number, j:number) : void {

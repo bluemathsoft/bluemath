@@ -19,7 +19,7 @@
 
 */
 
-import {NDArray} from '../basic'
+import {NDArray,Complex} from '../basic'
 import {eye} from './construction'
 import * as lapack from './lapack'
 import {EPSILON} from '../constants'
@@ -76,7 +76,7 @@ export function matmul(A:NDArray, B:NDArray) {
     for(let j=0; j<mB.shape[1]; j++) {
       let value = 0.0;
       for(let k=0; k<mA.shape[1]; k++) {
-        value += A.get(i,k)*B.get(k,j);
+        value += <number>A.get(i,k)*<number>B.get(k,j); // TODO:Complex
       }
       result.set(i,j,value);
     }
@@ -115,13 +115,13 @@ export function norm(A:NDArray, p?:number|'fro') {
     if(p === Infinity) {
       let max = -Infinity;
       for(let i=0; i<A.shape[0]; i++) {
-        max = Math.max(max, Math.abs(A.get(i)));
+        max = Math.max(max, Math.abs(<number>A.get(i))); // TODO:Complex
       }
       return max;
     } else if(p === -Infinity) { // As defined in Matlab docs
       let min = Infinity;
       for(let i=0; i<A.shape[0]; i++) {
-        min = Math.min(min, Math.abs(A.get(i)));
+        min = Math.min(min, Math.abs(<number>A.get(i))); // TODO:Complex
       }
       return min;
     } else if(p === 0) {
@@ -136,7 +136,7 @@ export function norm(A:NDArray, p?:number|'fro') {
 
       let sum = 0;
       for(let i=0; i<A.shape[0]; i++) {
-        sum += Math.pow(Math.abs(A.get(i)), p);
+        sum += Math.pow(Math.abs(<number>A.get(i)), p); // TODO:complex
       }
       return Math.pow(sum, 1/p);
 
@@ -148,7 +148,7 @@ export function norm(A:NDArray, p?:number|'fro') {
       let sum = 0;
       for(let i=0; i<A.shape[0]; i++) {
         for(let j=0; j<A.shape[1]; j++) {
-          sum += A.get(i,j)*A.get(i,j);
+          sum += <number>A.get(i,j)*<number>A.get(i,j); // TODO:Complex
         }
       }
       return Math.sqrt(sum);
@@ -195,7 +195,7 @@ export function lu_custom(A:NDArray) {
     let ipivot:number = 0;
     let pivot = -Infinity;
     for(let i=k; i<n; i++) {
-      let val = Math.abs(A.get(i,k));
+      let val = Math.abs(<number>A.get(i,k)); // TODO:Complex
       if(val > pivot) {
         pivot = val;
         ipivot = i;
@@ -211,11 +211,12 @@ export function lu_custom(A:NDArray) {
     }
 
     for(let i=k+1; i<n; i++) {
-      A.set(i,k, A.get(i,k)/pivot);
+      A.set(i,k, <number>A.get(i,k)/pivot); // TODO:Complex
     }
     for(let i=k+1; i<n; i++) {
       for(let j=n-1; j>k; j--) {
-        A.set(i,j, A.get(i,j)-A.get(i,k)*A.get(k,j));
+        // TODO:Complex
+        A.set(i,j, <number>A.get(i,j)-<number>A.get(i,k)*<number>A.get(k,j));
       }
     }
 
@@ -568,7 +569,8 @@ export function lstsq(A:NDArray, B:NDArray, rcond=-1) : lstsq_return {
       for(i=n; i<m; i++) {
         let K = copyB.shape[1];
         for(let j=0; j<K; j++) {
-          sum += copyB.get(i,j) * copyB.get(i,j);
+          // TODO:Complex
+          sum += <number>copyB.get(i,j) * <number>copyB.get(i,j);
         }
       }
       residuals.set(0,sum);
@@ -578,7 +580,8 @@ export function lstsq(A:NDArray, B:NDArray, rcond=-1) : lstsq_return {
         let K = copyB.shape[1];
         let sum = 0;
         for(let j=0; j<K; j++) {
-          sum += copyB.get(i,j) * copyB.get(i,j);
+          // TODO:Complex
+          sum += <number>copyB.get(i,j) * <number>copyB.get(i,j);
         }
         residuals.set(i-<number>n,sum);
       }
@@ -632,8 +635,9 @@ export function slogdet(A:NDArray) {
 
   for(let i=0; i<m; i++) {
     let e = copyA.get(i,i);
-    let e_abs = Math.abs(e);
-    let e_sign = e/e_abs;
+    // TODO:Complex
+    let e_abs = Math.abs(<number>e);
+    let e_sign = <number>e/e_abs;
     sign_acc *= e_sign;
     log_acc += Math.log(e_abs);
   }

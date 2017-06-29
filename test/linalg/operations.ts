@@ -186,8 +186,8 @@ export default function testOperations() {
           [0,1], [1,1], [2,1], [3,1]
         ]);
         let {x,residuals,rank,singulars} = linalg.lstsq(A,Y);
-        assert.ok(utils.isequal(x.get(0,0),1));
-        assert.ok(utils.isequal(x.get(1,0),-0.95));
+        assert.ok(utils.isequal(<number>x.get(0,0),1));
+        assert.ok(utils.isequal(<number>x.get(1,0),-0.95));
         assert.equal(rank, 2);
         assert.ok(residuals.isEqual(new NDArray([0.05])));
         assert.ok(singulars.isEqual(new NDArray([4.10003045, 1.09075677])));
@@ -200,8 +200,8 @@ export default function testOperations() {
           [3.2, 1], [1, 1], [3.3, 1]
         ]);
         let {x,residuals,rank,singulars} = linalg.lstsq(A,Y);
-        assert.ok(utils.isequal(x.get(0, 0), -0.71853349));
-        assert.ok(utils.isequal(x.get(1, 0), 1.16556005));
+        assert.ok(utils.isequal(<number>x.get(0, 0), -0.71853349));
+        assert.ok(utils.isequal(<number>x.get(1, 0), 1.16556005));
         assert.equal(rank, 2);
         assert.ok(residuals.isEqual(new NDArray([4.1707015])));
         assert.ok(singulars.isEqual(new NDArray([5.94059051, 2.42680538])));
