@@ -141,6 +141,7 @@ export default class NDArray {
   {
     this.size = 0;
     this.datatype = 'f32';
+    this._idata = [];
     if(Array.isArray(arg0)) {
       this.shape = deduceShape(arg0);
       this._calcSize();

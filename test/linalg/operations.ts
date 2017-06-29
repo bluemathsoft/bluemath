@@ -804,6 +804,21 @@ export default function testOperations() {
         ])));
       });
     });
+    QUnit.module('Eigen', () => {
+      QUnit.test('eig', assert => {
+        let A = new NDArray([
+          [3,6,2,1],
+          [1,7,6,1],
+          [9,3,2,1],
+          [9,3,7,1]
+        ]);
+        let [w,vl,vr] = linalg.eig(A);
+        console.log('w',w.toString());
+        console.log('vl',vl.toString());
+        console.log('vr',vr.toString());
+        assert.ok(true);
+      });
+    });
 
     QUnit.module('Cholesky', () => {
       QUnit.test('3x3 1', assert => {
