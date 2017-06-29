@@ -42,8 +42,20 @@ def test_eig_3x3():
     [1,7,6],
     [9,3,2]
   ])
-  answer = np.linalg.eig(A)
-  print(answer)
+  [w,v] = np.linalg.eig(A)
+  print(w)
+  print(v)
+
+def test_eig_4x4():
+  A = np.array([
+    [3,6,2,1],
+    [1,7,6,1],
+    [9,3,2,1],
+    [9,3,7,1]
+  ])
+  [w,v] = np.linalg.eig(A)
+  print(w)
+  print(v)
 
 def test_eig_2x2():
   A = np.array([
@@ -85,4 +97,4 @@ def test_dgeqrf_dorgqr():
 
   print(A)
 
-test_qr()
+test_eig_4x4()
