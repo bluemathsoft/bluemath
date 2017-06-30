@@ -74,6 +74,14 @@ export declare const dgeqrf_wrap: any;
 /**
  * @hidden
  */
+export declare const sorgqr_wrap: any;
+/**
+ * @hidden
+ */
+export declare const dorgqr_wrap: any;
+/**
+ * @hidden
+ */
 export declare const dgelsd_wrap: any;
 /**
  * @hidden
@@ -83,6 +91,14 @@ export declare const sgetrf_wrap: any;
  * @hidden
  */
 export declare const dgetrf_wrap: any;
+/**
+ * @hidden
+ */
+export declare const sgeev_wrap: any;
+/**
+ * @hidden
+ */
+export declare const dgeev_wrap: any;
 /**
  * @hidden
  */

@@ -12,7 +12,7 @@ import NDArray from '../basic/ndarray';
  */
 export declare function eye(arg0: number | number[], datatype?: NumberType): NDArray;
 /**
- * Creates NDArray of filled with zeros
+ * Creates NDArray filled with zeros
  *
  * ```
  * zeros(2) // Creates 2x2 matrix of zeros

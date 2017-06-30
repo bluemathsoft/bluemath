@@ -5,4 +5,5 @@ import Vector2 from './vector2';
 import Vector3 from './vector3';
 import PermutationVector from './pvector';
 import NDArray from './ndarray';
-export { NDArray, Matrix, Vector, Vector2, Vector3, PermutationVector, BandMatrix };
+import Complex from './complex';
+export { NDArray, Matrix, Vector, Vector2, Vector3, Complex, PermutationVector, BandMatrix };

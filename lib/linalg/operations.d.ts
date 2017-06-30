@@ -94,9 +94,9 @@ export declare function inner(A: NDArray, B: NDArray): number;
  */
 export declare function outer(A: NDArray, B: NDArray): NDArray;
 /**
- * @hidden
+ * Perform Cholesky decomposition on given Matrix
  */
-export declare function cholesky(A: NDArray): void;
+export declare function cholesky(A: NDArray): NDArray;
 /**
  * Singular Value Decomposition
  * Factors the given matrix A, into U,S,VT such that
@@ -171,3 +171,24 @@ export declare function slogdet(A: NDArray): number[];
  * @param A Square matrix to compute determinant
  */
 export declare function det(A: NDArray): number;
+/**
+ * Compute (multiplicative) inverse of given matrix
+ * @param A Square matrix whose inverse is to be found
+ */
+export declare function inv(A: NDArray): NDArray;
+/**
+ * Create Lower triangular matrix from given matrix
+ */
+export declare function tril(A: NDArray, k?: number): NDArray;
+/**
+ * Return Upper triangular matrix from given matrix
+ */
+export declare function triu(A: NDArray, k?: number): NDArray;
+/**
+ * Compute QR decomposition of given Matrix
+ */
+export declare function qr(A: NDArray): NDArray[];
+/**
+ * Compute Eigen values and left, right eigen vectors of given Matrix
+ */
+export declare function eig(A: NDArray): NDArray[];
