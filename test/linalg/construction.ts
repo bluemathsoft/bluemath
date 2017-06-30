@@ -20,6 +20,7 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 import {linalg} from '../../src'
 
 export default function testConstruction() {

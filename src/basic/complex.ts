@@ -32,8 +32,8 @@ export default class Complex {
   }
 
   isEqual(other:Complex, tolerance=EPSILON) {
-    return isequal(this.real,other.real, tolerance) &&
-      isequal(this.imag, other.imag, tolerance);
+    return isequal(this.real,other.real,tolerance) &&
+      isequal(this.imag,other.imag,tolerance);
   }
 
   toString(precision=4) {

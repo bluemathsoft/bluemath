@@ -20,8 +20,8 @@
 
 */
 
-import {eye, zeros} from './construction'
 import {
+  eye, zeros,
   matmul, norm, solve, cholesky, inner, outer, svd, rank, lstsq, lu_custom,
   slogdet, det, inv, qr, triu, tril, eig
 } from './operations'
