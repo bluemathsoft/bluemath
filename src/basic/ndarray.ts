@@ -113,10 +113,28 @@ function getDataArrayType(typestr?:string) {
   }
 }
 
+/**
+ * N-Dimensional array class
+ * It can store real as well as complex numbers in n-dimensions
+ * It can be used to store Vectors (1D) or Matrices (2D).
+ * This class stores the data internally in flat typed arrays
+ */
 export default class NDArray {
 
+  /**
+   * Array of array dimensions. First being the outermost dimension.
+   */
   shape : number[];
+
+  /**
+   * Size of the data (i.e. number of real/complex numbers stored
+   * in this array)
+   */
   size : number;
+
+  /**
+   * Data type of each number, specified by a string code
+   */
   datatype : NumberType;
 
   /**
@@ -179,6 +197,13 @@ export default class NDArray {
     return this._data;
   }
 
+  /**
+   * Set new shape for the data stored in the array
+   * The old data remains intact. If the total size with the new shape
+   * is larger than the old size, then excess elements of the data are
+   * fill with zero.
+   * @param shape New shape
+   */
   reshape(shape:number[]) {
     this.shape = shape;
     let oldsize = this.size;
@@ -191,7 +216,9 @@ export default class NDArray {
     }
   }
 
-
+  /**
+   * Create deep copy of the array
+   */
   clone() {
     let dataArrayType = getDataArrayType(this.datatype);
     let data = new dataArrayType(this._data);
@@ -249,6 +276,9 @@ export default class NDArray {
     return index;
   }
 
+  /**
+   * Create nested array
+   */
   toArray() {
     if(this.shape.length <= 0) {
       throw new Error('Zero shape');
@@ -292,15 +322,26 @@ export default class NDArray {
     return aarr[0];
   }
 
+  /**
+   * Set all members of this array to given value
+   */
   fill(value:number) {
     this._data.fill(value);
   }
 
-  get(...indices:number[]) : number|Complex {
-    let addr = this._indexToAddress(...indices);
+  /**
+   * Access member at given index
+   */
+  get(...index:number[]) : number|Complex {
+    let addr = this._indexToAddress(...index);
     return this._data[addr];
   }
 
+  /**
+   * Set member at given index
+   * All but the last argument should specify the index.
+   * The last argument is the value to set.
+   */
   set(...args:(number|Complex)[]) {
     let nargs = args.length;
     let index = <number[]>(args.slice(0,nargs-1));
@@ -314,6 +355,9 @@ export default class NDArray {
     }
   }
 
+  /**
+   * Swaps matrix rows (this must be a 2D array)
+   */
   swaprows(i:number, j:number) : void {
     if(this.shape.length !== 2) {
       throw new Error('This NDArray is not a Matrix (2D)');
@@ -355,6 +399,12 @@ export default class NDArray {
     return true;
   }
 
+  /**
+   * Does equality test for each element of the array as well as the
+   * shape of the arrays
+   * @param other Other NDArray to compare with
+   * @param tolerance
+   */
   isEqual(other:NDArray, tolerance=EPSILON) : boolean {
     if(this.shape.length !== other.shape.length) {
       return false;
@@ -367,6 +417,9 @@ export default class NDArray {
     return other.datacompare(this._data, this._idata, tolerance);
   }
 
+  /**
+   * Change between Row-major and Column-major layout
+   */
   swapOrder() {
     if(this.shape.length !== 2) {
       throw new Error(
@@ -387,6 +440,10 @@ export default class NDArray {
     }
   }
 
+  /**
+   * TBD
+   * @param slices 
+   */
   slice(...slices:(string|number|undefined|null)[]):NDArray {
     let slice_recipe:number[][] = [];
     // Each slice specifies the index-range in that dimension to return

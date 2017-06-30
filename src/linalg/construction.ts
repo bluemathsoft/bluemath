@@ -52,7 +52,7 @@ export function eye(arg0:number|number[], datatype?:NumberType) {
 }
 
 /**
- * Creates NDArray of filled with zeros
+ * Creates NDArray filled with zeros
  * 
  * ```
  * zeros(2) // Creates 2x2 matrix of zeros  

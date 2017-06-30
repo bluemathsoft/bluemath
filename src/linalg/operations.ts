@@ -398,7 +398,7 @@ export function outer(A:NDArray, B:NDArray) {
 }
 
 /**
- * @hidden
+ * Perform Cholesky decomposition on given Matrix
  */
 export function cholesky(A:NDArray) {
   if(A.shape.length !== 2) {
@@ -674,6 +674,9 @@ export function inv(A:NDArray) {
   return I;
 }
 
+/**
+ * Create Lower triangular matrix from given matrix
+ */
 export function tril(A:NDArray,k=0) {
   if(A.shape.length !== 2) {
     throw new Error('Input is not matrix');
@@ -689,6 +692,9 @@ export function tril(A:NDArray,k=0) {
   return copyA;
 }
 
+/**
+ * Return Upper triangular matrix from given matrix
+ */
 export function triu(A:NDArray,k=0) {
   if(A.shape.length !== 2) {
     throw new Error('Input is not matrix');
@@ -704,6 +710,9 @@ export function triu(A:NDArray,k=0) {
   return copyA;
 }
 
+/**
+ * Compute QR decomposition of given Matrix
+ */
 export function qr(A:NDArray)
 {
   if(A.shape.length !== 2) {
@@ -734,6 +743,9 @@ export function qr(A:NDArray)
   return [q,r];
 }
 
+/**
+ * Compute Eigen values and left, right eigen vectors of given Matrix
+ */
 export function eig(A:NDArray) {
   if(A.shape.length !== 2) {
     throw new Error('Input is not matrix');
