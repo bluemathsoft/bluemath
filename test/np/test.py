@@ -97,4 +97,4 @@ def test_dgeqrf_dorgqr():
 
   print(A)
 
-test_eig_4x4()
+test_eig_3x3()

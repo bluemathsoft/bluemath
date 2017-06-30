@@ -22,7 +22,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 */
 import {utils, basic, linalg} from '../../src'
 
-let {NDArray} = basic;
+let {NDArray,Complex} = basic;
 
 (<any>window).bluemath = {
   NDArray
@@ -805,7 +805,51 @@ export default function testOperations() {
       });
     });
     QUnit.module('Eigen', () => {
-      QUnit.test('eig', assert => {
+      QUnit.test('eig 2x2', assert => {
+        let A = new NDArray([
+          [3,1],
+          [0,2]
+        ]);
+        let [w,vl,vr] = linalg.eig(A);
+        !vl; // to fix the unused warning
+        assert.ok(w.isEqual(new NDArray([3,2])));
+        assert.ok(vr.isEqual(new NDArray([
+          [1, -0.70710678],
+          [0, 0.70710678]
+        ])));
+      });
+
+      QUnit.test('eig 3x3', assert => {
+        let A = new NDArray([
+          [3,6,2],
+          [1,7,6],
+          [9,3,2]
+        ]);
+        let [w,vl,vr] = linalg.eig(A);
+        !vl; // to fix the unused warning
+        
+        let target_w = new NDArray({shape:[3]});
+        target_w.set(0, new Complex(-0.56082135, 3.66104822));
+        target_w.set(1, new Complex(-0.56082135, -3.66104822));
+        target_w.set(2, 13.12164269);
+        assert.ok(w.isEqual(target_w));
+
+        let target_vr = new NDArray({shape:[3,3]});
+        target_vr.set(0, 0, new Complex(-0.06160653, 0.39509838));
+        target_vr.set(0, 1, new Complex(-0.06160653, -0.39509838));
+        target_vr.set(0, 2, -0.49774794);
+
+        target_vr.set(1, 0, new Complex(-0.45396105, -0.27206987));
+        target_vr.set(1, 1, new Complex(-0.45396105, 0.27206987));
+        target_vr.set(1, 2, -0.64721249);
+
+        target_vr.set(2, 0, 0.74833098);
+        target_vr.set(2, 1, 0.74833098);
+        target_vr.set(2, 2, -0.57737594);
+        assert.ok(vr.isEqual(target_vr));
+      });
+
+      QUnit.test('eig 4x4', assert => {
         let A = new NDArray([
           [3,6,2,1],
           [1,7,6,1],
@@ -813,10 +857,39 @@ export default function testOperations() {
           [9,3,7,1]
         ]);
         let [w,vl,vr] = linalg.eig(A);
-        console.log('w',w.toString());
-        console.log('vl',vl.toString());
-        console.log('vr',vr.toString());
-        assert.ok(true);
+        !vl; // to fix the unused warning
+        let target_w = new NDArray({shape:[4]});
+        target_w.set(0, 14.4616694);
+        target_w.set(1, new Complex(-0.730834679,3.55021966));
+        target_w.set(2, new Complex(-0.730834679,-3.55021966));
+        target_w.set(3, 0);
+        assert.ok(w.isEqual(target_w));
+
+        let target_vr = new NDArray({shape:[4,4]});
+        // TODO:
+        // target_vr values at (0,0), (1,0), (2,0), (3,0) should
+        // have opposite signs to match the numpy output
+        target_vr.set(0,0, 0.397234093);
+        target_vr.set(0,1, new Complex(-0.295467105,0.08333459));
+        target_vr.set(0,2, new Complex(-0.295467105,-0.08333459));
+        target_vr.set(0,3, 0.0659380473);
+
+        target_vr.set(1,0, 0.503683695);
+        target_vr.set(1,1, new Complex(-0.0629882747,-0.36737993));
+        target_vr.set(1,2, new Complex(-0.0629882747,0.36737993));
+        target_vr.set(1,3, -0.131876095);
+
+        target_vr.set(2,0, 0.457555861);
+        target_vr.set(2,1, new Complex(0.225571507,0.42219946));
+        target_vr.set(2,2, new Complex(0.225571507,-0.42219946));
+        target_vr.set(2,3, 0);
+
+        target_vr.set(3,0, 0.615751934);
+        target_vr.set(3,1, 0.733269467);
+        target_vr.set(3,2, 0.733269467);
+        target_vr.set(3,3, 0.989070710);
+
+        assert.ok(vr.isEqual(target_vr));
       });
     });
 

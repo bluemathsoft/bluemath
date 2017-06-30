@@ -761,38 +761,20 @@ export function eig(A:NDArray) {
     for(let j=0; j<n;) {
       if(iszero(WI[j])) {
         // We want to extract eigen-vectors in i'th column of VL and VR
-        eigvecL.set(i,j,VL[i*n+j]);
-        eigvecR.set(i,j,VR[i*n+j]);
+        eigvecL.set(i,j,VL[j*n+i]);
+        eigvecR.set(i,j,VR[j*n+i]);
         j += 1;
       } else {
         // i-th eigen vector will be complex and
         // i+1-th eigen vector will be its conjugate
         // There are n eigen-vectors for i'th eigen-value
-        eigvecL.set(i,j,new Complex(VL[i*n+j],VL[i*n+j+1]));
-        eigvecR.set(i,j,new Complex(VR[i*n+j],VR[i*n+j+1]));
+        eigvecL.set(i,j,new Complex(VL[j*n+i],VL[(j+1)*n+i]));
+        eigvecL.set(i,j+1,new Complex(VL[j*n+i],-VL[(j+1)*n+i]));
+        eigvecR.set(i,j,new Complex(VR[j*n+i],VR[(j+1)*n+i]));
+        eigvecR.set(i,j+1,new Complex(VR[j*n+i],-VR[(j+1)*n+i]));
         j += 2;
       }
     }
   }
-  /*
-  for(let i=0; i<n; i++) {
-    if(iszero(WI[i])) {
-      eigval.set(i,WR[i]);
-      // There are n eigen-vectors for i'th eigen-value
-      for(let j=0; j<n; j++) {
-        // VL and VR are in column major order
-        eigvecL.set(i,j,VL[i*n+j]);
-        eigvecR.set(i,j,VR[i*n+j]);
-      }
-    } else {
-      eigval.set(i,new Complex(WR[i],WI[i]));
-      for(let j=0; j<n;) {
-        eigvecL.set(i,j,new Complex(VL[i*n+j],VL[i*n+j+1]));
-        eigvecR.set(i,j,new Complex(VR[i*n+j],VR[i*n+j+1]));
-        j+=2;
-      }
-    }
-  }
-  */
   return [eigval,eigvecL,eigvecR];
 }
