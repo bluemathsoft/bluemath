@@ -28,8 +28,9 @@ export default class Complex {
     this.imag = imag || 0;
   }
 
-  toString() {
+  toString(precision=4) {
     let sign = (this.imag >=0) ? '+' : '-';
-    return `(${this.real}${sign}${Math.abs(this.imag)}i)`;
+    return `(${this.real.toFixed(precision)}`+
+      `${sign}${Math.abs(this.imag).toFixed(precision)}i)`;
   }
 }

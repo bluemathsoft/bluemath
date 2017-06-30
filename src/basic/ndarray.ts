@@ -255,22 +255,33 @@ export default class NDArray {
     }
     let aarr = [];
     let step = 1;
+
+    // iterate over dimensions from innermost to outermost
     for(let i=this.shape.length-1; i>=0; i--) {
 
+      // Step size in i'th dimension
       let d = this.shape[i];
       step = step * d;
 
+      // number of elements in i'th dimension
       let nelem = this.size/step;
 
       if(i === this.shape.length-1) {
+        // innermost dimension, create array from all elements
         for(let j=0; j<nelem; j++) {
           let arr = new Array(step);
           for(let k=0; k<d; k++) {
-            arr[k] = this._data[j*step+k];
+            let index = j*step+k;
+            if(this._idata[index] === undefined) {
+              arr[k] = this._data[index];
+            } else {
+              arr[k] = new Complex(this._data[index],this._idata[index]);
+            }
           }
           aarr.push(arr);
         }
       } else {
+        // outer dimensions, create array from inner dimension's arrays
         let darr = new Array(nelem);
         for(let j=0; j<nelem; j++) {
           darr[j] = aarr.slice(j*d,(j+1)*d);
@@ -438,14 +449,21 @@ export default class NDArray {
     return newndarray;
   }
 
-  toString() {
-    let precision = 4;
+  toString(precision=4) {
     return JSON.stringify(this.toArray(), function (key, val) { 
       !key; // to avoid unused variable warning
-      if(val.toFixed) {
+      if(val instanceof Complex) {
+        return val.toString();
+      } else if(typeof val === 'number') {
         return Number(val.toFixed(3));
       } else if(Array.isArray(val) && !Array.isArray(val[0])) {
-        return '['+val.map(v=>v.toFixed(precision)).join(',')+']';
+        return '['+val.map(v => {
+          if(v instanceof Complex) {
+            return v.toString();
+          } else {
+            return v.toFixed(precision)
+          }
+        }).join(',')+']';
       } else {
         return val;
       }
