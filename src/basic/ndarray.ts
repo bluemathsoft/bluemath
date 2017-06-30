@@ -336,10 +336,20 @@ export default class NDArray {
   /**
    * @hidden
    */
-  datacompare(otherdata:TypedArray, tolerance=EPSILON) {
+  datacompare(otherdata:TypedArray, otheridata:number[], tolerance=EPSILON) {
     for(let i=0; i<this._data.length; i++) {
-      if(!isequal(this._data[i], otherdata[i], tolerance)) {
-        return false;
+      if(this._idata[i] === undefined) {
+        if(!isequal(this._data[i], otherdata[i], tolerance)) {
+          return false;
+        }
+      } else {
+        if(otheridata[i] === undefined) {
+          // other is not complex number
+          return false;
+        }
+        let thisC = new Complex(this._data[i],this._idata[i]);
+        let otherC = new Complex(otherdata[i],otheridata[i]);
+        return thisC.isEqual(otherC);
       }
     }
     return true;
@@ -354,7 +364,7 @@ export default class NDArray {
         return false;
       }
     }
-    return other.datacompare(this._data, tolerance);
+    return other.datacompare(this._data, this._idata, tolerance);
   }
 
   swapOrder() {

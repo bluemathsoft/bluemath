@@ -19,6 +19,9 @@
 
 */
 
+import {EPSILON} from '../constants'
+import {isequal} from '../utils'
+
 export default class Complex {
   real : number;
   imag : number;
@@ -26,6 +29,11 @@ export default class Complex {
   constructor(real?:number,imag?:number) {
     this.real = real || 0;
     this.imag = imag || 0;
+  }
+
+  isEqual(other:Complex, tolerance=EPSILON) {
+    return isequal(this.real,other.real, tolerance) &&
+      isequal(this.imag, other.imag, tolerance);
   }
 
   toString(precision=4) {
