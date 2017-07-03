@@ -401,13 +401,13 @@ export default class NDArray {
   /**
    * Iterate over each element, invoke a callback with each index and value
    */
-  forEach(callback:(...args:(number|Complex)[])=>void) {
+  forEach(callback:(value:number|Complex,...index:number[])=>void) {
     for(let i=0; i<this.size; i++) {
       let index = this._addressToIndex(i);
       if(this._idata[i] === undefined) {
-        callback(...index, this._data[i])
+        callback(this._data[i], ...index)
       } else {
-        callback(...index, new Complex(this._data[i],this._idata[i]));
+        callback(new Complex(this._data[i],this._idata[i]), ...index);
       }
     }
   }

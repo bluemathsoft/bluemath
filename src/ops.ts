@@ -161,9 +161,8 @@ function _add_ndarrays(a:NDArray, b:NDArray) : NDArray {
     throw new Error('Addition of NDArray with mismatched shapes');
   }
   let answer = a.clone();
-  a.forEach((...args:(number|Complex)[]) => {
-    let index:number[] = <number[]>args.slice(0,args.length-1);
-    let aval = args[args.length-1];
+  a.forEach((value, ...index:number[]) => {
+    let aval = value;
     let bval = b.get(...index);
     let ansval = _add_numbers(aval, bval);
     answer.set(...index, ansval);
@@ -176,9 +175,8 @@ function _add_ndarrays(a:NDArray, b:NDArray) : NDArray {
  */
 function _add_ndarray_and_number(a:NDArray, b:number|Complex) {
   let answer = a.clone();
-  a.forEach((...args:(number|Complex)[]) => {
-    let index:number[] = <number[]>args.slice(0,args.length-1);
-    let aval = args[args.length-1];
+  a.forEach((value,...index:number[]) => {
+    let aval = value;
     let ansval = _add_numbers(aval, b);
     answer.set(...index, ansval);
   });
