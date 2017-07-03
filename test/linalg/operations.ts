@@ -20,15 +20,121 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {isequal,NDArray,Complex,linalg} from '../../src'
+import {isequal,NDArray,Complex,linalg,add} from '../../src'
 
+// For debugging purposes
 (<any>window).bluemath = {
-  NDArray
+  NDArray,
+  Complex
 };
 
 export default function testOperations() {
 
   QUnit.module('Operations', () => {
+
+    QUnit.module('add', () => {
+      QUnit.test('Real numbers', assert => {
+        assert.equal(add(4,5), 9);
+        assert.equal(add(4,5,10), 19);
+      });
+      QUnit.test('Real and Complex numbers', assert => {
+        assert.ok(new Complex(9,5).isEqual(
+          <Complex>add(4,new Complex(5,5))));
+        assert.ok(new Complex(9,5).isEqual(
+          <Complex>add(new Complex(5,5),4)));
+        assert.ok(new Complex(19,5).isEqual(
+          <Complex>add(4,new Complex(5,5),10)));
+        assert.ok(new Complex(9,15).isEqual(
+          <Complex>add(4,new Complex(5,5),new Complex(0,10))));
+      });
+      QUnit.test('Real numbers and NDArray', assert => {
+        assert.ok(new NDArray([4,4,4]).isEqual(
+          <NDArray>add(new NDArray([1,1,1]),3)));
+        assert.ok(new NDArray([4,4,4]).isEqual(
+          <NDArray>add(3,new NDArray([1,1,1]))));
+        assert.ok(new NDArray([4,4,4]).isEqual(
+          <NDArray>add(1,2,new NDArray([1,1,1]))));
+        assert.ok(new NDArray([4,4,4]).isEqual(
+          <NDArray>add(1,new NDArray([1,1,1]),2)));
+
+        assert.ok(new NDArray([[4,4],[4,4]]).isEqual(
+          <NDArray>add(new NDArray([[1,1],[1,1]]),3)));
+      });
+      QUnit.test('Complex numbers and NDArray', assert => {
+        let sarr = new NDArray({shape:[3]});
+        sarr.set(0,new Complex(1,1));
+        sarr.set(1,new Complex(1,2));
+        sarr.set(2,new Complex(2,1));
+        let tarr = sarr.clone();
+        tarr.set(0,new Complex(2,2));
+        tarr.set(1,new Complex(2,3));
+        tarr.set(2,new Complex(3,2));
+        assert.ok(tarr.isEqual(
+          <NDArray>add(sarr, new Complex(1,1))));
+        assert.ok(tarr.isEqual(
+          <NDArray>add(new Complex(1,1), sarr)));
+        assert.ok(tarr.isEqual(
+          <NDArray>add(new Complex(0,1), sarr, new Complex(1,0))));
+
+        sarr = new NDArray({shape:[2,2]});
+        sarr.set(0,0,new Complex(3,3));
+        sarr.set(0,1,new Complex(3,3));
+        sarr.set(1,0,new Complex(5,5));
+        sarr.set(1,1,new Complex(5,5));
+        tarr = sarr.clone();
+        tarr.set(0,0,new Complex(4,4));
+        tarr.set(0,1,new Complex(4,4));
+        tarr.set(1,0,new Complex(6,6));
+        tarr.set(1,1,new Complex(6,6));
+        assert.ok(tarr.isEqual(
+          <NDArray>add(sarr, new Complex(1,1))));
+        assert.ok(tarr.isEqual(
+          <NDArray>add(1,sarr, new Complex(0,1))));
+
+        sarr = new NDArray({shape:[2,2]});
+        sarr.set(0,0,new Complex(3,3));
+        sarr.set(0,1,3);
+        sarr.set(1,0,new Complex(5,5));
+        sarr.set(1,1,5);
+        tarr = sarr.clone();
+        tarr.set(0,0,new Complex(4,4));
+        tarr.set(0,1,new Complex(3,1));
+        tarr.set(1,0,new Complex(6,6));
+        tarr.set(1,1,new Complex(6,1));
+        assert.ok(tarr.isEqual(
+          <NDArray>add(sarr, new Complex(1,1))));
+      });
+      QUnit.test('NDArrays', assert => {
+        let arrA = new NDArray([1,1,1]);
+        let arrB = new NDArray([1,1,1]);
+        assert.ok(new NDArray([2,2,2]).isEqual(
+          <NDArray>add(arrA,arrB)));
+        assert.ok(new NDArray([3,3,3]).isEqual(
+          <NDArray>add(arrA,arrB,arrA)));
+        assert.ok(new NDArray([4,4,4]).isEqual(
+          <NDArray>add(arrA,arrB,1,arrA)));
+
+        assert.throws(() => {
+          add(arrA,new NDArray([[1,2],[4,4]]));
+        });
+        assert.throws(() => {
+          add(arrA,new NDArray([1,1]));
+        });
+
+        let sarr1 = new NDArray({shape:[2]});
+        sarr1.set(0,new Complex(1,1));
+        sarr1.set(1,new Complex(2,0));
+        let sarr2 = new NDArray({shape:[2]});
+        sarr2.set(0,1);
+        sarr2.set(1,new Complex(0,1));
+        let tarr = new NDArray({shape:[2]});
+        tarr.set(0,new Complex(2,1));
+        tarr.set(1,new Complex(2,1));
+        assert.ok(tarr.isEqual(<NDArray>add(sarr1,sarr2)));
+      });
+    });
+
+
     QUnit.module('matmul', () => {
       QUnit.test("Square 3x3", assert => {
         let A = new NDArray([[2,2,2],[2,2,2],[2,2,2]], {datatype:'i16'});

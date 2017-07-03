@@ -399,12 +399,23 @@ export default class NDArray {
   }
 
   /**
-   * Does equality test for each element of the array as well as the
-   * shape of the arrays
-   * @param other Other NDArray to compare with
-   * @param tolerance
+   * Iterate over each element, invoke a callback with each index and value
    */
-  isEqual(other:NDArray, tolerance=EPSILON) : boolean {
+  forEach(callback:(...args:(number|Complex)[])=>void) {
+    for(let i=0; i<this.size; i++) {
+      let index = this._addressToIndex(i);
+      if(this._idata[i] === undefined) {
+        callback(...index, this._data[i])
+      } else {
+        callback(...index, new Complex(this._data[i],this._idata[i]));
+      }
+    }
+  }
+
+  /**
+   * Checks if the shape of this ndarray matches the shape of other
+   */
+  isShapeEqual(other:NDArray) : boolean {
     if(this.shape.length !== other.shape.length) {
       return false;
     }
@@ -413,7 +424,18 @@ export default class NDArray {
         return false;
       }
     }
-    return other.datacompare(this._data, this._idata, tolerance);
+    return true;
+  }
+
+  /**
+   * Does equality test for each element of the array as well as the
+   * shape of the arrays
+   * @param other Other NDArray to compare with
+   * @param tolerance
+   */
+  isEqual(other:NDArray, tolerance=EPSILON) : boolean {
+    let shapeequal = this.isShapeEqual(other);
+    return shapeequal && other.datacompare(this._data, this._idata, tolerance);
   }
 
   /**

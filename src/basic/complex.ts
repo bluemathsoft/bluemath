@@ -31,6 +31,10 @@ export default class Complex {
     this.imag = imag || 0;
   }
 
+  clone() {
+    return new Complex(this.real,this.imag);
+  }
+
   isEqual(other:Complex, tolerance=EPSILON) {
     return isequal(this.real,other.real,tolerance) &&
       isequal(this.imag,other.imag,tolerance);

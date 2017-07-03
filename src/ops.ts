@@ -20,10 +20,9 @@
 
 */
 import {EPSILON} from './constants'
-import {NDArray, NumberType} from './'
+import {NDArray, Complex, NumberType} from './'
 
 /**
- * @hidden
  * Convert angle to degrees
  */
 export function todeg(angleInRadians:number) : number {
@@ -31,7 +30,6 @@ export function todeg(angleInRadians:number) : number {
 }
 
 /**
- * @hidden
  * Convert angle to radians
  */
 export function torad(angleInDegrees:number) : number {
@@ -53,7 +51,6 @@ export function isequal(a:number, b:number, tolerance=EPSILON) : boolean {
 }
 
 /**
- * @hidden
  * Find cube root of given number. Math.pow return NaN while taking
  * cube root of negative number, because some of the results might
  * be complex numbers. This function only return the real cubeRoot
@@ -128,4 +125,121 @@ export function zeros(arg0:number|number[], datatype?:NumberType) {
   }
   A.fill(0);
   return A;
+}
+
+/**
+ * @hidden
+ */
+function _add_numbers(a:number|Complex, b:number|Complex) {
+  if(typeof a === 'number') {
+    if(typeof b === 'number') {
+      return a+b;
+    } else {
+      let answer = b.clone();
+      answer.real += a;
+      return answer;
+    }
+  } else {
+    if(typeof b === 'number') {
+      let answer = a.clone();
+      answer.real += b;
+      return answer;
+    } else {
+      let answer = a.clone();
+      answer.real += b.real;
+      answer.imag += b.imag;
+      return answer;
+    }
+  }
+}
+
+/**
+ * @hidden
+ */
+function _add_ndarrays(a:NDArray, b:NDArray) : NDArray {
+  if(!a.isShapeEqual(b)) {
+    throw new Error('Addition of NDArray with mismatched shapes');
+  }
+  let answer = a.clone();
+  a.forEach((...args:(number|Complex)[]) => {
+    let index:number[] = <number[]>args.slice(0,args.length-1);
+    let aval = args[args.length-1];
+    let bval = b.get(...index);
+    let ansval = _add_numbers(aval, bval);
+    answer.set(...index, ansval);
+  });
+  return answer;
+}
+
+/**
+ * @hidden
+ */
+function _add_ndarray_and_number(a:NDArray, b:number|Complex) {
+  let answer = a.clone();
+  a.forEach((...args:(number|Complex)[]) => {
+    let index:number[] = <number[]>args.slice(0,args.length-1);
+    let aval = args[args.length-1];
+    let ansval = _add_numbers(aval, b);
+    answer.set(...index, ansval);
+  });
+  return answer;
+}
+
+/**
+ * @hidden
+ */
+function _add_two(a:NDArray|number|Complex, b:NDArray|number|Complex)
+  : NDArray|number|Complex
+{
+  if(a === 0) {
+    return b;
+  }
+  if(b === 0) {
+    return a;
+  }
+  if(typeof a === 'number') {
+    if(typeof b === 'number') {
+      return a+b;
+    } else if(b instanceof NDArray) {
+      return _add_ndarray_and_number(b, a);
+    } else if(b instanceof Complex) {
+      let answer = b.clone();
+      answer.real += a;
+      return answer;
+    }
+  } else if(a instanceof NDArray) {
+    if(typeof b === 'number' || b instanceof Complex) {
+      return _add_ndarray_and_number(a, b);
+    } else if(b instanceof NDArray) {
+      return _add_ndarrays(a, b);
+    }
+  } else if(a instanceof Complex) {
+    if(typeof b === 'number') {
+      let answer = a.clone();
+      answer.real += b;
+      return answer;
+    } else if(b instanceof NDArray) {
+      return _add_ndarray_and_number(b, a);
+    } else if(b instanceof Complex) {
+      let answer = a.clone();
+      answer.real += b.real;
+      answer.imag += b.imag;
+      return answer;
+    }
+  }
+  throw new Error('Addition of invalid types');
+}
+
+/**
+ * Add all arguments in accordance to their types
+ * The arguments could be NDArray or numbers (real/complex).
+ * If some of them are NDArray's, then their shapes have to match,
+ * other exception is thrown
+ */
+export function add(...args:(NDArray|number|Complex)[]) {
+  let acc:number|Complex|NDArray = args[0];
+  for(let i=1; i<args.length; i++) {
+    acc = _add_two(acc, args[i]);
+  }
+  return acc;
 }
