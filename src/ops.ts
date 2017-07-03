@@ -20,7 +20,7 @@
 
 */
 import {EPSILON} from './constants'
-import {NDArray, Complex, NumberType} from './'
+import {NDArray, Complex, NumberType, linalg} from './'
 
 /**
  * Convert angle to degrees
@@ -134,23 +134,24 @@ function _add_numbers(a:number|Complex, b:number|Complex) {
   if(typeof a === 'number') {
     if(typeof b === 'number') {
       return a+b;
-    } else {
+    } else if(b instanceof Complex) {
       let answer = b.clone();
       answer.real += a;
       return answer;
     }
-  } else {
+  } else if(a instanceof Complex) {
     if(typeof b === 'number') {
       let answer = a.clone();
       answer.real += b;
       return answer;
-    } else {
+    } else if(b instanceof Complex) {
       let answer = a.clone();
       answer.real += b.real;
       answer.imag += b.imag;
       return answer;
     }
   }
+  throw new Error('Addition of incompatible types');
 }
 
 /**
@@ -196,14 +197,10 @@ function _add_two(a:NDArray|number|Complex, b:NDArray|number|Complex)
     return a;
   }
   if(typeof a === 'number') {
-    if(typeof b === 'number') {
-      return a+b;
+    if(typeof b === 'number' || b instanceof Complex) {
+      return _add_numbers(a,b);
     } else if(b instanceof NDArray) {
       return _add_ndarray_and_number(b, a);
-    } else if(b instanceof Complex) {
-      let answer = b.clone();
-      answer.real += a;
-      return answer;
     }
   } else if(a instanceof NDArray) {
     if(typeof b === 'number' || b instanceof Complex) {
@@ -212,17 +209,10 @@ function _add_two(a:NDArray|number|Complex, b:NDArray|number|Complex)
       return _add_ndarrays(a, b);
     }
   } else if(a instanceof Complex) {
-    if(typeof b === 'number') {
-      let answer = a.clone();
-      answer.real += b;
-      return answer;
+    if(typeof b === 'number' || b instanceof Complex) {
+      return _add_numbers(a,b);
     } else if(b instanceof NDArray) {
       return _add_ndarray_and_number(b, a);
-    } else if(b instanceof Complex) {
-      let answer = a.clone();
-      answer.real += b.real;
-      answer.imag += b.imag;
-      return answer;
     }
   }
   throw new Error('Addition of invalid types');
@@ -232,12 +222,94 @@ function _add_two(a:NDArray|number|Complex, b:NDArray|number|Complex)
  * Add all arguments in accordance to their types
  * The arguments could be NDArray or numbers (real/complex).
  * If some of them are NDArray's, then their shapes have to match,
- * other exception is thrown
+ * otherwise exception is thrown
+ * The order of addition starts from left to right 
  */
 export function add(...args:(NDArray|number|Complex)[]) {
   let acc:number|Complex|NDArray = args[0];
   for(let i=1; i<args.length; i++) {
     acc = _add_two(acc, args[i]);
+  }
+  return acc;
+}
+
+/**
+ * @hidden
+ */
+function _mul_numbers(a:number|Complex, b:number|Complex) {
+  if(typeof a === 'number') {
+    if(typeof b === 'number') {
+      return a * b;
+    } else if(b instanceof Complex) {
+      let answer = b.clone();
+      answer.real *=  a;
+      answer.imag *= a;
+      return answer;
+    }
+  } else if(a instanceof Complex) {
+    if(typeof b === 'number') {
+      let answer = a.clone();
+      answer.real *= b;
+      answer.imag *= b;
+      return answer;
+    } else if(b instanceof Complex) {
+      let answer = new Complex();
+      answer.real = a.real * b.real - a.imag * b.imag;
+      answer.imag = a.imag * b.real + a.real * b.imag;
+      return answer;
+    }
+  }
+  throw new Error('Multiplication of incompatible types');
+}
+
+/**
+ * @hidden
+ */
+function _mul_two(a:NDArray|number|Complex, b:NDArray|number|Complex)
+  : NDArray|number|Complex
+{
+  if(a === 1) {
+    return b;
+  }
+  if(b === 1) {
+    return a;
+  }
+  if(typeof a === 'number' || a instanceof Complex) {
+    if(typeof b === 'number' || b instanceof Complex) {
+      return _mul_numbers(a,b);
+    } else if(b instanceof NDArray) {
+      let answer = b.clone();
+      answer.forEach((value, ...index:number[]) => {
+        answer.set(...index, _mul_numbers(a, value));
+      });
+      return answer;
+    }
+  } else if(a instanceof NDArray) {
+    if(typeof b === 'number' || b instanceof Complex) {
+      let answer = a.clone();
+      answer.forEach((value, ...index:number[]) => {
+        answer.set(...index, _mul_numbers(b, value));
+      });
+      return answer;
+    } else if(b instanceof NDArray) {
+      return linalg.matmul(a,b);
+    }
+  }
+  throw new Error('Addition of invalid types');
+}
+
+/**
+ * Multiply all arguments in accordance with their data types
+ * Each argument can be a number (real or complex) or NDArray.
+ * If some of the arguments are NDArrays, then their shapes should
+ * be compatible with the other operand of multiplication operation,
+ * otherwise an exception is thrown
+ * The order of multiplication starts from left to right 
+ */
+export function mul(...args:(NDArray|number|Complex)[]) {
+  let acc:number|Complex|NDArray = args[0];
+  for(let i=1; i<args.length; i++) {
+    acc = _mul_two(acc, args[i]);
   }
   return acc;
 }

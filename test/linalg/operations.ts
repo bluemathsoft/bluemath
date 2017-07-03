@@ -20,7 +20,7 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {isequal,NDArray,Complex,linalg,add} from '../../src'
+import {isequal,NDArray,Complex,linalg,add,mul} from '../../src'
 
 // For debugging purposes
 (<any>window).bluemath = {
@@ -131,6 +131,51 @@ export default function testOperations() {
         tarr.set(0,new Complex(2,1));
         tarr.set(1,new Complex(2,1));
         assert.ok(tarr.isEqual(<NDArray>add(sarr1,sarr2)));
+      });
+    });
+
+    QUnit.module('mul', () => {
+      QUnit.test("Real and Complex numbers", assert => {
+        assert.equal(mul(2,5), 10);
+        assert.equal(mul(2,5,3), 30);
+        assert.ok(new Complex(4,6).isEqual(
+          <Complex>mul(2,new Complex(2,3))));
+        assert.ok(new Complex(4,6).isEqual(
+          <Complex>mul(new Complex(2,3),2)));
+        assert.ok(new Complex(12,18).isEqual(
+          <Complex>mul(new Complex(2,3),2,3)));
+        assert.ok(new Complex(-6,10).isEqual(
+          <Complex>mul(new Complex(1,4),new Complex(2,2))));
+        assert.ok(new Complex(-28,24).isEqual(
+          <Complex>mul(new Complex(1,4),new Complex(2,2),new Complex(3,1))));
+      });
+
+      QUnit.test('Numbers and NDArray', assert => {
+        assert.ok(new NDArray([4,4]).isEqual(
+          <NDArray>mul(2,new NDArray([2,2]))));
+        assert.ok(new NDArray([4,4]).isEqual(
+          <NDArray>mul(new NDArray([2,2]),2)));
+        assert.ok(new NDArray([8,8]).isEqual(
+          <NDArray>mul(new NDArray([2,2]),2,2)));
+
+        let sarr = new NDArray({shape:[2]});
+        sarr.set(0, new Complex(2,2));
+        sarr.set(1, 2);
+        let tarr = sarr.clone();
+        tarr.set(0, new Complex(6,6));
+        tarr.set(1, 6);
+        assert.ok(tarr.isEqual(<NDArray>mul(sarr, 3)));
+      });
+
+      QUnit.test('NDArrays', assert => {
+        let A = new NDArray([[2,2,2],[2,2,2],[2,2,2]], {datatype:'i16'});
+        let B = new NDArray([[5,5,5],[5,5,5],[5,5,5]], {datatype:'i16'});
+        let M:NDArray = <NDArray>mul(A,B);
+        assert.ok(M.isEqual(new NDArray([
+          [30,30,30],
+          [30,30,30],
+          [30,30,30]
+        ])));
       });
     });
 

@@ -24,7 +24,7 @@ import {
   eye, zeros,
   iszero, isequal,
   torad, todeg,
-  add
+  add, mul
 } from './ops'
 import * as linalg from './linalg'
 import {EPSILON} from './constants'
@@ -54,6 +54,6 @@ export {
   eye, zeros,
   iszero, isequal,
   torad, todeg,
-  add
+  add, mul
 }
 
