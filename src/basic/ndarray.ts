@@ -28,6 +28,7 @@ export interface NDArrayOptions {
   shape? : number[];
   datatype? : NumberType;
   fill? : number;
+  idata? : number[];
 }
 
 /**
@@ -166,6 +167,9 @@ export default class NDArray {
         this.datatype = arg1.datatype;
       }
       this._alloc(this.size, arg0, this.datatype);
+      if(arg1 && arg1.idata) {
+        this._idata = arg1.idata;
+      }
     } else if(ArrayBuffer.isView(arg0)) {
       this._data = arg0;
       if(arg1 && arg1.shape) {
@@ -176,6 +180,9 @@ export default class NDArray {
       // in this case options.datatype is ignored if supplied
       this.datatype = deduceNumberType(arg0);
       this._calcSize();
+      if(arg1 && arg1.idata) {
+        this._idata = arg1.idata;
+      }
     } else { // must be NDArrayOption
       let options = arg0;
       if(options.datatype) {
@@ -188,6 +195,9 @@ export default class NDArray {
         if(options.fill) {
           this._data.fill(options.fill);
         }
+      }
+      if(options.idata) {
+        this._idata = options.idata;
       }
     }
   }
@@ -221,7 +231,7 @@ export default class NDArray {
   clone() {
     let dataArrayType = getDataArrayType(this.datatype);
     let data = new dataArrayType(this._data);
-    return new NDArray(data,{shape:this.shape.slice()});
+    return new NDArray(data,{shape:this.shape.slice(),idata:this._idata.slice()});
   }
 
   private _calcSize() {
@@ -333,7 +343,11 @@ export default class NDArray {
    */
   get(...index:number[]) : number|Complex {
     let addr = this._indexToAddress(...index);
-    return this._data[addr];
+    if(this._idata[addr] === undefined) {
+      return this._data[addr];
+    } else {
+      return new Complex(this._data[addr], this._idata[addr]);
+    }
   }
 
   /**
