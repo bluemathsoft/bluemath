@@ -20,7 +20,7 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {utils,NDArray,Complex,linalg} from '../../src'
+import {isequal,NDArray,Complex,linalg} from '../../src'
 
 (<any>window).bluemath = {
   NDArray
@@ -146,11 +146,11 @@ export default function testOperations() {
         });
         QUnit.test('2-norm', assert => {
           let A = new NDArray([2,3,4,5]);
-          assert.ok(utils.isequal(linalg.norm(A,2), 7.34847));
+          assert.ok(isequal(linalg.norm(A,2), 7.34847));
         });
         QUnit.test('3-norm', assert => {
           let A = new NDArray([2,3,4,5]);
-          assert.ok(utils.isequal(linalg.norm(A,3), 6.07318, 1e-4));
+          assert.ok(isequal(linalg.norm(A,3), 6.07318, 1e-4));
         });
         QUnit.test('Infinity-norm', assert => {
           let A = new NDArray([2,3,4,5]);
@@ -172,7 +172,7 @@ export default function testOperations() {
             [4,2,-9],
             [0,3,1]
           ]);
-          assert.ok(utils.isequal(linalg.norm(A, 'fro'),
+          assert.ok(isequal(linalg.norm(A, 'fro'),
             11.832159566199232, 1e-6));
         });
       });
@@ -184,8 +184,8 @@ export default function testOperations() {
           [0,1], [1,1], [2,1], [3,1]
         ]);
         let {x,residuals,rank,singulars} = linalg.lstsq(A,Y);
-        assert.ok(utils.isequal(<number>x.get(0,0),1));
-        assert.ok(utils.isequal(<number>x.get(1,0),-0.95));
+        assert.ok(isequal(<number>x.get(0,0),1));
+        assert.ok(isequal(<number>x.get(1,0),-0.95));
         assert.equal(rank, 2);
         assert.ok(residuals.isEqual(new NDArray([0.05])));
         assert.ok(singulars.isEqual(new NDArray([4.10003045, 1.09075677])));
@@ -198,8 +198,8 @@ export default function testOperations() {
           [3.2, 1], [1, 1], [3.3, 1]
         ]);
         let {x,residuals,rank,singulars} = linalg.lstsq(A,Y);
-        assert.ok(utils.isequal(<number>x.get(0, 0), -0.71853349));
-        assert.ok(utils.isequal(<number>x.get(1, 0), 1.16556005));
+        assert.ok(isequal(<number>x.get(0, 0), -0.71853349));
+        assert.ok(isequal(<number>x.get(1, 0), 1.16556005));
         assert.equal(rank, 2);
         assert.ok(residuals.isEqual(new NDArray([4.1707015])));
         assert.ok(singulars.isEqual(new NDArray([5.94059051, 2.42680538])));
@@ -215,7 +215,7 @@ export default function testOperations() {
         ]);
         let [sign,logdet] = linalg.slogdet(A);
         assert.equal(sign,-1);
-        assert.ok(utils.isequal(logdet, Math.log(69)));
+        assert.ok(isequal(logdet, Math.log(69)));
       });
 
       QUnit.test('2x2', assert => {
@@ -237,7 +237,7 @@ export default function testOperations() {
           [8,4,5]
         ]);
         let det = linalg.det(A);
-        assert.ok(utils.isequal(det, -69, 1e-5));
+        assert.ok(isequal(det, -69, 1e-5));
       });
 
       QUnit.test('2x2', assert => {

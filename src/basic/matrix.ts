@@ -19,9 +19,8 @@
 
 */
 
-import {TypedArray, NumberType} from '..'
+import {TypedArray, NumberType, isequal} from '..'
 import Vector from './vector'
-import {utils} from '..'
 import {EPSILON} from '../constants'
 
 /**
@@ -275,7 +274,7 @@ export default class Matrix {
     if(this.cols !== other.cols) { return false; }
     for(let i=0; i<this.rows; i++) {
       for(let j=0; j<this.cols; j++) {
-        if(!utils.isequal(this.get(i,j), other.get(i,j), tolerance)) {
+        if(!isequal(this.get(i,j), other.get(i,j), tolerance)) {
           return false;
         }
       }

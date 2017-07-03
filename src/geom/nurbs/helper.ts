@@ -19,7 +19,7 @@
 
  */
 
-import {isequal} from '../../utils'
+import {isequal} from '../..'
 
 /**
  * @hidden

@@ -20,12 +20,13 @@
 
 */
 import {EPSILON} from './constants'
+import {NDArray, NumberType} from './'
 
 /**
  * @hidden
  * Convert angle to degrees
  */
-export function toDeg(angleInRadians:number) : number {
+export function todeg(angleInRadians:number) : number {
   return 180 * angleInRadians / Math.PI;
 }
 
@@ -33,7 +34,7 @@ export function toDeg(angleInRadians:number) : number {
  * @hidden
  * Convert angle to radians
  */
-export function toRad(angleInDegrees:number) : number {
+export function torad(angleInDegrees:number) : number {
   return Math.PI * angleInDegrees / 180;
 }
 
@@ -77,4 +78,54 @@ export function range(a:number,b?:number) : number[] {
     arr.push(i);
   }
   return arr;
+}
+
+/**
+ * Creates m-by-n Identity matrix
+ * 
+ * ``` 
+ * eye(2) // Creates 2x2 Identity matrix
+ * eye([2,2]) // Creates 2x2 Identity matrix
+ * eye([2,3]) // Create 2x3 Identity matrix with main diagonal set to 1
+ * eye(2,'i32') // Creates 2x2 Identity matrix of 32-bit integers
+ * ```
+ */
+export function eye(arg0:number|number[], datatype?:NumberType) {
+  let n,m;
+  if(Array.isArray(arg0)) {
+    n = arg0[0];
+    if(arg0.length > 1) {
+      m = arg0[1];
+    } else {
+      m = n;
+    }
+  } else {
+    n = m = arg0;
+  }
+  let A = new NDArray({shape:[n,m],datatype:datatype,fill:0});
+  let ndiag = Math.min(n,m);
+  for(let i=0; i<ndiag; i++) {
+    A.set(i,i,1);
+  }
+  return A;
+}
+
+/**
+ * Creates NDArray filled with zeros
+ * 
+ * ```
+ * zeros(2) // Creates 2x2 matrix of zeros  
+ * zeros([2,2,2]) // Create 2x2x2 matrix of zeros
+ * zeros(2,'i16') // Creates 2x2 matrix of 16-bit integers filled with zeros
+ * ```
+ */
+export function zeros(arg0:number|number[], datatype?:NumberType) {
+  let A;
+  if(Array.isArray(arg0)) {
+    A = new NDArray({shape:arg0, datatype:datatype});
+  } else {
+    A = new NDArray({shape:[arg0,arg0], datatype:datatype})
+  }
+  A.fill(0);
+  return A;
 }

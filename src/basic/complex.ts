@@ -20,7 +20,7 @@
 */
 
 import {EPSILON} from '../constants'
-import {isequal} from '../utils'
+import {isequal} from '..'
 
 export default class Complex {
   real : number;

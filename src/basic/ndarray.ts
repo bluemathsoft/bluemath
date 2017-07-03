@@ -20,8 +20,7 @@
 
 */
 
-import {NumberType,TypedArray} from '..'
-import {isequal} from '../utils'
+import {NumberType,TypedArray,isequal} from '..'
 import {EPSILON} from '../constants'
 import Complex from './complex'
 

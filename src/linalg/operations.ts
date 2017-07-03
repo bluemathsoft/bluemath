@@ -19,11 +19,9 @@
 
 */
 
-import {NDArray,Complex} from '../basic'
-import {eye} from '../'
 import * as lapack from './lapack'
 import {EPSILON} from '../constants'
-import {iszero} from '../utils'
+import {NDArray,Complex,eye,iszero} from '..'
 
 /**
  * Matrix multiplication

@@ -20,8 +20,7 @@
 
 */
 
-import {NumberType, TypedArray} from '..'
-import {utils} from '..'
+import {NumberType, TypedArray, iszero, isequal} from '..'
 import {EPSILON} from '../constants'
 
 /**
@@ -150,7 +149,7 @@ export default class Vector {
    */
   unit() : Vector {
     let len = this.len();
-    if(utils.iszero(len)) {
+    if(iszero(len)) {
       let arr = new Array<number>(this.size());
       for(let i=0, l=this.size(); i<l; i++) { arr[i] = 0.0; }
       return new Vector(arr);
@@ -224,7 +223,7 @@ export default class Vector {
    */
   isEqual(other:Vector, tolerance=EPSILON) : boolean {
     for(let i=0; i<this._data.length; i++) {
-      if(!utils.isequal(this._data[i], other._data[i], tolerance)) {
+      if(!isequal(this._data[i], other._data[i], tolerance)) {
         return false;
       }
     }
