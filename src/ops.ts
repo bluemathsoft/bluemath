@@ -295,7 +295,7 @@ function _mul_two(a:NDArray|number|Complex, b:NDArray|number|Complex)
       return linalg.matmul(a,b);
     }
   }
-  throw new Error('Addition of invalid types');
+  throw new Error('Multiplication of incompatible types');
 }
 
 /**
@@ -312,4 +312,16 @@ export function mul(...args:(NDArray|number|Complex)[]) {
     acc = _mul_two(acc, args[i]);
   }
   return acc;
+}
+
+/**
+ * Subtract second argument from first
+ * The arguments could be a number (real or complex) or NDArray.
+ * If some of the arguments are NDArrays, then their shapes should
+ * be compatible with the other operand of subtraction operation,
+ * otherwise an exception is thrown
+ */
+export function sub(a:number|Complex|NDArray, b:number|Complex|NDArray)
+{
+  return _add_two(a, _mul_two(-1,b));
 }

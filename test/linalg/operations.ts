@@ -20,7 +20,7 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {isequal,NDArray,Complex,linalg,add,mul} from '../../src'
+import {isequal,NDArray,Complex,linalg,add,sub,mul} from '../../src'
 
 // For debugging purposes
 (<any>window).bluemath = {
@@ -179,6 +179,80 @@ export default function testOperations() {
       });
     });
 
+    QUnit.module('sub', () => {
+      QUnit.test('Real and complex numbers', assert => {
+        assert.equal(sub(3,4),-1);
+        assert.ok(new Complex(0,-3).isEqual(
+          <Complex>sub(3,new Complex(3,3))));
+        assert.ok(new Complex(2,3).isEqual(
+          <Complex>sub(new Complex(3,3),1)));
+        assert.ok(new Complex(2,2).isEqual(
+          <Complex>sub(new Complex(3,3),new Complex(1,1))));
+      });
+
+      QUnit.test('Numbers and NDArrays', assert => {
+        let A = new NDArray([
+          [4,5],
+          [2,7]
+        ]);
+        assert.ok(new NDArray([
+          [3,4],
+          [1,6]
+        ]).isEqual(<NDArray>sub(A,1)));
+        assert.ok(new NDArray([
+          [-3,-4],
+          [-1,-6]
+        ]).isEqual(<NDArray>sub(1,A)));
+
+        let sarr = new NDArray({shape:[2]});
+        sarr.set(0,3);
+        sarr.set(1,new Complex(4,5));
+
+        let tarr = sarr.clone();
+        tarr.set(0,2);
+        tarr.set(1,new Complex(3,5));
+        assert.ok(tarr.isEqual(<NDArray>sub(sarr,1)));
+
+        tarr = sarr.clone();
+        tarr.set(0,-2);
+        tarr.set(1,new Complex(-3,-5));
+        assert.ok(tarr.isEqual(<NDArray>sub(1,sarr)));
+
+        tarr = sarr.clone();
+        tarr.set(0,new Complex(-2,1));
+        tarr.set(1,new Complex(-3,-4));
+        assert.ok(tarr.isEqual(<NDArray>sub(new Complex(1,1),sarr)));
+
+        tarr = sarr.clone();
+        tarr.set(0,new Complex(2,-1));
+        tarr.set(1,new Complex(3,4));
+        assert.ok(tarr.isEqual(<NDArray>sub(sarr,new Complex(1,1))));
+      });
+
+      QUnit.test('NDArrays', assert => {
+        let A = new NDArray([
+          [4,5],
+          [2,7]
+        ]);
+        let B = new NDArray([
+          [1,4],
+          [5,2]
+        ]);
+        assert.ok(new NDArray([
+          [3,1],
+          [-3,5]
+        ]).isEqual(<NDArray>sub(A,B)));
+
+        let sarr1 = new NDArray({shape:[2]});
+        sarr1.set(0,3);
+        sarr1.set(1,new Complex(4,5));
+        let sarr2 = new NDArray([3,3]);
+        let tarr = sarr1.clone();
+        tarr.set(0, 0)
+        tarr.set(1, new Complex(1,5));
+        assert.ok(tarr.isEqual(<NDArray>sub(sarr1,sarr2)));
+      });
+    });
 
     QUnit.module('matmul', () => {
       QUnit.test("Square 3x3", assert => {
