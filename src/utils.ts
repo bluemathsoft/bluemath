@@ -61,3 +61,20 @@ export function isequal(a:number, b:number, tolerance=EPSILON) : boolean {
 export function cuberoot(x:number) : number {
   return x<0 ? -Math.pow(-x,1/3) : Math.pow(x,1/3);
 }
+
+/**
+ * Generate array of integers within given range.
+ * If both a and b are specified then return [a,b)
+ * if only a is specifed then return [0,a)
+ */
+export function range(a:number,b?:number) : number[] {
+  if(b === undefined) {
+    b = a;
+  }
+  b = Math.max(b,0);
+  let arr = [];
+  for(let i=a; i<b; i++) {
+    arr.push(i);
+  }
+  return arr;
+}

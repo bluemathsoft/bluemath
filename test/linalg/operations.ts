@@ -20,9 +20,7 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {utils, basic, linalg} from '../../src'
-
-let {NDArray,Complex} = basic;
+import {utils,NDArray,Complex,linalg} from '../../src'
 
 (<any>window).bluemath = {
   NDArray

@@ -20,8 +20,7 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {basic} from '../../src'
-let {NDArray} = basic;
+import {NDArray} from '../../src'
 
 /// <reference path="qunit/index.d.ts" />
 

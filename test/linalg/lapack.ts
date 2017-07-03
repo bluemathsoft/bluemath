@@ -19,8 +19,7 @@
  along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {linalg, basic} from '../../src'
-let {NDArray} = basic;
+import {linalg, NDArray} from '../../src'
 
 export default function testLAPACK() {
 
