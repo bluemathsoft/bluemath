@@ -321,7 +321,25 @@ export function mul(...args:(NDArray|number|Complex)[]) {
  * be compatible with the other operand of subtraction operation,
  * otherwise an exception is thrown
  */
-export function sub(a:number|Complex|NDArray, b:number|Complex|NDArray)
-{
+export function sub(a:number|Complex|NDArray, b:number|Complex|NDArray) {
   return _add_two(a, _mul_two(-1,b));
+}
+
+/**
+ * Divide first argument by second
+ * The first argument can be a number (real or complex) or NDArray.
+ * The second argument can be a number (real or complex)
+ */
+export function div(a:number|Complex|NDArray, b:number|Complex) {
+  let binv;
+  if(b instanceof Complex) {
+    // 1/Complex number is converted to a usable complex number by
+    // multiplying both numerator and denominator by complex conjugate
+    // of the original number
+    let den = b.real*b.real+b.imag*b.imag;
+    binv = new Complex(b.real/den, -b.imag/den);
+  } else {
+    binv = 1/b;
+  }
+  return _mul_two(a, binv);
 }

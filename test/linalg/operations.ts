@@ -20,7 +20,7 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {isequal,NDArray,Complex,linalg,add,sub,mul} from '../../src'
+import {isequal,NDArray,Complex,linalg,add,sub,mul,div} from '../../src'
 
 // For debugging purposes
 (<any>window).bluemath = {
@@ -251,6 +251,27 @@ export default function testOperations() {
         tarr.set(0, 0)
         tarr.set(1, new Complex(1,5));
         assert.ok(tarr.isEqual(<NDArray>sub(sarr1,sarr2)));
+      });
+    });
+
+    QUnit.module('div', () => {
+      QUnit.test('Real and complex numbers', assert => {
+        assert.equal(div(10,5), 2);
+        assert.ok(new Complex(6,8).isEqual(
+          <Complex>div(new Complex(12,16),2)));
+        assert.ok(new Complex(0.8,-1.6).isEqual(
+          <Complex>div(4,new Complex(1,2))));
+      });
+      QUnit.test('Numbers and NDArray', assert => {
+        let A = new NDArray([4,6,8]);
+        assert.ok(new NDArray([2,3,4]).isEqual(<NDArray>div(A,2)));
+        let sarr = new NDArray({shape:[2]});
+        sarr.set(0, 4);
+        sarr.set(1, new Complex(4,4));
+        let tarr = new NDArray({shape:[2]});
+        tarr.set(0, 2);
+        tarr.set(1, new Complex(2,2));
+        assert.ok(tarr.isEqual(<NDArray>div(sarr,2)));
       });
     });
 
