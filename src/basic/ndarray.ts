@@ -146,6 +146,20 @@ function getDataArrayType(typestr?:string) {
  * zeros([2,2,2]); // Returns 2x2x2 NDArray of zeros
  * eye([4,4]); // Creates 4x4 Identity matrix
  * ```
+ * 
+ * Basic math operations
+ * ---
+ * 
+ * Bluemath provides functions that allow basic math operations
+ * on NDArrays
+ * 
+ * [[add]]
+ * 
+ * [[sub]]
+ * 
+ * [[mul]]
+ * 
+ * [[div]]
  */
 export default class NDArray {
 
