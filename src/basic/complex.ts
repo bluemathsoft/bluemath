@@ -35,6 +35,16 @@ export default class Complex {
     return new Complex(this.real,this.imag);
   }
 
+  inverse() : Complex {
+    // 1/Complex number is converted to a usable complex number by
+    // multiplying both numerator and denominator by complex conjugate
+    // of the original number (rationalizing the denominator)
+    let r = this.real;
+    let i = this.imag;
+    let den = r*r+i*i;
+    return new Complex(r/den, -i/den);
+  }
+
   isEqual(other:Complex, tolerance=EPSILON) {
     return isequal(this.real,other.real,tolerance) &&
       isequal(this.imag,other.imag,tolerance);

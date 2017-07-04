@@ -331,15 +331,9 @@ export function sub(a:number|Complex|NDArray, b:number|Complex|NDArray) {
  * The second argument can be a number (real or complex)
  */
 export function div(a:number|Complex|NDArray, b:number|Complex) {
-  let binv;
   if(b instanceof Complex) {
-    // 1/Complex number is converted to a usable complex number by
-    // multiplying both numerator and denominator by complex conjugate
-    // of the original number
-    let den = b.real*b.real+b.imag*b.imag;
-    binv = new Complex(b.real/den, -b.imag/den);
+    return _mul_two(a, b.inverse());
   } else {
-    binv = 1/b;
+    return _mul_two(a, 1/b);
   }
-  return _mul_two(a, binv);
 }
