@@ -495,6 +495,15 @@ export default class NDArray {
   }
 
   /**
+   * Return 1D copy of this array
+   */
+  flatten() {
+    let copy = this.clone();
+    copy.reshape([this.size]);
+    return copy;
+  }
+
+  /**
    * Change between Row-major and Column-major layout
    */
   swapOrder() {

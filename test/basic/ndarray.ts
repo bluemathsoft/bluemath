@@ -384,6 +384,21 @@ export default function testNDArray() {
       });
     });
 
+    QUnit.module('flatten', () => {
+      QUnit.test('2x2', assert => {
+        let A = new NDArray([[2,7],[9,5]]);
+        assert.ok(new NDArray([2,7,9,5]).isEqual(A.flatten()));
+      });
+      QUnit.test('3x3', assert => {
+        let A = new NDArray([[2,7,8],[9,5,8],[0,3,4]]);
+        assert.ok(new NDArray([2,7,8,9,5,8,0,3,4]).isEqual(A.flatten()));
+      });
+      QUnit.test('5', assert => {
+        let A = new NDArray([2,7,8,9,5]);
+        assert.ok(new NDArray([2,7,8,9,5]).isEqual(A.flatten()));
+      });
+    });
+
     QUnit.module('clone', () => {
       QUnit.test('3x3', assert => {
         let A = new NDArray([

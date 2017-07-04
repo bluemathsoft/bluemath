@@ -27,7 +27,6 @@ import {
 import * as lapack from './lapack'
 
 export {
-  
   inner,
   outer,
   matmul,
