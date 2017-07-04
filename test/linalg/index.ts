@@ -21,7 +21,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import testOps from './operations'
+import testOps from './ops'
 import testLAPACK from './lapack'
 
 export default function testLinalg() {

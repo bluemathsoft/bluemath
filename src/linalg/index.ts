@@ -23,7 +23,7 @@
 import {
   matmul, norm, solve, cholesky, inner, outer, svd, rank, lstsq, lu_custom,
   slogdet, det, inv, qr, triu, tril, eig
-} from './operations'
+} from './ops'
 import * as lapack from './lapack'
 
 export {
