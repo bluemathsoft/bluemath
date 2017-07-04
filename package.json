@@ -8,8 +8,8 @@
     "build": "webpack --config webpack.config.js",
     "watch": "webpack --watch --config webpack.config.js",
     "watch-logoscope": "webpack --watch --config webpack.logoscope.config.js",
-    "build-deploy-docs": "typedoc --excludeNotExported --excludePrivate --out ./docs --theme doctheme/ --mode file --readme src/index.md --gaID \"UA-99857402-1\" && cp -r docs/* ../bluemathsoft.github.io/docs/",
-    "build-docs": "typedoc --excludeNotExported --excludePrivate --out ./docs --theme doctheme/ --mode file --readme src/index.md",
+    "build-deploy-docs": "typedoc --excludeNotExported --excludePrivate --out ./docs --theme doctheme/ --mode modules --readme src/index.md --gaID \"UA-99857402-1\" && cp -r docs/* ../bluemathsoft.github.io/docs/",
+    "build-docs": "typedoc --excludeNotExported --excludePrivate --out ./docs --theme doctheme/ --mode modules --readme src/index.md",
     "deploy-tests":"(cp build/bluemath-test.js ../bluemathsoft.github.io/tests/)",
     "prepublish": "(cd src; tsc -p .)"
   },
