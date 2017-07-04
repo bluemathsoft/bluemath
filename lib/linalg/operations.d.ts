@@ -1,4 +1,4 @@
-import { NDArray } from '../basic';
+import { NDArray } from '..';
 /**
  * Matrix multiplication
  *
