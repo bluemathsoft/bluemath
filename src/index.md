@@ -1,12 +1,22 @@
 
-API
+Classes
 ===
 
-**NDArray**  [bluemath.NDArray](./classes/_basic_ndarray_.ndarray.html)
+[[NDArray]]
 
-**Basic Math operations**  [bluemath.*](./modules/_ops_.html)
+[[Complex]]
 
-**Linear Algebra**  [bluemath.linalg.*](./modules/_linalg_operations_.html)
+Basic Operations
+===
+
+[[add]]
+
+[[sub]]
+
+[[mul]]
+
+[[div]]
+
 
 Linear Algebra
 ===
