@@ -25,7 +25,11 @@ import testBasic from './basic'
 import testLinalg from './linalg'
 import testOps from './ops'
 
+import {version} from '../src'
+
 window.onload = () => {
+
+  console.log('BlueMath v'+version);
 
   let qunitDiv = document.createElement('div');
   qunitDiv.setAttribute('id', 'qunit');

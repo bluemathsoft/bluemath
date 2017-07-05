@@ -648,6 +648,8 @@ export default class NDArray {
   }
 
   take(indices:number[],axis:number) : NDArray {
+    !indices;
+    !axis;
     throw new Error('TODO');
   }
 
