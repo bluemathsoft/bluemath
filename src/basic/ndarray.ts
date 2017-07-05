@@ -687,7 +687,7 @@ export default class NDArray {
       if(val instanceof Complex) {
         return val.toString();
       } else if(typeof val === 'number') {
-        return Number(val.toFixed(3));
+        return Number(val.toFixed(precision));
       } else if(Array.isArray(val) && !Array.isArray(val[0])) {
         return '['+val.map(v => {
           if(v instanceof Complex) {
@@ -700,5 +700,77 @@ export default class NDArray {
         return val;
       }
     },precision);
+  }
+
+  toString2(precision=4) {
+
+    let isInteger = false;
+    if(['i8','ui8','i16','ui16','i32','ui32'].indexOf(this.datatype) >= 0) {
+      isInteger = true;
+    }
+
+    function whitespace(length=0) {
+      let s = '';
+      for(let i=0; i<length; i++) { s+=' '; }
+      return s;
+    }
+
+    if(this.shape.length <= 0) {
+      return '[]';
+    }
+    let sarr = [];
+    let step = 1;
+
+    // iterate over dimensions from innermost to outermost
+    for(let i=this.shape.length-1; i>=0; i--) {
+
+      // Step size in i'th dimension
+      let d = this.shape[i];
+      step = step * d;
+
+      // number of elements in i'th dimension
+      let nelem = this.size/step;
+
+      if(i === this.shape.length-1) {
+        // innermost dimension, create array from all elements
+        for(let j=0; j<nelem; j++) {
+          let str = whitespace(i+1)+'[';
+          for(let k=0; k<d; k++) {
+            let index = j*step+k;
+
+            if(isInteger) {
+              if(this._idata[index] === undefined) {
+                str += Math.round(this._data[index]);
+              } else {
+                str += new Complex(this._data[index],this._idata[index]).toString(0);
+              }
+            } else {
+              if(this._idata[index] === undefined) {
+                str += this._data[index].toFixed(precision);
+              } else {
+                str += new Complex(this._data[index],this._idata[index]).toString();
+              }
+            }
+
+            if(k < d-1) {
+              str += ',';
+            }
+          }
+          str += ']';
+          sarr.push(str);
+        }
+      } else {
+        // outer dimensions, create array from inner dimension's arrays
+        let sdarr = new Array(nelem);
+        for(let j=0; j<nelem; j++) {
+          sdarr[j] =
+            whitespace(i+1)+'[\n'+
+            sarr.slice(j*d,(j+1)*d).map(s => whitespace(i+1)+s).join(',\n')+'\n'+
+            whitespace(i+2)+']';
+        }
+        sarr = sdarr;
+      }
+    }
+    return sarr[0];
   }
 }
