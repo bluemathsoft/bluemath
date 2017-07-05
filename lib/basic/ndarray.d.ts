@@ -145,6 +145,10 @@ export default class NDArray {
      */
     isEqual(other: NDArray, tolerance?: number): boolean;
     /**
+     * Return 1D copy of this array
+     */
+    flatten(): NDArray;
+    /**
      * Change between Row-major and Column-major layout
      */
     swapOrder(): void;
@@ -195,5 +199,14 @@ export default class NDArray {
      * * No support for `<start>:<stop>:<step>` format yet
      */
     slice(...slices: (string | number | undefined | null)[]): NDArray;
+    take(indices: number[], axis: number): NDArray;
+    max(): void;
+    min(): void;
+    mean(): void;
+    all(): void;
+    any(): void;
+    sort(): void;
+    argsort(): void;
     toString(precision?: number): string;
+    toString2(precision?: number): any;
 }

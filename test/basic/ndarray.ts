@@ -78,7 +78,7 @@ export default function testNDArray() {
                 [2,3],
                 [5,4]
               ]
-            ], 'i16');
+            ], {datatype:'i16'});
             assert.deepEqual(A.shape,[2,2,2]);
             assert.equal(A.size, 8);
           });
@@ -191,8 +191,8 @@ export default function testNDArray() {
     });
 
     QUnit.test("swaprows", assert => {
-      let A = new NDArray([[1,0],[2,1],[6,9]], 'i16');
-      let B = new NDArray([[2,1],[1,0],[6,9]], 'i16');
+      let A = new NDArray([[1,0],[2,1],[6,9]], {datatype:'i16'});
+      let B = new NDArray([[2,1],[1,0],[6,9]], {datatype:'i16'});
       A.swaprows(0,1);
       assert.ok(A.isEqual(B));
     });
@@ -201,12 +201,12 @@ export default function testNDArray() {
 
       QUnit.test("4", assert => {
         let arr = [5,6,7,8];
-        let A = new NDArray(arr, 'i16');
+        let A = new NDArray(arr, {datatype:'i16'});
         assert.deepEqual(arr, A.toArray());
       });
       QUnit.test("3x2", assert => {
         let arr = [[1,0],[2,1],[6,9]];
-        let A = new NDArray(arr, 'i16');
+        let A = new NDArray(arr, {datatype:'i16'});
         assert.deepEqual(arr, A.toArray());
       });
 
@@ -221,7 +221,7 @@ export default function testNDArray() {
             [5,4]
           ]
         ];
-        let A = new NDArray(arr, 'i16');
+        let A = new NDArray(arr, {datatype:'i16'});
         assert.deepEqual(arr, A.toArray());
       });
       QUnit.test("2x3x1", assert => {
@@ -237,7 +237,7 @@ export default function testNDArray() {
             [10]
           ]
         ];
-        let A = new NDArray(arr, 'i16');
+        let A = new NDArray(arr, {datatype:'i16'});
         assert.deepEqual(arr, A.toArray());
       });
       QUnit.test("1x4x3x2", assert => {
@@ -257,7 +257,7 @@ export default function testNDArray() {
             ]
           ]
         ];
-        let A = new NDArray(arr, 'i16');
+        let A = new NDArray(arr, {datatype:'i16'});
         assert.deepEqual(arr, A.toArray());
       });
 
