@@ -647,6 +647,38 @@ export default class NDArray {
     return newndarray;
   }
 
+  take(indices:number[],axis:number) : NDArray {
+    throw new Error('TODO');
+  }
+
+  max() {
+    throw new Error('TODO');
+  }
+
+  min() {
+    throw new Error('TODO');
+  }
+
+  mean() {
+    throw new Error('TODO');
+  }
+
+  all() {
+    throw new Error('TODO');
+  }
+
+  any() {
+    throw new Error('TODO');
+  }
+
+  sort() {
+    throw new Error('TODO');
+  }
+
+  argsort() {
+    throw new Error('TODO');
+  }
+
   toString(precision=4) {
     return JSON.stringify(this.toArray(), function (key, val) { 
       !key; // to avoid unused variable warning
