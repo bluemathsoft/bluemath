@@ -681,6 +681,7 @@ export default class NDArray {
     throw new Error('TODO');
   }
 
+  /*
   toString(precision=4) {
     return JSON.stringify(this.toArray(), function (key, val) { 
       !key; // to avoid unused variable warning
@@ -701,8 +702,9 @@ export default class NDArray {
       }
     },precision);
   }
+  */
 
-  toString2(precision=4) {
+  toString(precision=4) {
 
     if(['i8','ui8','i16','ui16','i32','ui32'].indexOf(this.datatype) >= 0) {
       precision = 0;
@@ -758,7 +760,7 @@ export default class NDArray {
           sdarr[j] =
             whitespace(i+1)+'[\n'+
             sarr.slice(j*d,(j+1)*d).map(s => whitespace(i+1)+s).join(',\n')+'\n'+
-            whitespace(i+2)+']';
+            whitespace(i+1)+']';
         }
         sarr = sdarr;
       }
@@ -781,7 +783,6 @@ export default class NDArray {
 
     // iterate over dimensions from innermost to outermost
     for(let i=this.shape.length-1; i>=0; i--) {
-
 
       // Step size in i'th dimension
       let d = this.shape[i];
