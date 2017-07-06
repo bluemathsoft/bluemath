@@ -207,6 +207,6 @@ export default class NDArray {
     any(): void;
     sort(): void;
     argsort(): void;
-    toString(precision?: number): string;
-    toString2(precision?: number): any;
+    toString(precision?: number): any;
+    toHTML(precision?: number): any;
 }
