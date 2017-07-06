@@ -52,12 +52,7 @@ export default class Complex {
 
   toString(precision=4) {
     let sign = (this.imag >=0) ? '+' : '-';
-    if(precision > 0) {
-      return `(${this.real.toFixed(precision)}`+
-        `${sign}${Math.abs(this.imag).toFixed(precision)}i)`;
-    } else {
-      return `(${Math.round(this.real)}`+
-        `${sign}${Math.round(Math.abs(this.imag))}i)`;
-    }
+    return `(${this.real.toFixed(precision)}`+
+      `${sign}${Math.abs(this.imag).toFixed(precision)}i)`;
   }
 }

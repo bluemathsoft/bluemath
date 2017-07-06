@@ -704,9 +704,8 @@ export default class NDArray {
 
   toString2(precision=4) {
 
-    let isInteger = false;
     if(['i8','ui8','i16','ui16','i32','ui32'].indexOf(this.datatype) >= 0) {
-      isInteger = true;
+      precision = 0;
     }
 
     function whitespace(length=0) {
@@ -730,26 +729,19 @@ export default class NDArray {
 
       // number of elements in i'th dimension
       let nelem = this.size/step;
-
       if(i === this.shape.length-1) {
+
         // innermost dimension, create array from all elements
         for(let j=0; j<nelem; j++) {
           let str = whitespace(i+1)+'[';
           for(let k=0; k<d; k++) {
             let index = j*step+k;
 
-            if(isInteger) {
-              if(this._idata[index] === undefined) {
-                str += Math.round(this._data[index]);
-              } else {
-                str += new Complex(this._data[index],this._idata[index]).toString(0);
-              }
+            if(this._idata[index] === undefined) {
+              str += this._data[index].toFixed(precision);
             } else {
-              if(this._idata[index] === undefined) {
-                str += this._data[index].toFixed(precision);
-              } else {
-                str += new Complex(this._data[index],this._idata[index]).toString();
-              }
+              str += new Complex(this._data[index],this._idata[index])
+                .toString(precision);
             }
 
             if(k < d-1) {
@@ -772,5 +764,67 @@ export default class NDArray {
       }
     }
     return sarr[0];
+  }
+
+  toHTML(precision=4) {
+
+    if(['i8','ui8','i16','ui16','i32','ui32'].indexOf(this.datatype) >= 0) {
+      precision = 0;
+    }
+    let tagnames = ['table','tr','td'];
+
+    if(this.shape.length <= 0) {
+      return '<table></table>';
+    }
+    let sarr = [];
+    let step = 1;
+
+    // iterate over dimensions from innermost to outermost
+    for(let i=this.shape.length-1; i>=0; i--) {
+
+
+      // Step size in i'th dimension
+      let d = this.shape[i];
+      step = step * d;
+
+      let tag = tagnames[(i+1)%3];
+      let outertag = tagnames[(3+i)%3]; // adding 3 wraps around the mod range
+
+      // number of elements in i'th dimension
+      let nelem = this.size/step;
+      if(i === this.shape.length-1) {
+
+        // innermost dimension, create array from all elements
+        for(let j=0; j<nelem; j++) {
+          let str = `<${outertag}>`;
+          for(let k=0; k<d; k++) {
+            let index = j*step+k;
+
+            str += `<${tag}>`;
+            if(this._idata[index] === undefined) {
+              str += this._data[index].toFixed(precision);
+            } else {
+              str += new Complex(this._data[index],this._idata[index])
+                .toString(precision);
+            }
+            str += `</${tag}>`;
+
+          }
+          str += `</${outertag}>`;
+          sarr.push(str);
+        }
+      } else {
+        // outer dimensions, create array from inner dimension's arrays
+        let sdarr = new Array(nelem);
+        for(let j=0; j<nelem; j++) {
+          sdarr[j] = `<${outertag}>`+
+            sarr.slice(j*d,(j+1)*d).join('')+
+            `</${outertag}>`;
+        }
+        sarr = sdarr;
+      }
+    }
+    return sarr[0];
+    //return '<table>'+sarr[0]+'</table>';
   }
 }
