@@ -22,9 +22,10 @@
 
 import {
   eye, zeros,
+  range,
   iszero, isequal,
   torad, todeg,
-  add, mul, sub, div
+  add, mul, sub, div,
 } from './ops'
 import * as linalg from './linalg'
 import {EPSILON} from './constants'
@@ -54,6 +55,7 @@ export {
 
   // Ops
   eye, zeros,
+  range,
   iszero, isequal,
   torad, todeg,
   add, mul, sub, div
