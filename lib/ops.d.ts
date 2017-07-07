@@ -27,7 +27,7 @@ export declare function cuberoot(x: number): number;
  * If both a and b are specified then return [a,b)
  * if only a is specifed then return [0,a)
  */
-export declare function range(a: number, b?: number): number[];
+export declare function range(a: number, b?: number): NDArray;
 /**
  * Creates m-by-n Identity matrix
  *
