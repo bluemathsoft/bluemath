@@ -653,8 +653,36 @@ export default class NDArray {
     throw new Error('TODO');
   }
 
-  max() {
-    throw new Error('TODO');
+  max(axis?:number|number[]) : number|NDArray {
+    if(axis !== undefined && axis !== null) {
+      if(typeof axis === 'number') {
+        if(axis >= this.shape.length) {
+          throw new Error('axis is out of range');
+        }
+        let maxshape = this.shape.slice();
+        maxshape.splice(axis,1);
+        let maxsize = maxshape.reduce((a,b)=>a*b,1);
+        let maxarr = new NDArray({datatype:this.datatype, shape:maxshape});
+        for(let i=0; i<maxsize; i++) {
+          let maxindex = maxarr._addressToIndex(i);
+          let sliceindex = maxindex.slice();
+          sliceindex.splice(axis,0,':');
+          let slice = this.slice(...sliceindex);
+          maxarr.set(...maxindex,<number>slice.max());
+        }
+        return maxarr;
+      } else if(Array.isArray(axis)) {
+        throw new Error('TODO');
+      } else {
+        throw new Error('Invalid type for axis');
+      }
+    } else {
+      if(Object.keys(this._idata).length > 0) {
+        throw new Error('TODO');
+      } else {
+        return Math.max.apply(Math.max, this._data);
+      }
+    }
   }
 
   min() {

@@ -20,7 +20,7 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {NDArray, Complex} from '../../src'
+import {NDArray, Complex, range} from '../../src'
 
 /// <reference path="qunit/index.d.ts" />
 
@@ -195,6 +195,35 @@ export default function testNDArray() {
       let B = new NDArray([[2,1],[1,0],[6,9]], {datatype:'i16'});
       A.swaprows(0,1);
       assert.ok(A.isEqual(B));
+    });
+
+    QUnit.module('max', () => {
+      QUnit.test("No axis", assert => {
+        assert.equal(<number>(new NDArray([3,4,5,8]).max()), 8);
+        assert.equal(<number>(new NDArray([[3,4],[5,8]]).max()), 8);
+        assert.equal(<number>(new NDArray([[3,4],[23,-99],[5,8]]).max()), 23);
+      });
+      QUnit.test("1 Axis of 2x2", assert => {
+        let A = new NDArray([[1,2],[3,4]],{datatype:'i32'});
+        assert.ok(new NDArray([3,4]).isEqual(<NDArray>A.max(0)));
+        assert.ok(new NDArray([2,4]).isEqual(<NDArray>A.max(1)));
+      });
+      QUnit.test("1 Axis of 3x3", assert => {
+        let A = new NDArray([[1,2,3],[4,5,6],[7,8,9]],{datatype:'i32'});
+        assert.ok(new NDArray([7,8,9]).isEqual(<NDArray>A.max(0)));
+        assert.ok(new NDArray([3,6,9]).isEqual(<NDArray>A.max(1)));
+      });
+      QUnit.test("1 Axis of 3x3x3", assert => {
+        let A = range(27);
+        A.reshape([3,3,3]);
+        console.log(A.toString());
+        console.log(A.max(2).toString());
+        assert.ok(new NDArray([
+          [2,5,8],
+          [11,14,17],
+          [20,23,26]
+        ]).isEqual(<NDArray>A.max(2)));
+      });
     });
 
     QUnit.module("toArray", () => {
@@ -512,6 +541,12 @@ export default function testNDArray() {
           [1,0,9],
           [0,2,3]
         ])));
+      });
+      QUnit.test('3x3x3', assert => {
+        let A = range(27);
+        A.reshape([3,3,3]);
+        console.log(A.slice(0,0,':').toString());
+        assert.ok(new NDArray([0,1,2]).isEqual(A.slice(0,0,':')));
       });
     });
 
