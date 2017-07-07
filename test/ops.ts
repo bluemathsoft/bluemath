@@ -19,7 +19,7 @@
 
 */
 
-import {NDArray,Complex,eye,zeros,add,sub,mul,div} from '../src'
+import {NDArray,Complex,eye,zeros,add,sub,mul,div,range} from '../src'
 
 export default function testOps() {
 
@@ -64,6 +64,19 @@ export default function testOps() {
         assert.equal(Z.datatype, 'ui32');
       });
     });
+
+    QUnit.module('range', () => {
+      QUnit.test('range(4)', assert => {
+        assert.ok(new NDArray([0,1,2,3]).isEqual(range(4)));
+      });
+      QUnit.test('range(0,4)', assert => {
+        assert.ok(new NDArray([0,1,2,3]).isEqual(range(0,4)));
+      });
+      QUnit.test('range(2,4)', assert => {
+        assert.ok(new NDArray([2,3]).isEqual(range(2,4)));
+      });
+    });
+
     QUnit.module('add', () => {
       QUnit.test('Real numbers', assert => {
         assert.equal(add(4,5), 9);

@@ -65,16 +65,17 @@ export function cuberoot(x:number) : number {
  * If both a and b are specified then return [a,b)
  * if only a is specifed then return [0,a)
  */
-export function range(a:number,b?:number) : number[] {
+export function range(a:number,b?:number) : NDArray {
   if(b === undefined) {
     b = a;
+    a = 0;
   }
   b = Math.max(b,0);
   let arr = [];
   for(let i=a; i<b; i++) {
     arr.push(i);
   }
-  return arr;
+  return new NDArray(arr,{datatype:'i32'});
 }
 
 /**
