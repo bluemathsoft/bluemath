@@ -28,6 +28,8 @@ console.log(bluemath.eye(3));
 
 [**Unit Tests**](http://www.bluemathsoftware.com/tests/index.html)
 
+[**Interactive Shell**](http://www.bluemathsoftware.com/shell/index.html)
+
 linalg example
 ===
 
