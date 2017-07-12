@@ -5,7 +5,7 @@
 #include "ndarray.h"
 
 void TestNDArrayConstruction(CuTest *tc) {
-  uint shape[] = {2,2};
+  ui32_t shape[] = {2,2};
   NDArray *ndarr = nda_create(f32,2,shape,NULL);
   CuAssertPtrNotNull(tc,ndarr);
   nda_destroy(ndarr);
