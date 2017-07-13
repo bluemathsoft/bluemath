@@ -17,8 +17,8 @@ NDATest::tearDown()
 void
 NDATest::testConstructor()
 {
-  NDArray::ShapeType shape = {2,2};
-  NDArray ndarr(NDArray::i8,shape);
+  NDArray<uint32_t>::ShapeType shape = {2,2};
+  NDArray<uint32_t> ndarr(shape);
   CPPUNIT_ASSERT(ndarr.size() == 4);
 }
 

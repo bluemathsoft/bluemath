@@ -5,21 +5,20 @@
 #include <vector>
 
 
+template <class T>
 class NDArray {
 
 public:
-  typedef enum { i8, i16, i32, f32, f64 } DataType;
   typedef std::vector<uint32_t> ShapeType;
 
 
 private:
   uint8_t m_ndim;
-  DataType m_type;
   ShapeType m_shape;
 
 public:
 
-  NDArray(DataType type, const ShapeType& shape);
+  NDArray(const ShapeType& shape);
 
   inline uint32_t size() {
     uint32_t s = 1;
