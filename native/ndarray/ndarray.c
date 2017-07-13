@@ -23,14 +23,14 @@
 #include <string.h>
 #include "ndarray.h"
 
-ui32_t
+uint32_t
 nda_size(
   NDArray *ndarr)
 {
   if(!ndarr) {
     return -1;
   }
-  ui32_t size = 1;
+  uint32_t size = 1;
   for(size_t i=0; i<ndarr->nd; i++) {
     size *= ndarr->shape[i];
   }
@@ -40,15 +40,15 @@ nda_size(
 NDArray *
 nda_create(
   nda_datatype type,
-  ui32_t nd,
-  ui32_t shape[],
+  uint32_t nd,
+  uint32_t shape[],
   void *data)
 {
   NDArray *nda = (NDArray*)malloc(sizeof(NDArray));
   nda->type = type;
   nda->nd = nd;
-  nda->shape = (ui32_t*)malloc(sizeof(ui32_t)*nd);
-  memcpy(nda->shape, shape, sizeof(ui32_t)*nd);
+  nda->shape = (shape_t)malloc(sizeof(uint32_t)*nd);
+  memcpy(nda->shape, shape, sizeof(uint32_t)*nd);
   nda->data = data;
   return nda;
 }
@@ -63,3 +63,12 @@ nda_destroy(
   }
   free(ndarr);
 }
+
+int32_t
+get_int32(
+  NDArray *ndarr,
+  index_t index)
+{
+
+}
+

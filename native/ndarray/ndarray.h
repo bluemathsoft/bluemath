@@ -1,4 +1,4 @@
- /*
+/*
 
  Copyright (C) 2017 Jayesh Salvi, Blue Math Software Inc.
 
@@ -19,31 +19,29 @@
 
 */
 
-typedef signed char i8_t;
-typedef unsigned char ui8_t;
-typedef signed short i16_t;
-typedef unsigned short ui16_t;
-typedef signed long i32_t;
-typedef unsigned long ui32_t;
-typedef float f32_t;
-typedef double f64_t;
+#include <stdint.h>
 
 typedef enum { i8, i16, i32, f32, f64 } nda_datatype;
+typedef uint32_t *shape_t;
+typedef struct {
+  int32_t *idx;
+  uint8_t nidx;
+} index_t;
 
 typedef struct {
 
   nda_datatype type;
 
-  ui32_t *shape;  /* Array of length nd, describing shape */
+  shape_t shape;  /* Array of length nd, describing shape */
 
-  ui32_t nd;      /* Number of dimensions */
+  uint32_t nd;    /* Number of dimensions */
 
-  void *data;   /* Pointer to first element of the array */
+  void *data;     /* Pointer to first element of the array */
 
 } NDArray;
 
 
-ui32_t
+uint32_t
 nda_size(
   NDArray *ndarr);
 
@@ -55,8 +53,8 @@ nda_size(
 NDArray *
 nda_create(
   nda_datatype type,
-  ui32_t nd,
-  ui32_t shape[],
+  uint32_t nd,
+  uint32_t shape[],
   void *data);
 
 void
@@ -69,53 +67,45 @@ nda_destroy(
  * Getters
  */
 
-i8_t
-get_i8(
+int8_t
+get_int8(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length);
+  index_t index);
 
-i16_t
-get_i16(
+int16_t
+get_int16(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length);
+  index_t index);
 
-i32_t
-get_i32(
+int32_t
+get_int32(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length);
+  index_t index);
 
-ui8_t
-get_ui8(
+uint8_t
+get_uint8(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length);
+  index_t index);
 
-ui16_t
-get_ui16(
+uint16_t
+get_uint16(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length);
+  index_t index);
 
-ui32_t
-get_ui32(
+uint32_t
+get_uint32(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length);
+  index_t index);
 
-f32_t
-get_f32(
+float
+get_float(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length);
+  index_t index);
 
-f64_t
-get_f64(
+double
+get_double(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length);
+  index_t index);
 
 /**
  * -------------------------
@@ -123,59 +113,51 @@ get_f64(
  */
 
 void
-set_i8(
+set_int8(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length,
-  i8_t value);
+  index_t index,
+  int8_t value);
 
 void
-set_i16(
+set_int16(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length,
-  i16_t value);
+  index_t index,
+  int16_t value);
 
 void
-set_i32(
+set_int32(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length,
-  i32_t value);
+  index_t index,
+  index_t value);
 
 void
-set_ui8(
+set_uint8(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length,
-  ui8_t value);
+  index_t index,
+  uint8_t value);
 
 void
-set_ui16(
+set_uint16(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length,
-  ui16_t value);
+  index_t index,
+  uint16_t value);
 
 void
-set_ui32(
+set_uint32(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length,
-  ui32_t value);
+  index_t index,
+  uint32_t value);
 
 void
-set_f32(
+set_float(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length,
-  f32_t value);
+  index_t index,
+  float value);
 
 void
-set_f64(
+set_double(
   NDArray *ndarr,
-  i32_t index[],
-  ui32_t index_length,
-  f64_t value);
+  index_t index,
+  double value);
 
 
