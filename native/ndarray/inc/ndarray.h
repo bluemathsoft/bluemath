@@ -80,3 +80,11 @@ public:
   }
 
 };
+
+
+class Dummy {
+private:
+  int m_num;
+public:
+  Dummy(int num):m_num(num){}
+};

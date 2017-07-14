@@ -2,3 +2,4 @@ build/
 node_modules/
 docs/
 /native/CMakeLists.txt.user
+/native/build-em
