@@ -11,6 +11,8 @@ if(TARGET_EMCC)
 
   message(STATUS "Building for Emscripten")
 
+  set(IDL ${CMAKE_CURRENT_SOURCE_DIR}/bmnative.idl)
+
   include(${CMAKE_CURRENT_SOURCE_DIR}/exported-functions.txt)
 
   set(CMAKE_C_COMPILER "emcc")
@@ -36,7 +38,7 @@ if(TARGET_EMCC)
 
   execute_process(
     COMMAND
-    python ${WEBIDL_BINDER} ${CMAKE_CURRENT_SOURCE_DIR}/bmnative.idl glue
+    python ${WEBIDL_BINDER} ${IDL} glue
     )
 
   add_executable(${PROJECT_NAME}.js ${SRC_LIST})

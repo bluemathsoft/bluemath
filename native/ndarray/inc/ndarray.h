@@ -57,25 +57,32 @@ private:
 
 public:
 
+  NDArray<T>() {
+  }
+
   NDArray<T>(const ShapeType& shape, T *data=nullptr) {
     m_shape = shape;
     m_ndim = shape.size();
-    m_data.reserve(m_ndim);
+    size_t datasize = size();
+    m_data.reserve(datasize);
     if(data) {
-      for(size_t i=0; i<m_ndim; i++) {
-        m_data[i] = data[i];
-      }
+      m_data.assign(data, data+datasize);
     }
   }
 
   ~NDArray<T>() {
   }
 
+  void resize(const ShapeType& shape) {
+    m_shape = shape;
+    m_ndim = shape.size();
+    size_t newsize = size();
+    m_data.reserve(newsize);
+  }
+
   uint32_t size() {
     uint32_t s = 1;
-    for(auto d : m_shape) {
-      s *= d;
-    }
+    for(auto d : m_shape) { s *= d; }
     return s;
   }
 
@@ -99,6 +106,25 @@ public:
 
 
 class NDArrayInt32 {
+private:
+  NDArray<int32_t> m_ndarr;
+
 public:
-  NDArrayInt32(uint32_t shape[], size_t shape_len) {}
+  NDArrayInt32(uint32_t shape[], size_t shape_len) {
+    NDArray<int32_t>::ShapeType shp;
+    shp.assign(shape, shape+shape_len);
+    m_ndarr.resize(shp);
+  }
+
+  int32_t get(int32_t index[], size_t index_len) {
+    NDArray<int32_t>::IndexType idx;
+    idx.assign(index, index+index_len);
+    return m_ndarr.get(idx);
+  }
+
+  void set(int32_t index[], size_t index_len, int32_t value) {
+    NDArray<int32_t>::IndexType idx;
+    idx.assign(index, index+index_len);
+    m_ndarr.set(idx, value);
+  }
 };
