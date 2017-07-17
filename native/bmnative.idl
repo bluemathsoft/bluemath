@@ -7,7 +7,7 @@ interface NDArrayInt32 {
   long get(
     long[] index, long index_len);
 
-  long set(
+  void set(
     long[] index, long index_len, long value);
 
 };
