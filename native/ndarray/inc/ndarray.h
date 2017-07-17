@@ -82,9 +82,7 @@ public:
 };
 
 
-class Dummy {
-private:
-  int m_num;
+class NDArrayInt32 {
 public:
-  Dummy(int num):m_num(num){}
+  NDArrayInt32(uint32_t shape[], size_t shape_len) {}
 };

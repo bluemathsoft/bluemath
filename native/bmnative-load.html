@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <script src="./build-em/bmnative.js"></script>
+  </head>
+  <body>
+  <script>
+    let ndarr = new Module.NDArrayInt32([3,4,5],3);
+    console.log(ndarr);
+    let spotrf = Module.cwrap(
+        'spotrf_',null,['number','number','number','number','number']);
+    console.log(spotrf);
+  </script>
+  </body>
+</html>

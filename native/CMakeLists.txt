@@ -1,28 +1,60 @@
 
 cmake_minimum_required(VERSION 3.0.0)
 
-project(ndarray)
+project(bmnative)
 
+set(EMSDK_ROOT "$ENV{HOME}/emsdk-portable")
+set(EMSDK_BIN "${EMSDK_ROOT}/emscripten/1.37.16")
+set(WEBIDL_BINDER "${EMSDK_BIN}/tools/webidl_binder.py")
 
 if(TARGET_EMCC)
 
   message(STATUS "Building for Emscripten")
+
+  include(${CMAKE_CURRENT_SOURCE_DIR}/exported-functions.txt)
+
   set(CMAKE_C_COMPILER "emcc")
   set(CMAKE_CXX_COMPILER "emcc")
-  set(CMAKE_CXX_FLAGS "-std=c++11 --bind -DFOR_EMSCRIPTEN=1")
+  set(CMAKE_CXX_FLAGS "-std=c++11 -O2 -DFOR_EMSCRIPTEN=1")
+  set(CMAKE_EXE_LINKER_FLAGS "--memory-init-file 0 --post-js glue.js -O2 -s EXPORTED_FUNCTIONS='${EXPORTED_FUNCTIONS}'")
 
   include_directories(
       ${CMAKE_CURRENT_SOURCE_DIR}/ndarray/inc
+      ${CMAKE_CURRENT_SOURCE_DIR}/lapacklite
+      ${CMAKE_BINARY_DIR}
     )
 
   file(GLOB INC_LIST
       ${CMAKE_CURRENT_SOURCE_DIR}/ndarray/inc/*.h
+      ${CMAKE_CURRENT_SOURCE_DIR}/lapacklite/*.h
     )
   file(GLOB SRC_LIST
       ${CMAKE_CURRENT_SOURCE_DIR}/ndarray/src/*.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/lapacklite/*.c
+      ${CMAKE_CURRENT_SOURCE_DIR}/glue_wrapper.cpp
     )
 
-  add_executable("ndarray.js" ${SRC_LIST})
+  execute_process(
+    COMMAND
+    python ${WEBIDL_BINDER} ${CMAKE_CURRENT_SOURCE_DIR}/bmnative.idl glue
+    )
+  #set_source_files_properties(
+  #  ${CMAKE_BINARY_DIR}/glue.cpp GENERATED)
+
+  #  add_executable(ndarray.js ${SRC_LIST})
+  #
+  #add_custom_command(TARGET glue.js
+  #  PRE_BUILD
+  #  COMMAND python ARGS ${WEBIDL_BINDER} ${CMAKE_CURRENT_SOURCE_DIR}/bmnative.idl glue)
+
+  #add_custom_target(glue.js
+  #  python ${WEBIDL_BINDER} ${CMAKE_CURRENT_SOURCE_DIR}/bmnative.idl glue
+  #  SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/bmnative.idl
+  #  )
+
+  add_executable(${PROJECT_NAME}.js ${SRC_LIST})
+  #add_dependencies(ndarray.js glue.js)
+
 
 else(TARGET_EMCC)
 

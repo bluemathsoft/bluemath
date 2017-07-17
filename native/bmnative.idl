@@ -1,0 +1,6 @@
+
+interface NDArrayInt32 {
+  void NDArrayInt32(
+    unsigned long[] shape,
+    unsigned long shape_len);
+};
