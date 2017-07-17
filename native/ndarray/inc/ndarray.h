@@ -41,7 +41,19 @@ private:
     return offset;
   }
 
-  IndexType offsetToIndex(const uint32_t offset);
+  IndexType offsetToIndex(const uint32_t offset) {
+    if(offset >= this->size()) {
+      throw std::runtime_error("Index out of bounds");
+    }
+    uint32_t di = offset;
+    IndexType idx(m_shape.size());
+    for(size_t i=m_shape.size(); i>=0; i--) {
+      size_t d = m_shape[i];
+      idx[i] = di % d;
+      di = di/d;
+    }
+    return idx;
+  }
 
 public:
 
@@ -77,6 +89,10 @@ public:
 
   T get(const IndexType& index) {
     return m_data[indexToOffset(index)];
+  }
+
+  void set(const IndexType& index, T value) {
+    m_data[indexToOffset(index)] = value;
   }
 
 };

@@ -38,22 +38,8 @@ if(TARGET_EMCC)
     COMMAND
     python ${WEBIDL_BINDER} ${CMAKE_CURRENT_SOURCE_DIR}/bmnative.idl glue
     )
-  #set_source_files_properties(
-  #  ${CMAKE_BINARY_DIR}/glue.cpp GENERATED)
-
-  #  add_executable(ndarray.js ${SRC_LIST})
-  #
-  #add_custom_command(TARGET glue.js
-  #  PRE_BUILD
-  #  COMMAND python ARGS ${WEBIDL_BINDER} ${CMAKE_CURRENT_SOURCE_DIR}/bmnative.idl glue)
-
-  #add_custom_target(glue.js
-  #  python ${WEBIDL_BINDER} ${CMAKE_CURRENT_SOURCE_DIR}/bmnative.idl glue
-  #  SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/bmnative.idl
-  #  )
 
   add_executable(${PROJECT_NAME}.js ${SRC_LIST})
-  #add_dependencies(ndarray.js glue.js)
 
 
 else(TARGET_EMCC)
@@ -84,8 +70,3 @@ else(TARGET_EMCC)
   target_link_libraries(${PROJECT_NAME}-test ${CPPUNIT_LIBRARY})
 
 endif(TARGET_EMCC)
-
-
-
-
-
