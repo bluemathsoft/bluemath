@@ -2,7 +2,8 @@
 interface NDArrayInt32 {
   void NDArrayInt32(
     unsigned long[] shape,
-    unsigned long shape_len);
+    unsigned long shape_len,
+    long[] data);
 
   long get(
     long[] index, long index_len);
@@ -15,7 +16,8 @@ interface NDArrayInt32 {
 interface NDArrayFloat32 {
   void NDArrayFloat32(
     unsigned long[] shape,
-    unsigned long shape_len);
+    unsigned long shape_len,
+    float[] data);
 
   float get(
     long[] index, long index_len);

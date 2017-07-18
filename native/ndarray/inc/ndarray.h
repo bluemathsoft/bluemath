@@ -102,6 +102,10 @@ public:
     m_data[indexToOffset(index)] = value;
   }
 
+  void setData(T *data) {
+    m_data.assign(data, data+size());
+  }
+
 };
 
 
@@ -110,10 +114,13 @@ private:
   NDArray<int32_t> m_ndarr;
 
 public:
-  NDArrayInt32(uint32_t shape[], size_t shape_len) {
+  NDArrayInt32(uint32_t shape[], size_t shape_len, int32_t *data=nullptr) {
     NDArray<int32_t>::ShapeType shp;
     shp.assign(shape, shape+shape_len);
     m_ndarr.resize(shp);
+    if(data) {
+      m_ndarr.setData(data);
+    }
   }
 
   int32_t get(int32_t index[], size_t index_len) {
@@ -133,10 +140,13 @@ class NDArrayFloat32 {
 private:
   NDArray<float> m_ndarr;
 public:
-  NDArrayFloat32(uint32_t shape[], size_t shape_len) {
+  NDArrayFloat32(uint32_t shape[], size_t shape_len, float *data=nullptr) {
     NDArray<float>::ShapeType shp;
     shp.assign(shape, shape+shape_len);
     m_ndarr.resize(shp);
+    if(data) {
+      m_ndarr.setData(data);
+    }
   }
 
   float get(int32_t index[], size_t index_len) {
