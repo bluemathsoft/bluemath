@@ -647,12 +647,18 @@ export default class NDArray {
     return newndarray;
   }
 
+  /**
+   * @hidden
+   */
   take(indices:number[],axis:number) : NDArray {
     !indices;
     !axis;
     throw new Error('TODO');
   }
 
+  /**
+   * @hidden
+   */
   max(axis?:number|number[]) : number|NDArray {
     if(axis !== undefined && axis !== null) {
       if(typeof axis === 'number') {
@@ -685,26 +691,44 @@ export default class NDArray {
     }
   }
 
+  /**
+   * @hidden
+   */
   min() {
     throw new Error('TODO');
   }
 
+  /**
+   * @hidden
+   */
   mean() {
     throw new Error('TODO');
   }
 
+  /**
+   * @hidden
+   */
   all() {
     throw new Error('TODO');
   }
 
+  /**
+   * @hidden
+   */
   any() {
     throw new Error('TODO');
   }
 
+  /**
+   * @hidden
+   */
   sort() {
     throw new Error('TODO');
   }
 
+  /**
+   * @hidden
+   */
   argsort() {
     throw new Error('TODO');
   }

@@ -1,8 +1,7 @@
 module.exports = {
-    entry: "./src/index.ts",
+    entry: "./test/perf-index.ts",
     output: {
-        filename: "./lib/bluemath.js",
-        libraryTarget:'umd'
+        filename: "./build/bluemath-perf.js",
     },
 
     // Enable sourcemaps for debugging webpack's output.
