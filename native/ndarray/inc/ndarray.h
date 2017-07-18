@@ -73,7 +73,7 @@ public:
   ~NDArray<T>() {
   }
 
-  void resize(const ShapeType& shape) {
+  void reshape(const ShapeType& shape) {
     m_shape = shape;
     m_ndim = shape.size();
     size_t newsize = size();
@@ -117,7 +117,7 @@ public:
   NDArrayInt32(uint32_t shape[], size_t shape_len, int32_t *data=nullptr) {
     NDArray<int32_t>::ShapeType shp;
     shp.assign(shape, shape+shape_len);
-    m_ndarr.resize(shp);
+    m_ndarr.reshape(shp);
     if(data) {
       m_ndarr.setData(data);
     }
@@ -143,7 +143,7 @@ public:
   NDArrayFloat32(uint32_t shape[], size_t shape_len, float *data=nullptr) {
     NDArray<float>::ShapeType shp;
     shp.assign(shape, shape+shape_len);
-    m_ndarr.resize(shp);
+    m_ndarr.reshape(shp);
     if(data) {
       m_ndarr.setData(data);
     }
