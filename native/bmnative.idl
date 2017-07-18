@@ -11,3 +11,15 @@ interface NDArrayInt32 {
     long[] index, long index_len, long value);
 
 };
+
+interface NDArrayFloat32 {
+  void NDArrayFloat32(
+    unsigned long[] shape,
+    unsigned long shape_len);
+
+  float get(
+    long[] index, long index_len);
+
+  void set(
+    long[] index, long index_len, float value);
+};

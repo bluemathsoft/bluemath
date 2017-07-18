@@ -128,3 +128,26 @@ public:
     m_ndarr.set(idx, value);
   }
 };
+
+class NDArrayFloat32 {
+private:
+  NDArray<float> m_ndarr;
+public:
+  NDArrayFloat32(uint32_t shape[], size_t shape_len) {
+    NDArray<float>::ShapeType shp;
+    shp.assign(shape, shape+shape_len);
+    m_ndarr.resize(shp);
+  }
+
+  float get(int32_t index[], size_t index_len) {
+    NDArray<float>::IndexType idx;
+    idx.assign(index, index+index_len);
+    return m_ndarr.get(idx);
+  }
+
+  void set(int32_t index[], size_t index_len, float value) {
+    NDArray<float>::IndexType idx;
+    idx.assign(index, index+index_len);
+    m_ndarr.set(idx, value);
+  }
+};
