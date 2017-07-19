@@ -59,12 +59,19 @@ window.onload = () => {
   for(let i=0; i<npoints; i++) {
     A.set(i,0,POINTS_DATA.get(i,0));
   }
-  let t0 = new Date();
-  let {x} = bm.linalg.lstsq(A,Y);
-  let t1 = new Date();
 
-  console.log('t[lstsq] = '+(t1-t0)+' msec');
-  console.log('Computed values: m='+x.get(0,0),' ',' c='+x.get(1,0));
-  console.log('Expected values: m='+LINE_SLOPE,' ',' c='+Y_INTERCEPT);
-  console.log('Noise weight: ',NOISE_WEIGHT);
+  setTimeout(() => {
+
+    let t0 = new Date();
+    let {x} = bm.linalg.lstsq(A,Y);
+    let t1 = new Date();
+
+    let report = [];
+    report.push('t[lstsq] = '+(t1-t0)+' msec');
+    report.push('Computed values: m='+x.get(0,0)+' c='+x.get(1,0));
+    report.push('Expected values: m='+LINE_SLOPE+' c='+Y_INTERCEPT);
+    report.push('Noise weight: ',NOISE_WEIGHT);
+    document.body.innerHTML = report.join('<br/>');
+
+  }, 1000);
 };
