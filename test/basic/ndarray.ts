@@ -213,7 +213,7 @@ export default function testNDArray() {
         assert.ok(new NDArray([7,8,9]).isEqual(<NDArray>A.max(0)));
         assert.ok(new NDArray([3,6,9]).isEqual(<NDArray>A.max(1)));
       });
-      QUnit.test("1 Axis of 3x3x3", assert => {
+      QUnit.skip("1 Axis of 3x3x3", assert => {
         let A = range(27);
         A.reshape([3,3,3]);
         console.log(A.toString());
@@ -542,7 +542,7 @@ export default function testNDArray() {
           [0,2,3]
         ])));
       });
-      QUnit.test('3x3x3', assert => {
+      QUnit.skip('3x3x3', assert => {
         let A = range(27);
         A.reshape([3,3,3]);
         console.log(A.slice(0,0,':').toString());

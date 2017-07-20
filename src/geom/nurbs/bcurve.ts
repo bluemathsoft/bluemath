@@ -159,7 +159,7 @@ class BSplineCurve2D extends BSplineCurve {
   tessellate(resolution=10) : NDArray {
     let tess = new NDArray({shape:[resolution+1,2],datatype:'f32'});
     for(let i=0; i<resolution+1; i++) {
-      this.evaluate(1/(resolution+1), tess, i);
+      this.evaluate(i/resolution, tess, i);
     }
     return tess;
   }
