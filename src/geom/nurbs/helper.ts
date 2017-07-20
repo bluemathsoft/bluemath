@@ -19,7 +19,7 @@
 
  */
 
-import {isequal} from '../..'
+import {isequal, TypedArray} from '../..'
 
 /**
  * @hidden
@@ -49,7 +49,7 @@ function bernstein(n:number, u:number) : Array<number> {
  * @param {number} u Parameter
  * @returns {number}
  */
-function findSpan(p:number, U:Array<number>, u:number)
+function findSpan(p:number, U:Array<number>|TypedArray, u:number)
   : number
 {
   let m = U.length-1;
@@ -80,7 +80,8 @@ function findSpan(p:number, U:Array<number>, u:number)
  * @param {number} u Parameter
  * @returns {Array} Basis function values at i,u
  */
-function getBasisFunction(p:number, U:Array<number>, i:number, u:number)
+function getBasisFunction(
+  p:number, U:Array<number>|TypedArray, i:number, u:number)
   : Array<number>
 {
   let N = new Array(p+1);
@@ -114,7 +115,7 @@ function getBasisFunction(p:number, U:Array<number>, i:number, u:number)
  *            basic function N(i-p+j,p), where 0<=k<=n and 0<=j<=p
  */
 function getBasisFunctionDerivatives(
-  p:number, u:number, i:number, U:Array<number>, n:number)
+  p:number, u:number, i:number, U:Array<number>|TypedArray, n:number)
   : Array<Array<number>>
 {
 

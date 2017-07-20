@@ -24,5 +24,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 import testNURBS from './nurbs'
 
 export default function testGeom() {
-  testNURBS();
+  QUnit.module('geom', () => {
+    testNURBS();
+  });
 }

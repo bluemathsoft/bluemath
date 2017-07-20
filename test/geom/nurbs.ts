@@ -20,23 +20,26 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {basic, geom} from '../../src'
+import {Vector2, NDArray, geom} from '../../src'
 
-let {Vector2} = basic;
 let {BSplineCurve2D} = geom.nurbs;
 
 export default function testNURBS() {
-  QUnit.module('BSplineCurve2D', () => {
-    QUnit.test('construction', assert => {
-      let bcrv = new BSplineCurve2D(1, [new Vector2(0,0), new Vector2(10,10)], [0,0,1,1]);
-      assert.ok(!!bcrv);
-      assert.equal(bcrv.degree, 1);
-      assert.equal(bcrv.cpoints.length, 2);
-      assert.equal(bcrv.knots.length, 4);
-    });
-    QUnit.test('evaluate at midpoint', assert => {
-      let bcrv = new BSplineCurve2D(1, [new Vector2(0,0), new Vector2(10,10)], [0,0,1,1]);
-      assert.ok(bcrv.evaluate(0.5).isEqual(new Vector2(5,5)));
+  QUnit.module('NURBS', () => {
+    QUnit.module('BSplineCurve2D', () => {
+      QUnit.test('construction', assert => {
+        let bcrv = new BSplineCurve2D(1,
+          new NDArray([[0,0],[10,10]]), new NDArray([0,0,1,1]));
+        assert.ok(!!bcrv);
+        assert.equal(bcrv.degree, 1);
+        assert.equal(bcrv.cpoints.shape[0], 2);
+        assert.equal(bcrv.knots.shape[0], 4);
+      });
+      QUnit.test('evaluate at midpoint', assert => {
+        let bcrv = new BSplineCurve2D(1,
+          new NDArray([[0,0], [10,10]]), new NDArray([0,0,1,1]));
+        assert.ok(bcrv.evaluate(0.5).isEqual(new Vector2(5,5)));
+      });
     });
   });
 }

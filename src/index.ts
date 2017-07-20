@@ -28,6 +28,7 @@ import {
   add, mul, sub, div,
 } from './ops'
 import * as linalg from './linalg'
+import * as geom from './geom'
 import {EPSILON} from './constants'
 import {
   NDArray,
@@ -44,6 +45,7 @@ export const version = '0.2.13'; // TODO: populate from package.json
 export {
   // Submodules
   linalg,
+  geom,
 
   // Constants
   EPSILON,

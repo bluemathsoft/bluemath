@@ -244,6 +244,14 @@ export default class NDArray {
     }
   }
 
+  is1D() : boolean {
+    return this.shape.length === 1;
+  }
+
+  is2D() : boolean {
+    return this.shape.length === 2;
+  }
+
   get data() {
     return this._data;
   }
@@ -603,7 +611,7 @@ export default class NDArray {
       } else if(typeof slice === 'number') {
         slice_recipe.push([slice,slice+1]);
       } else {
-        throw new Error("Unexpected slice :"+slice)
+        throw new Error("Unexpected slice :"+slice);
       }
     }
     // At this point slice_recipe contains an array of index ranges

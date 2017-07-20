@@ -21,7 +21,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import testBasic from './basic'
-//import testGeom from './geom'
+import testGeom from './geom'
 import testLinalg from './linalg'
 import testOps from './ops'
 
@@ -43,6 +43,7 @@ window.onload = () => {
 
   testBasic();
   testOps();
-  //testGeom();
+  testGeom();
   testLinalg();
+
 }

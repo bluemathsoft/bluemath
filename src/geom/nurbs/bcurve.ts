@@ -23,7 +23,7 @@
 import {                                                                                                                                                      
   findSpan, getBasisFunction, getBasisFunctionDerivatives                                                                                                     
 } from './helper'
-import {Vector, Vector2, Vector3} from '../../basic'
+import {NDArray, Vector2, Vector3} from '../../basic'
 
 /**
  * @hidden
@@ -31,19 +31,24 @@ import {Vector, Vector2, Vector3} from '../../basic'
 class BSplineCurve {
 
   degree : number;
-  cpoints : Array<Vector>;
-  knots : Array<number>;
-  weights? : Array<number>;
+  cpoints : NDArray;
+  knots : NDArray;
+  weights? : NDArray;
 
   constructor(
     degree:number,
-    cpoints:Array<Vector>,
-    knots:Array<number>,
-    weights?:Array<number>)
+    cpoints:NDArray,
+    knots:NDArray,
+    weights?:NDArray)
   {
     this.degree = degree;
+    console.assert(cpoints.is2D());
     this.cpoints = cpoints;
+    console.assert(knots.is1D());
     this.knots = knots;
+    if(weights) {
+      console.assert(knots.is1D());
+    }
     this.weights = weights;
 
     /*                                                                                                                                                        
@@ -53,8 +58,8 @@ class BSplineCurve {
      [The NURBS book, P3.1]                                                                                                                                   
      */
     let p = degree;
-    let m = knots.length+1;
-    let n = cpoints.length+1;
+    let m = knots.shape[0]+1;
+    let n = cpoints.shape[0]+1;
     console.assert(m === n+p+1);
   }
 
@@ -71,15 +76,15 @@ class BSplineCurve {
   evaluateBasisDerivatives(span:number, n:number, t:number)
     : number[][] 
   {
-    return getBasisFunctionDerivatives(this.degree, t, span, this.knots, n)
+    return getBasisFunctionDerivatives(this.degree, t, span, this.knots.data, n)
   }
 
   evaluateBasis(span:number, t:number) : number[] {
-    return getBasisFunction(this.degree, this.knots, span, t);
+    return getBasisFunction(this.degree, this.knots.data, span, t);
   }
 
   findSpan(t:number) {
-    return findSpan(this.degree, this.knots, t);                                                                                                              
+    return findSpan(this.degree, this.knots.data, t);
   }
 
   protected getTermDenominator(span:number, N:number[]) : number {
@@ -89,7 +94,7 @@ class BSplineCurve {
     if(this.weights) {
       denominator = 0.0;
       for(let i=0; i<N.length; i++) {
-        denominator += N[i] * this.weights[span-p+i];
+        denominator += N[i] * <number>this.weights.get(span-p+i);
       }
     } else {
       denominator = 1.0;
@@ -105,32 +110,58 @@ class BSplineCurve2D extends BSplineCurve {
 
   constructor(
     degree:number,
-    cpoints:Array<Vector2>,
-    knots:Array<number>,
-    weights?:Array<number>)
+    cpoints:NDArray,
+    knots:NDArray,
+    weights?:NDArray)
   {
     super(degree, cpoints, knots, weights);
   }
 
-  evaluate(t:number) : Vector2 {
+  evaluate(t:number, tess?:NDArray, tessidx?:number) : Vector2|null {
     let p = this.degree;
     let span = this.findSpan(t);
     let N = this.evaluateBasis(span, t);
-    let point = new Vector2();
-
-    let denominator = this.getTermDenominator(span, N);
-    for(let i=0; i<p+1; i++) {
-      let K;
-      if(this.weights) {
-        K = N[i] * this.weights[span-p+i]/denominator;
-      } else {
-        K = N[i]/denominator;
+    if(tess) {
+      tessidx = tessidx || 0;
+      let denominator = this.getTermDenominator(span, N);
+      for(let i=0; i<p+1; i++) {
+        let K;
+        if(this.weights) {
+          K = N[i] * <number>this.weights.get(span-p+i)/denominator;
+        } else {
+          K = N[i]/denominator;
+        }
+        let cx = <number>this.cpoints.get(span-p+i, 0);
+        let cy = <number>this.cpoints.get(span-p+i, 1);
+        tess.set(tessidx,0, (<number>tess.get(tessidx,0)) + K*cx);
+        tess.set(tessidx,1, (<number>tess.get(tessidx,1)) + K*cy);
       }
-      let cpoint = <Vector2>this.cpoints[span-p+i];
-      point.x += K * cpoint.x;
-      point.y += K * cpoint.y;
+      return null;
+    } else {
+      let point = new Vector2();
+      let denominator = this.getTermDenominator(span, N);
+      for(let i=0; i<p+1; i++) {
+        let K;
+        if(this.weights) {
+          K = N[i] * <number>this.weights.get(span-p+i)/denominator;
+        } else {
+          K = N[i]/denominator;
+        }
+        let cx = <number>this.cpoints.get(span-p+i, 0);
+        let cy = <number>this.cpoints.get(span-p+i, 1);
+        point.x += K * cx;
+        point.y += K * cy;
+      }
+      return point;
     }
-    return point;
+  }
+
+  tessellate(resolution=10) : NDArray {
+    let tess = new NDArray({shape:[resolution+1,2],datatype:'f32'});
+    for(let i=0; i<resolution+1; i++) {
+      this.evaluate(1/(resolution+1), tess, i);
+    }
+    return tess;
   }
 }
 
@@ -141,9 +172,9 @@ class BSplineCurve3D extends BSplineCurve {
 
   constructor(
     degree:number,
-    cpoints:Array<Vector3>,
-    knots:Array<number>,
-    weights?:Array<number>)
+    cpoints:NDArray,
+    knots:NDArray,
+    weights?:NDArray)
   {
     super(degree, cpoints, knots, weights);
   }
@@ -158,14 +189,16 @@ class BSplineCurve3D extends BSplineCurve {
     for(let i=0; i<p+1; i++) {
       let K;
       if(this.weights) {
-        K = N[i] * this.weights[span-p+i]/denominator;
+        K = N[i] * <number>this.weights.get(span-p+i)/denominator;
       } else {
         K = N[i]/denominator;
       }
-      let cpoint = <Vector3>this.cpoints[span-p+i];
-      point.x += K * cpoint.x;
-      point.y += K * cpoint.y;
-      point.z += K * cpoint.z;
+      let cx = <number>this.cpoints.get(span-p+i,0);
+      let cy = <number>this.cpoints.get(span-p+i,1);
+      let cz = <number>this.cpoints.get(span-p+i,2);
+      point.x += K * cx;
+      point.y += K * cy;
+      point.z += K * cz;
     }
     return point;
   }
