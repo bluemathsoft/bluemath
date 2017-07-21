@@ -77,14 +77,15 @@ function bmplot(name: string, spec: PlotSpec) {
 
 window.onload = () => {
 
-  let pelem = document.createElement('div');
-  pelem.setAttribute('id', 'plot-' + name);
-  pelem.setAttribute('class', 'plot');
+  let pelem = document.getElementById('mainplot');
+
+  let degree = 3;
+  let cpoints = [[0,0],[3,11],[4,0],[5.5,3],[6,0],[10,10]];
+  let knots = [0,0,0,0,0.4,0.7,1,1,1,1];
 
   let RESOLUTION=50;
-  let bcrv = new BSplineCurve2D(3,
-    new NDArray([[0,0],[3,11],[4,0],[5.5,3],[6,0],[10,10]]),
-    new NDArray([0,0,0,0,0.4,0.7,1,1,1,1]));
+  let bcrv = new BSplineCurve2D(degree,
+    new NDArray(cpoints), new NDArray(knots));
 
   let Nip = bcrv.tessellateBasis(RESOLUTION);
   let u = new NDArray({shape:[RESOLUTION+1]});
@@ -137,11 +138,39 @@ window.onload = () => {
   Plotly.newPlot(pelem, traces, {
     width : 800,
     height : 800,
-    xaxis: { anchor: 'y1' },
-    xaxis2: { anchor: 'y2' },
+    xaxis: { anchor: 'y1', title:'Euclidean space' },
+    xaxis2: { anchor: 'y2', title:'Parametric space' },
     yaxis2: { domain: [0, 0.45] },
     yaxis: { domain: [0.55, 1] },
   });
 
-  document.body.appendChild(pelem);
+
+  for(let i=degree+1; i<knots.length-degree; i++) {
+    let jqelem = $('<div></div>')
+      .attr('id',`slider${i}`)
+      .addClass('knotslider')
+      .slider({
+        range : true,
+        min : 0,
+        max : 100,
+        values : [knots[i-1]*100, knots[i]*100],
+        slide : function (ev, ui) {
+          let thisid = $(this).attr('id');
+          let thisnum = parseInt(/slider(\d+)/.exec(thisid)[1]);
+          if(thisnum > degree+1) {
+            let leftslider = $(`#slider${thisnum-1}`);
+            let leftvalues = leftslider.slider('values');
+            leftvalues[1] = ui.values[0];
+            leftslider.slider('option','values',leftvalues);
+          }
+          if(thisnum < knots.length-degree) {
+            let rightslider = $(`#slider${thisnum+1}`);
+            let rightvalues = rightslider.slider('values');
+            rightvalues[0] = ui.values[1];
+            rightslider.slider('option','values',rightvalues);
+          }
+        }
+      });
+    $('#knotsliders').append(jqelem);
+  }
 };
