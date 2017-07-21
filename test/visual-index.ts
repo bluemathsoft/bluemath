@@ -159,33 +159,33 @@ window.onload = () => {
           let thisnum = parseInt(/slider(\d+)/.exec(thisid)[1]);
           let handles = $(this).find('.ui-slider-handle');
           if(thisnum > degree+1) {
-            let val = ui.values[0];
+            let val = ui.values[0]/100;
             let leftslider = $(`#slider${thisnum-1}`);
             let leftvalues = leftslider.slider('values');
-            leftvalues[1] = val;
+            leftvalues[1] = ui.values[0];
             leftslider.slider('option','values',leftvalues);
-            $(handles[0]).text(val);
+            $(handles[0]).text(val.toFixed(2));
             let leftsliderhandles =
               $(`#slider${thisnum-1}>.ui-slider-handle`);
-            $(leftsliderhandles[1]).text(val);
+            $(leftsliderhandles[1]).text(val.toFixed(2));
           }
           if(thisnum < knots.length-degree) {
-            let val = ui.values[1];
+            let val = ui.values[1]/100;
             let rightslider = $(`#slider${thisnum+1}`);
             let rightvalues = rightslider.slider('values');
-            rightvalues[0] = val;
+            rightvalues[0] = ui.values[1];
             rightslider.slider('option','values',rightvalues);
-            $(handles[1]).text(val);
+            $(handles[1]).text(val.toFixed(2));
             let rightsliderhandles =
               $(`#slider${thisnum+1}>.ui-slider-handle`);
-            $(rightsliderhandles[0]).text(val);
+            $(rightsliderhandles[0]).text(val.toFixed(2));
           }
         },
         create: function () {
           let values = $(this).slider('values');
           let handles = $(this).find('.ui-slider-handle');
-          $(handles[0]).text(values[0]);
-          $(handles[1]).text(values[1]);
+          $(handles[0]).text((values[0]/100).toFixed(2));
+          $(handles[1]).text((values[1]/100).toFixed(2));
         }
       });
     $('#knotsliders').append(jqelem);
