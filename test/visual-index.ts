@@ -111,5 +111,13 @@ window.onload = () => {
       name:`N(${i},${bcrv.degree})`
     });
   }
+  let ones = new NDArray({shape:[bcrv.knots.shape[0]]});
+  ones.fill(1);
+  traces.push({
+    x : Array.from(bcrv.knots.data),
+    y : Array.from(ones.data),
+    type : 'point',
+    name : 'Knot Vector'
+  });
   bmplot('Basis',{traces:traces});
 };
