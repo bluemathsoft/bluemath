@@ -157,18 +157,35 @@ window.onload = () => {
         slide : function (ev, ui) {
           let thisid = $(this).attr('id');
           let thisnum = parseInt(/slider(\d+)/.exec(thisid)[1]);
+          let handles = $(this).find('.ui-slider-handle');
           if(thisnum > degree+1) {
+            let val = ui.values[0];
             let leftslider = $(`#slider${thisnum-1}`);
             let leftvalues = leftslider.slider('values');
-            leftvalues[1] = ui.values[0];
+            leftvalues[1] = val;
             leftslider.slider('option','values',leftvalues);
+            $(handles[0]).text(val);
+            let leftsliderhandles =
+              $(`#slider${thisnum-1}>.ui-slider-handle`);
+            $(leftsliderhandles[1]).text(val);
           }
           if(thisnum < knots.length-degree) {
+            let val = ui.values[1];
             let rightslider = $(`#slider${thisnum+1}`);
             let rightvalues = rightslider.slider('values');
-            rightvalues[0] = ui.values[1];
+            rightvalues[0] = val;
             rightslider.slider('option','values',rightvalues);
+            $(handles[1]).text(val);
+            let rightsliderhandles =
+              $(`#slider${thisnum+1}>.ui-slider-handle`);
+            $(rightsliderhandles[0]).text(val);
           }
+        },
+        create: function () {
+          let values = $(this).slider('values');
+          let handles = $(this).find('.ui-slider-handle');
+          $(handles[0]).text(values[0]);
+          $(handles[1]).text(values[1]);
         }
       });
     $('#knotsliders').append(jqelem);
