@@ -42,17 +42,6 @@ function bmplot(name: string, spec: PlotSpec) {
   let pelem = document.createElement('div');
   pelem.setAttribute('id', 'plot-' + name);
   pelem.setAttribute('class', 'plot');
-  let W = 600;
-  let H = 600;
-  pelem.style.width = W+'px';
-  pelem.style.height = H+'px';
-  /*
-  pelem.style.position = 'absolute';
-  pelem.style.left = (window.innerWidth/2)+'px';
-  pelem.style.top = (window.innerHeight/2)+'px';
-  pelem.style.marginLeft = `-${W/2}px`;
-  pelem.style.marginTop = `-${H/2}px`;
-  */
 
   let data = [];
 
@@ -87,27 +76,49 @@ function bmplot(name: string, spec: PlotSpec) {
 };
 
 window.onload = () => {
+
+  let pelem = document.createElement('div');
+  pelem.setAttribute('id', 'plot-' + name);
+  pelem.setAttribute('class', 'plot');
+
   let RESOLUTION=50;
   let bcrv = new BSplineCurve2D(3,
     new NDArray([[0,0],[3,11],[4,0],[5.5,3],[6,0],[10,10]]),
     new NDArray([0,0,0,0,0.4,0.7,1,1,1,1]));
-  bmplot('Curve',{
-    traces : [
-      { points2d:bcrv.tessellate(RESOLUTION), type:'line', name:'Curve' },
-      { points2d:bcrv.cpoints, type:'point', name:'Control Points' }
-    ]
-  });
+
   let Nip = bcrv.tessellateBasis(RESOLUTION);
   let u = new NDArray({shape:[RESOLUTION+1]});
   for(let i=0; i<RESOLUTION+1; i++) {
     u.set(i, i/RESOLUTION);
   }
   let traces = [];
+  let tess = bcrv.tessellate(RESOLUTION);
+  traces.push({
+    x: Array.from(tess.slice(':',0).data),
+    y: Array.from(tess.slice(':',1).data),
+    xaxis : 'x1',
+    yaxis : 'y1',
+    type:'line',
+    name:'Curve'
+  });
+  traces.push({
+    points2d:bcrv.cpoints,
+    x: Array.from(bcrv.cpoints.slice(':',0).data),
+    y: Array.from(bcrv.cpoints.slice(':',1).data),
+    xaxis : 'x1',
+    yaxis : 'y1',
+    type : 'scatter',
+    mode : 'markers',
+    name:'Control Points'
+  });
   for(let i=0; i<Nip.shape[0]; i++) {
     traces.push({
       x : Array.from(u.data),
       y : Array.from(Nip.slice(i,':').data),
-      type:'line',
+      xaxis : 'x2',
+      yaxis : 'y2',
+      type:'scatter',
+      mode : 'lines',
       name:`N(${i},${bcrv.degree})`
     });
   }
@@ -116,8 +127,21 @@ window.onload = () => {
   traces.push({
     x : Array.from(bcrv.knots.data),
     y : Array.from(ones.data),
-    type : 'point',
+    xaxis : 'x2',
+    yaxis : 'y2',
+    type : 'scatter',
+    mode : 'markers',
     name : 'Knot Vector'
   });
-  bmplot('Basis',{traces:traces});
+
+  Plotly.newPlot(pelem, traces, {
+    width : 800,
+    height : 800,
+    xaxis: { anchor: 'y1' },
+    xaxis2: { anchor: 'y2' },
+    yaxis2: { domain: [0, 0.45] },
+    yaxis: { domain: [0.55, 1] },
+  });
+
+  document.body.appendChild(pelem);
 };
