@@ -144,6 +144,9 @@ window.onload = () => {
     yaxis: { domain: [0.55, 1] },
   });
 
+  let knotzeros = new Array(degree);
+  knotzeros.fill(0);
+  $('#knotsliders').append($('<span></span>').text(knotzeros.join(',')));
 
   for(let i=degree+1; i<knots.length-degree; i++) {
     let jqelem = $('<div></div>')
@@ -190,4 +193,7 @@ window.onload = () => {
       });
     $('#knotsliders').append(jqelem);
   }
+  let knotones = new Array(degree);
+  knotones.fill(1);
+  $('#knotsliders').append($('<span></span>').text(knotones.join(',')));
 };
