@@ -24,6 +24,7 @@ import {
   findSpan, getBasisFunction, getBasisFunctionDerivatives                                                                                                     
 } from './helper'
 import {NDArray, Vector2, Vector3} from '../../basic'
+import {zeros} from '../..'
 
 /**
  * @hidden
@@ -58,8 +59,8 @@ class BSplineCurve {
      [The NURBS book, P3.1]                                                                                                                                   
      */
     let p = degree;
-    let m = knots.shape[0]+1;
-    let n = cpoints.shape[0]+1;
+    let m = knots.shape[0]-1;
+    let n = cpoints.shape[0]-1;
     console.assert(m === n+p+1);
   }
 
@@ -156,12 +157,36 @@ class BSplineCurve2D extends BSplineCurve {
     }
   }
 
+  /*
+  evaluate_derivative(t:number, tess?:NDArray, tessidx?:number) : Vector2|null
+  {
+    let p = this.degree;
+    let span = this.findSpan(t);
+
+  }
+  */
+
   tessellate(resolution=10) : NDArray {
     let tess = new NDArray({shape:[resolution+1,2],datatype:'f32'});
     for(let i=0; i<resolution+1; i++) {
       this.evaluate(i/resolution, tess, i);
     }
     return tess;
+  }
+
+  tessellateBasis(resolution=10) : NDArray {
+    let n = this.cpoints.shape[0]-1;
+    let p = this.degree;
+    let Nip = zeros([n+1,resolution+1],'f32');
+    for(let i=0; i<resolution+1; i++) {
+      let u = i/resolution;
+      let span = this.findSpan(u);
+      let N = this.evaluateBasis(span, u);
+      for(let j=p; j>=0; j--) {
+        Nip.set(span-j,i,N[p-j]);
+      }
+    }
+    return Nip;
   }
 }
 

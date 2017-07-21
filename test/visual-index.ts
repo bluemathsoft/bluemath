@@ -19,49 +19,97 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import {NDArray,geom} from '../src'
+import {NDArray,geom,range} from '../src'
 let {BSplineCurve2D} = geom.nurbs;
 
-
-interface PlotSpec {
+interface TraceSpec {
   x?: number[];
   y?: number[];
   points2d? : NDArray;
   points3d? : NDArray;
+  type : 'line'|'point';
+  name? : string;
 };
+
+interface PlotSpec {
+  traces : TraceSpec[];
+}
+
+let plots = [];
 
 function bmplot(name: string, spec: PlotSpec) {
 
   let pelem = document.createElement('div');
   pelem.setAttribute('id', 'plot-' + name);
   pelem.setAttribute('class', 'plot');
+  let W = 600;
+  let H = 600;
+  pelem.style.width = W+'px';
+  pelem.style.height = H+'px';
+  /*
+  pelem.style.position = 'absolute';
+  pelem.style.left = (window.innerWidth/2)+'px';
+  pelem.style.top = (window.innerHeight/2)+'px';
+  pelem.style.marginLeft = `-${W/2}px`;
+  pelem.style.marginTop = `-${H/2}px`;
+  */
 
-  let traces = [];
+  let data = [];
 
-  if(spec.x && spec.y) {
-    console.assert(Array.isArray(spec.x));
-    console.assert(Array.isArray(spec.y));
-    traces.push({
-      x: spec.x,
-      y: spec.y
-    });
-  } else if(spec.points2d) {
-    console.assert(spec.points2d.is2D() && spec.points2d.shape[1] >= 2);
-    traces.push({
-      x: Array.from(spec.points2d.slice(':',0).data),
-      y: Array.from(spec.points2d.slice(':',1).data)
-    });
-  } else {
-    throw new Error('Missing Plot Spec');
+  for(let trace of spec.traces) {
+    if(trace.x && trace.y) {
+      console.assert(Array.isArray(trace.x));
+      console.assert(Array.isArray(trace.y));
+      data.push({
+        x: trace.x,
+        y: trace.y,
+        type : 'scatter',
+        mode : trace.type === 'line' ? 'lines' : 'markers',
+        name : trace.name
+      });
+    } else if(trace.points2d) {
+      console.assert(trace.points2d.is2D() && trace.points2d.shape[1] >= 2);
+      data.push({
+        x: Array.from(trace.points2d.slice(':',0).data),
+        y: Array.from(trace.points2d.slice(':',1).data),
+        mode : trace.type === 'line' ? 'lines' : 'markers',
+        name : trace.name
+      });
+    } else {
+      throw new Error('Invalid Trace Spec');
+    }
   }
-  Plotly.plot(pelem, traces, {
-    margin: { t: 0 }
+
+  Plotly.plot(pelem, data, {
+    margin: {  }
   });
   document.body.appendChild(pelem);
 };
 
 window.onload = () => {
-  let bcrv = new BSplineCurve2D(1,
-    new NDArray([[0,0],[10,10]]), new NDArray([0,0,1,1]));
-  bmplot('bcrv1',{points2d:bcrv.tessellate()});
+  let RESOLUTION=50;
+  let bcrv = new BSplineCurve2D(3,
+    new NDArray([[0,0],[3,11],[4,0],[5.5,3],[6,0],[10,10]]),
+    new NDArray([0,0,0,0,0.4,0.7,1,1,1,1]));
+  bmplot('Curve',{
+    traces : [
+      { points2d:bcrv.tessellate(RESOLUTION), type:'line', name:'Curve' },
+      { points2d:bcrv.cpoints, type:'point', name:'Control Points' }
+    ]
+  });
+  let Nip = bcrv.tessellateBasis(RESOLUTION);
+  let u = new NDArray({shape:[RESOLUTION+1]});
+  for(let i=0; i<RESOLUTION+1; i++) {
+    u.set(i, i/RESOLUTION);
+  }
+  let traces = [];
+  for(let i=0; i<Nip.shape[0]; i++) {
+    traces.push({
+      x : Array.from(u.data),
+      y : Array.from(Nip.slice(i,':').data),
+      type:'line',
+      name:`N(${i},${bcrv.degree})`
+    });
+  }
+  bmplot('Basis',{traces:traces});
 };
