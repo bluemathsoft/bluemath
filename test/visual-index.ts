@@ -136,7 +136,7 @@ window.onload = () => {
   });
 
   Plotly.newPlot(pelem, traces, {
-    width : 800,
+    width : 600,
     height : 800,
     xaxis: { anchor: 'y1', title:'Euclidean space' },
     xaxis2: { anchor: 'y2', title:'Parametric space' },
