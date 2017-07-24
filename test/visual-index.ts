@@ -21,6 +21,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 import {NDArray,geom,range} from '../src'
 let {BSplineCurve2D} = geom.nurbs;
+const RESOLUTION = 50;
 
 interface TraceSpec {
   x?: number[];
@@ -75,24 +76,14 @@ function bmplot(name: string, spec: PlotSpec) {
   document.body.appendChild(pelem);
 };
 
-window.onload = () => {
+function generatePlotlyData(bcrv) {
 
-  let pelem = document.getElementById('mainplot');
-
-  let degree = 3;
-  let cpoints = [[0,0],[3,11],[4,0],[5.5,3],[6,0],[10,10]];
-  let knots = [0,0,0,0,0.4,0.7,1,1,1,1];
-
-  let RESOLUTION=50;
-  let bcrv = new BSplineCurve2D(degree,
-    new NDArray(cpoints), new NDArray(knots));
-
+  let traces = [];
   let Nip = bcrv.tessellateBasis(RESOLUTION);
   let u = new NDArray({shape:[RESOLUTION+1]});
   for(let i=0; i<RESOLUTION+1; i++) {
     u.set(i, i/RESOLUTION);
   }
-  let traces = [];
   let tess = bcrv.tessellate(RESOLUTION);
   traces.push({
     x: Array.from(tess.slice(':',0).data),
@@ -134,15 +125,44 @@ window.onload = () => {
     mode : 'markers',
     name : 'Knot Vector'
   });
+  return traces;
+}
 
-  Plotly.newPlot(pelem, traces, {
-    width : 600,
-    height : 800,
-    xaxis: { anchor: 'y1', title:'Euclidean space' },
-    xaxis2: { anchor: 'y2', title:'Parametric space' },
-    yaxis2: { domain: [0, 0.45] },
-    yaxis: { domain: [0.55, 1] },
-  });
+const LAYOUT = {
+  width : 600,
+  height : 800,
+  xaxis: { anchor: 'y1', title:'Euclidean space' },
+  xaxis2: { anchor: 'y2', title:'Parametric space' },
+  yaxis2: { domain: [0, 0.45] },
+  yaxis: { domain: [0.55, 1] },
+};
+
+function createPlot(elem, traces) {
+  Plotly.newPlot(elem, traces, LAYOUT);
+}
+
+function updatePlot(elem, traces) {
+  // Plotly.update(elem, traces);
+  // Plotly.redraw(elem);
+  //Plotly.purge(elem);
+  //Plotly.addTraces(elem, traces);
+  Plotly.newPlot(elem, traces, LAYOUT);
+}
+
+window.onload = () => {
+
+  let pelem = document.getElementById('mainplot');
+
+  let degree = 3;
+  let cpoints = [[0,0],[3,11],[4,0],[5.5,3],[6,0],[10,10]];
+  let knots = [0,0,0,0,0.4,0.7,1,1,1,1];
+
+  let bcrv = new BSplineCurve2D(degree,
+    new NDArray(cpoints), new NDArray(knots));
+
+  let traces = generatePlotlyData(bcrv);
+
+  createPlot(pelem, traces);
 
   let knotzeros = new Array(degree);
   knotzeros.fill(0);
@@ -160,7 +180,17 @@ window.onload = () => {
         slide : function (ev, ui) {
           let thisid = $(this).attr('id');
           let thisnum = parseInt(/slider(\d+)/.exec(thisid)[1]);
+          console.log('sliding ', thisid, ui.handleIndex);
+          if(thisnum === degree+1 && ui.handleIndex === 0) {
+            return false;
+          }
+          if(thisnum === knots.length-degree-1 && ui.handleIndex === 1) {
+            return false;
+          }
           let handles = $(this).find('.ui-slider-handle');
+
+          let needsUpdate = false;
+
           if(thisnum > degree+1) {
             let val = ui.values[0]/100;
             let leftslider = $(`#slider${thisnum-1}`);
@@ -171,7 +201,11 @@ window.onload = () => {
             let leftsliderhandles =
               $(`#slider${thisnum-1}>.ui-slider-handle`);
             $(leftsliderhandles[1]).text(val.toFixed(2));
+
+            bcrv.setKnot(thisnum, val);
+            needsUpdate = needsUpdate || true;
           }
+
           if(thisnum < knots.length-degree) {
             let val = ui.values[1]/100;
             let rightslider = $(`#slider${thisnum+1}`);
@@ -182,6 +216,13 @@ window.onload = () => {
             let rightsliderhandles =
               $(`#slider${thisnum+1}>.ui-slider-handle`);
             $(rightsliderhandles[0]).text(val.toFixed(2));
+
+            bcrv.setKnot(thisnum, val);
+            needsUpdate = needsUpdate || true;
+          }
+
+          if(needsUpdate) {
+            updatePlot(pelem, generatePlotlyData(bcrv));
           }
         },
         create: function () {

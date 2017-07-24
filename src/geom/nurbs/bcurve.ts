@@ -64,6 +64,33 @@ class BSplineCurve {
     console.assert(m === n+p+1);
   }
 
+  setKnots(knots:NDArray) {
+    if(!this.knots.isShapeEqual(knots)) {
+      throw new Error('Invalid knot vector length');
+    }
+    this.knots = knots;
+  }
+
+  setKnot(index:number,knot:number) {
+    if(index >= this.knots.shape[0] || index < 0) {
+      throw new Error('Invalid knot index');
+    }
+    if(knot < 0 || knot > 1) {
+      throw new Error('Invalid knot value');
+    }
+    if(index < this.degree+1) {
+      if(knot !== 0) {
+        throw new Error('Clamped knot has to be zero');
+      }
+    }
+    if(index > (this.knots.shape[0]-this.degree-1)) {
+      if(knot !== 1) {
+        throw new Error('Clamped knot has to be one');
+      }
+    }
+    this.knots.set(index, knot);
+  }
+
   /**
    * Is this Rational BSpline Curve
    */
