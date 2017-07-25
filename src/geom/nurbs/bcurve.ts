@@ -83,7 +83,7 @@ class BSplineCurve {
         throw new Error('Clamped knot has to be zero');
       }
     }
-    if(index > (this.knots.shape[0]-this.degree-1)) {
+    if(index >= (this.knots.shape[0]-this.degree-1)) {
       if(knot !== 1) {
         throw new Error('Clamped knot has to be one');
       }

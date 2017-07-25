@@ -180,7 +180,6 @@ window.onload = () => {
         slide : function (ev, ui) {
           let thisid = $(this).attr('id');
           let thisnum = parseInt(/slider(\d+)/.exec(thisid)[1]);
-          console.log('sliding ', thisid, ui.handleIndex);
           if(thisnum === degree+1 && ui.handleIndex === 0) {
             return false;
           }
@@ -191,7 +190,7 @@ window.onload = () => {
 
           let needsUpdate = false;
 
-          if(thisnum > degree+1) {
+          if(ui.handleIndex === 0) {
             let val = ui.values[0]/100;
             let leftslider = $(`#slider${thisnum-1}`);
             let leftvalues = leftslider.slider('values');
@@ -202,11 +201,11 @@ window.onload = () => {
               $(`#slider${thisnum-1}>.ui-slider-handle`);
             $(leftsliderhandles[1]).text(val.toFixed(2));
 
-            bcrv.setKnot(thisnum, val);
+            bcrv.setKnot(thisnum-1, val);
             needsUpdate = needsUpdate || true;
           }
 
-          if(thisnum < knots.length-degree) {
+          if(ui.handleIndex === 1) {
             let val = ui.values[1]/100;
             let rightslider = $(`#slider${thisnum+1}`);
             let rightvalues = rightslider.slider('values');
