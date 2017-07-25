@@ -23,6 +23,8 @@ import {NDArray,geom,range} from '../src'
 let {BSplineCurve2D} = geom.nurbs;
 const RESOLUTION = 50;
 
+import {NURBS_DATA} from './nurbs-data'
+
 interface TraceSpec {
   x?: number[];
   y?: number[];
@@ -129,8 +131,9 @@ function generatePlotlyData(bcrv) {
 }
 
 const LAYOUT = {
-  width : 600,
-  height : 800,
+  width : 500,
+  height : 500,
+  margin : {t:0},
   xaxis: { anchor: 'y1', title:'Euclidean space' },
   xaxis2: { anchor: 'y2', title:'Parametric space' },
   yaxis2: { domain: [0, 0.45] },
@@ -153,9 +156,7 @@ window.onload = () => {
 
   let pelem = document.getElementById('mainplot');
 
-  let degree = 3;
-  let cpoints = [[0,0],[3,11],[4,0],[5.5,3],[6,0],[10,10]];
-  let knots = [0,0,0,0,0.4,0.7,1,1,1,1];
+  let {degree, cpoints, knots} = NURBS_DATA[1];
 
   let bcrv = new BSplineCurve2D(degree,
     new NDArray(cpoints), new NDArray(knots));
@@ -166,7 +167,9 @@ window.onload = () => {
 
   let knotzeros = new Array(degree);
   knotzeros.fill(0);
-  $('#knotsliders').append($('<span></span>').text(knotzeros.join(',')));
+  $('#knotsliders').append($('<span></span>')
+    .attr('id','clamped-zero-knots')
+    .text(knotzeros.join(',')));
 
   for(let i=degree+1; i<knots.length-degree; i++) {
     let jqelem = $('<div></div>')
@@ -235,5 +238,7 @@ window.onload = () => {
   }
   let knotones = new Array(degree);
   knotones.fill(1);
-  $('#knotsliders').append($('<span></span>').text(knotones.join(',')));
+  $('#knotsliders').append($('<span></span>')
+    .attr('id','clamped-one-knots')
+    .text(knotones.join(',')));
 };
