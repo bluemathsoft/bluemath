@@ -23,6 +23,7 @@
   "author": "Jayesh Salvi",
   "license": "AGPL-3.0",
   "devDependencies": {
+    "@types/jquery": "^3.2.9",
     "@types/qunit": "^2.0.31",
     "awesome-typescript-loader": "^3.2.1",
     "blueplot": "^0.1.0",
