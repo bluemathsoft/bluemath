@@ -216,7 +216,7 @@ function displayCurve(pelem, crvData) {
 
     $("#weights > #eq > span").each(function () {
       // read initial values from markup and remove that
-      var value = parseInt($(this).text(), 10);
+      var value = parseFloat($(this).text());
       $(this).empty().slider({
         value: value,
         min : -2,
@@ -229,15 +229,23 @@ function displayCurve(pelem, crvData) {
           let thisnum = parseInt(/weight(\d+)/.exec(thisid)[1]);
           bcrv.setWeight(thisnum, ui.value);
           updatePlot(pelem, generatePlotlyData(bcrv));
+          let handle = $(this).find('.ui-slider-handle');
+          $(handle).text(''+ui.value);
+        },
+        create : function () {
+          let handle = $(this).find('.ui-slider-handle');
+          $(handle).text($(this).slider('value').toFixed(2));
         }
       });
     });
   }
 
   $('#knotsliders')
-    .append($('<span></span>')
-    .attr('id','clamped-zero-knots')
-    .text(knotzeros.join(',')));
+    .append(
+      $('<span></span>')
+        .attr('id','clamped-zero-knots')
+        .text(knotzeros.join(','))
+      );
 
   for(let i=degree+1; i<knots.length-degree; i++) {
     let jqelem = $('<div></div>')
