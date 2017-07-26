@@ -23,7 +23,7 @@ import {NDArray,geom,range} from '../src'
 let {BSplineCurve2D} = geom.nurbs;
 const RESOLUTION = 50;
 
-import {NURBS_DATA} from './nurbs-data'
+import {CURVE_DATA} from './nurbs-data'
 
 interface TraceSpec {
   x?: number[];
@@ -152,11 +152,19 @@ function updatePlot(elem, traces) {
   Plotly.newPlot(elem, traces, LAYOUT);
 }
 
-window.onload = () => {
+function displayCurve(pelem, crvData) {
 
-  let pelem = document.getElementById('mainplot');
-
-  let {degree, cpoints, knots} = NURBS_DATA[1];
+  if(!crvData.knots) {
+    // Assume it's a bezier curve
+    crvData.knots = [];
+    for(let i=0; i<=crvData.degree; i++) {
+      crvData.knots.push(0);
+    }
+    for(let i=0; i<=crvData.degree; i++) {
+      crvData.knots.push(1);
+    }
+  }
+  let {degree, cpoints, knots} = crvData;
 
   let bcrv = new BSplineCurve2D(degree,
     new NDArray(cpoints), new NDArray(knots));
@@ -165,9 +173,13 @@ window.onload = () => {
 
   createPlot(pelem, traces);
 
+
+
   let knotzeros = new Array(degree);
   knotzeros.fill(0);
-  $('#knotsliders').append($('<span></span>')
+  $('#knotsliders')
+    .empty()
+    .append($('<span></span>')
     .attr('id','clamped-zero-knots')
     .text(knotzeros.join(',')));
 
@@ -241,4 +253,26 @@ window.onload = () => {
   $('#knotsliders').append($('<span></span>')
     .attr('id','clamped-one-knots')
     .text(knotones.join(',')));
+}
+
+window.onload = () => {
+
+  let pelem = document.getElementById('mainplot');
+
+  for(let i=0; i<CURVE_DATA.length; i++) {
+    let entry = CURVE_DATA[i];
+    $('#geom-selection').append(
+      $('<option></options>').val(''+i).html(entry.name));
+  }
+
+  let curChoice = parseInt($('#geom-selection option:selected').val());
+  
+  $('#geom-selection').on('change', ev => {
+    let choice = parseInt($('#geom-selection option:selected').val());
+    displayCurve(pelem, CURVE_DATA[choice].object);
+  });
+
+  let crvData = CURVE_DATA[curChoice].object;
+  displayCurve(pelem, CURVE_DATA[curChoice].object);
+
 };
