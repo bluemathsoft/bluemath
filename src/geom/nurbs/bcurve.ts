@@ -91,6 +91,16 @@ class BSplineCurve {
     this.knots.set(index, knot);
   }
 
+  setWeight(index:number, weight:number) {
+    if(!this.weights) {
+      throw new Error('Not a Rational BSpline');
+    }
+    if(index < 0 || index >= this.weights.shape[0]) {
+      throw new Error('Index out of bounds');
+    }
+    this.weights.set(index, weight);
+  }
+
   /**
    * Is this Rational BSpline Curve
    */

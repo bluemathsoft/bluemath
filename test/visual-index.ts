@@ -105,6 +105,7 @@ function generatePlotlyData(bcrv : BSplineCurve2D) {
     xaxis : 'x1',
     yaxis : 'y1',
     type:'line',
+    visible : 'legendonly',
     name:'1st Derivative'
   });
   traces.push({
@@ -142,14 +143,17 @@ function generatePlotlyData(bcrv : BSplineCurve2D) {
   return traces;
 }
 
+let PLOT_WIDTH = 500;
+let GAP_FRACTION = 0.02;
+
 const LAYOUT = {
   width : 500,
   height : 500,
-  margin : {t:0},
-  xaxis: { anchor: 'y1', title:'Euclidean space' },
-  xaxis2: { anchor: 'y2', title:'Parametric space' },
-  yaxis2: { domain: [0, 0.45] },
-  yaxis: { domain: [0.55, 1] },
+  margin : {t:0,b:0},
+  xaxis: { anchor: 'y1' },
+  xaxis2: { anchor: 'y2' },
+  yaxis2: { domain: [0, 0.5-GAP_FRACTION] , title:'Parametric space'},
+  yaxis: { domain: [0.5+GAP_FRACTION, 1] , title:'Euclidean space'},
 };
 
 function createPlot(elem, traces) {
@@ -175,18 +179,62 @@ function displayCurve(pelem, crvData) {
   let {degree, cpoints, knots} = crvData;
 
   let bcrv = new BSplineCurve2D(degree,
-    new NDArray(cpoints), new NDArray(knots));
+    new NDArray(cpoints), new NDArray(knots),
+    crvData.weights ? new NDArray(crvData.weights) : undefined);
 
   let traces = generatePlotlyData(bcrv);
 
   createPlot(pelem, traces);
 
-
-
   let knotzeros = new Array(degree);
   knotzeros.fill(0);
   $('#knotsliders')
-    .empty()
+    .empty();
+
+  $('#knotsliders')
+    .append($('<span></span>'))
+    .html('Knot Vector U');
+  $('#knotsliders').append('<br>');
+
+  $('#weights').empty();
+
+  if(bcrv.isRational()) {
+    $('#weights')
+      .append($('<span></span>'))
+      .html('Weights');
+    $('#weights').append('<br>');
+
+    let weightsEq = $('<div></div>').attr('id','eq');
+    for(let i=0; i<bcrv.weights.shape[0]; i++) {
+      weightsEq.append(
+        $('<span></span>')
+          .attr('id', `weight${i}`)
+          .text(''+<number>bcrv.weights.get(i))
+      );
+    }
+    $('#weights').append(weightsEq);
+
+    $("#weights > #eq > span").each(function () {
+      // read initial values from markup and remove that
+      var value = parseInt($(this).text(), 10);
+      $(this).empty().slider({
+        value: value,
+        min : -2,
+        max : +10,
+        step : 0.1,
+        animate: true,
+        orientation: "vertical",
+        slide : function (ev, ui) {
+          let thisid = $(ev.target).attr('id');
+          let thisnum = parseInt(/weight(\d+)/.exec(thisid)[1]);
+          bcrv.setWeight(thisnum, ui.value);
+          updatePlot(pelem, generatePlotlyData(bcrv));
+        }
+      });
+    });
+  }
+
+  $('#knotsliders')
     .append($('<span></span>')
     .attr('id','clamped-zero-knots')
     .text(knotzeros.join(',')));
