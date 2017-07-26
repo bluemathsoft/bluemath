@@ -78,7 +78,7 @@ function bmplot(name: string, spec: PlotSpec) {
   document.body.appendChild(pelem);
 };
 
-function generatePlotlyData(bcrv) {
+function generatePlotlyData(bcrv : BSplineCurve2D) {
 
   let traces = [];
   let Nip = bcrv.tessellateBasis(RESOLUTION);
@@ -87,6 +87,10 @@ function generatePlotlyData(bcrv) {
     u.set(i, i/RESOLUTION);
   }
   let tess = bcrv.tessellate(RESOLUTION);
+  let tessD = bcrv.tessellateDerivatives(RESOLUTION, 1);
+  let tdshape = tessD.shape;
+  tessD.reshape([tdshape[0], tdshape[2]]);
+
   traces.push({
     x: Array.from(tess.slice(':',0).data),
     y: Array.from(tess.slice(':',1).data),
@@ -94,6 +98,14 @@ function generatePlotlyData(bcrv) {
     yaxis : 'y1',
     type:'line',
     name:'Curve'
+  });
+  traces.push({
+    x: Array.from(tessD.slice(':',0).data),
+    y: Array.from(tessD.slice(':',1).data),
+    xaxis : 'x1',
+    yaxis : 'y1',
+    type:'line',
+    name:'1st Derivative'
   });
   traces.push({
     points2d:bcrv.cpoints,
@@ -145,10 +157,6 @@ function createPlot(elem, traces) {
 }
 
 function updatePlot(elem, traces) {
-  // Plotly.update(elem, traces);
-  // Plotly.redraw(elem);
-  //Plotly.purge(elem);
-  //Plotly.addTraces(elem, traces);
   Plotly.newPlot(elem, traces, LAYOUT);
 }
 

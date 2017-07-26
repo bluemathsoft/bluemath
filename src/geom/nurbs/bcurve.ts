@@ -24,7 +24,7 @@ import {
   findSpan, getBasisFunction, getBasisFunctionDerivatives                                                                                                     
 } from './helper'
 import {NDArray, Vector2, Vector3} from '../../basic'
-import {zeros} from '../..'
+import {zeros,range} from '../..'
 
 /**
  * @hidden
@@ -102,9 +102,9 @@ class BSplineCurve {
    * Evaluate basis function derivatives upto n'th
    */
   evaluateBasisDerivatives(span:number, n:number, t:number)
-    : number[][] 
+    : NDArray
   {
-    return getBasisFunctionDerivatives(this.degree, t, span, this.knots.data, n)
+    return getBasisFunctionDerivatives(this.degree, t, span, this.knots, n);
   }
 
   evaluateBasis(span:number, t:number) : number[] {
@@ -184,19 +184,55 @@ class BSplineCurve2D extends BSplineCurve {
     }
   }
 
-  /*
-  evaluate_derivative(t:number, tess?:NDArray, tessidx?:number) : Vector2|null
+  evaluateDerivative(
+    t:number, d:number, tess?:NDArray, tessidx?:number) : Vector2[]|null
   {
     let p = this.degree;
+    let P = this.cpoints;
+    let du = Math.min(d,p);
+    let ders = zeros([du+1,2]);
     let span = this.findSpan(t);
-
+    let Nders = this.evaluateBasisDerivatives(span, du, t);
+    for(let k=0; k<du+1; k++) {
+      ders.set(k,0, 0);
+      ders.set(k,1, 0);
+      for(let j=0; j<p+1; j++) {
+        for(let i=0; i<2; i++) {
+          ders.set(k,i,
+            <number>ders.get(k,i)+
+            <number>Nders.get(k,j)*<number>P.get(span-p+j,i));
+        }
+      }
+    }
+    if(tess && tessidx !== undefined) {
+      for(let i=0; i<du+1; i++) {
+        for(let j=0; j<2; j++) {
+          tess.set(tessidx,i,j, ders.get(i,j));
+        }
+      }
+      return null;
+    } else {
+      let varr = [];
+      for(let i=0; i<du+1; i++) {
+        varr.push(new Vector2(
+          <number>ders.get(i,0), <number>ders.get(i,1)));
+      }
+      return varr;
+    }
   }
-  */
 
   tessellate(resolution=10) : NDArray {
     let tess = new NDArray({shape:[resolution+1,2],datatype:'f32'});
     for(let i=0; i<resolution+1; i++) {
       this.evaluate(i/resolution, tess, i);
+    }
+    return tess;
+  }
+
+  tessellateDerivatives(resolution=10, d:number) : NDArray {
+    let tess = new NDArray({shape:[resolution+1,d,2], datatype:'f32'});
+    for(let i=0; i<resolution+1; i++) {
+      this.evaluateDerivative(i/resolution, d, tess, i);
     }
     return tess;
   }

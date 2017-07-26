@@ -19,7 +19,7 @@
 
  */
 
-import {isequal, TypedArray} from '../..'
+import {isequal, NDArray, TypedArray} from '../..'
 
 /**
  * @hidden
@@ -109,15 +109,16 @@ function getBasisFunction(
  * @param {number} p Degree
  * @param {number} u Parameter
  * @param {number} i Knot span
- * @param {Array.<number>} U Knot vector
+ * @param {NDArray} knots Knot vector
  * @param {number} n nth derivative
- * @returns {Array.<Array<number>>} ders ders[k][j] is k'th derivative of
+ * @returns {NDArray} ders ders[k][j] is k'th derivative of
  *            basic function N(i-p+j,p), where 0<=k<=n and 0<=j<=p
  */
 function getBasisFunctionDerivatives(
-  p:number, u:number, i:number, U:Array<number>|TypedArray, n:number)
-  : Array<Array<number>>
+  p:number, u:number, i:number, knots:NDArray, n:number)
+  : NDArray
 {
+  let U = knots.data;
 
   let ders = new Array(n+1);
   for(let i=0; i<n+1; i++) { ders[i] = new Array(p+1); }
@@ -198,8 +199,8 @@ function getBasisFunctionDerivatives(
     }
     r *= p-k;
   }
-  return ders;
 
+  return new NDArray(ders);
 }
 
 export {
