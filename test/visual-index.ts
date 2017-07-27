@@ -394,34 +394,41 @@ function displayCurve(pelem, crvData) {
     .text(knotones.join(',')));
 }
 
+function nameToKey(name) {
+  return name.replace(/[\(\)\s]+/g,'-').toLowerCase();
+}
+
 window.onload = () => {
 
   let pelem = document.getElementById('mainplot');
 
+  let CURVE_DATA_MAP = {};
+
   for(let i=0; i<CURVE_DATA.length; i++) {
     let entry = CURVE_DATA[i];
+    let key = nameToKey(entry.name);
     $('#geom-selection').append(
-      $('<option></options>').val(''+i).html(entry.name));
+      $('<option></option>').val(key).html(entry.name));
+    CURVE_DATA_MAP[key] = entry;
   }
 
   $('#geom-selection').on('change', ev => {
-    let choice = parseInt($('#geom-selection option:selected').val());
-    //displayCurve(pelem, CURVE_DATA[choice].object);
+    let choice = $('#geom-selection option:selected').val();
     window.location.href =
       window.location.protocol + '//' +
       window.location.host + window.location.pathname + '#' + choice;
     window.location.reload(true);
   });
 
-  let urlmatch = /#([\d\w -]+)$/.exec(window.location.href);
+  let urlmatch = /#([\d\w-]+)$/.exec(window.location.href);
 
   let curChoice;
   if(urlmatch) {
-    curChoice = parseInt(urlmatch[1]);
+    curChoice = urlmatch[1];
     $('#geom-selection').val(''+curChoice);
   } else {
-    curChoice = parseInt($('#geom-selection option:selected').val());
+    curChoice = $('#geom-selection option:selected').val();
   }
-  let crvData = CURVE_DATA[curChoice].object;
-  displayCurve(pelem, CURVE_DATA[curChoice].object);
+  let crvData = CURVE_DATA_MAP[curChoice].object;
+  displayCurve(pelem, CURVE_DATA_MAP[curChoice].object);
 };
