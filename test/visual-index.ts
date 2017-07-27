@@ -20,7 +20,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {NDArray,geom,range} from '../src'
-let {BSplineCurve2D} = geom.nurbs;
+let {BSplineCurve2D,BSplineCurve3D} = geom.nurbs;
 const RESOLUTION = 50;
 
 import {CURVE_DATA} from './nurbs-data'
@@ -78,7 +78,63 @@ function bmplot(name: string, spec: PlotSpec) {
   document.body.appendChild(pelem);
 };
 
-function generatePlotlyData(bcrv : BSplineCurve2D) {
+function generatePlotlyData3D(bcrv : BSplineCurve3D) {
+  let traces = [];
+  let Nip = bcrv.tessellateBasis(RESOLUTION);
+  let u = new NDArray({shape:[RESOLUTION+1]});
+  for(let i=0; i<RESOLUTION+1; i++) {
+    u.set(i, i/RESOLUTION);
+  }
+  let tess = bcrv.tessellate(RESOLUTION);
+
+  traces.push({
+    x: Array.from(tess.slice(':',0).data),
+    y: Array.from(tess.slice(':',1).data),
+    z: Array.from(tess.slice(':',2).data),
+    xaxis : 'x1',
+    yaxis : 'y1',
+    type : 'scatter3d',
+    mode : 'lines',
+    name:'Curve'
+  });
+  traces.push({
+    points2d:bcrv.cpoints,
+    x: Array.from(bcrv.cpoints.slice(':',0).data),
+    y: Array.from(bcrv.cpoints.slice(':',1).data),
+    xaxis : 'x1',
+    yaxis : 'y1',
+    type : 'scatter3d',
+    mode : 'markers',
+    name:'Control Points'
+  });
+  /*
+  for(let i=0; i<Nip.shape[0]; i++) {
+    traces.push({
+      x : Array.from(u.data),
+      y : Array.from(Nip.slice(i,':').data),
+      xaxis : 'x2',
+      yaxis : 'y2',
+      type:'scatter',
+      mode : 'lines',
+      name:`N(${i},${bcrv.degree})`
+    });
+  }
+  let ones = new NDArray({shape:[bcrv.knots.shape[0]]});
+  ones.fill(1);
+  traces.push({
+    x : Array.from(bcrv.knots.data),
+    y : Array.from(ones.data),
+    xaxis : 'x2',
+    yaxis : 'y2',
+    type : 'scatter',
+    mode : 'markers',
+    name : 'Knot Vector'
+  });
+  */
+  return traces;
+}
+
+function generatePlotlyData2D(bcrv : BSplineCurve2D) {
 
   let traces = [];
   let Nip = bcrv.tessellateBasis(RESOLUTION);
@@ -96,7 +152,8 @@ function generatePlotlyData(bcrv : BSplineCurve2D) {
     y: Array.from(tess.slice(':',1).data),
     xaxis : 'x1',
     yaxis : 'y1',
-    type:'line',
+    type : 'scatter',
+    mode : 'lines',
     name:'Curve'
   });
   traces.push({
@@ -104,7 +161,8 @@ function generatePlotlyData(bcrv : BSplineCurve2D) {
     y: Array.from(tessD.slice(':',1).data),
     xaxis : 'x1',
     yaxis : 'y1',
-    type:'line',
+    type : 'scatter',
+    mode : 'lines',
     visible : 'legendonly',
     name:'1st Derivative'
   });
@@ -178,11 +236,26 @@ function displayCurve(pelem, crvData) {
   }
   let {degree, cpoints, knots} = crvData;
 
-  let bcrv = new BSplineCurve2D(degree,
-    new NDArray(cpoints), new NDArray(knots),
-    crvData.weights ? new NDArray(crvData.weights) : undefined);
+  let bcrv;
+  if(cpoints[0].length === 2) {
+    bcrv = new BSplineCurve2D(degree,
+      new NDArray(cpoints), new NDArray(knots),
+      crvData.weights ? new NDArray(crvData.weights) : undefined);
+  } else if(cpoints[0].length === 3) {
+    bcrv = new BSplineCurve3D(degree,
+      new NDArray(cpoints), new NDArray(knots),
+      crvData.weights ? new NDArray(crvData.weights) : undefined);
+  } else {
+    throw new Error('Invalid dimension of control point');
+  }
 
-  let traces = generatePlotlyData(bcrv);
+
+  let traces;
+  if(bcrv instanceof BSplineCurve2D) {
+    traces = generatePlotlyData2D(bcrv);
+  } else if(bcrv instanceof BSplineCurve3D) {
+    traces = generatePlotlyData3D(bcrv);
+  }
 
   createPlot(pelem, traces);
 

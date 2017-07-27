@@ -139,6 +139,21 @@ class BSplineCurve {
     }
     return denominator;
   }
+
+  tessellateBasis(resolution=10) : NDArray {
+    let n = this.cpoints.shape[0]-1;
+    let p = this.degree;
+    let Nip = zeros([n+1,resolution+1],'f32');
+    for(let i=0; i<resolution+1; i++) {
+      let u = i/resolution;
+      let span = this.findSpan(u);
+      let N = this.evaluateBasis(span, u);
+      for(let j=p; j>=0; j--) {
+        Nip.set(span-j,i,N[p-j]);
+      }
+    }
+    return Nip;
+  }
 }
 
 /**
@@ -159,9 +174,9 @@ class BSplineCurve2D extends BSplineCurve {
     let p = this.degree;
     let span = this.findSpan(t);
     let N = this.evaluateBasis(span, t);
+    let denominator = this.getTermDenominator(span, N);
     if(tess) {
       tessidx = tessidx || 0;
-      let denominator = this.getTermDenominator(span, N);
       for(let i=0; i<p+1; i++) {
         let K;
         if(this.weights) {
@@ -171,13 +186,12 @@ class BSplineCurve2D extends BSplineCurve {
         }
         let cx = <number>this.cpoints.get(span-p+i, 0);
         let cy = <number>this.cpoints.get(span-p+i, 1);
-        tess.set(tessidx,0, (<number>tess.get(tessidx,0)) + K*cx);
-        tess.set(tessidx,1, (<number>tess.get(tessidx,1)) + K*cy);
+        tess.set(tessidx, 0, (<number>tess.get(tessidx,0)) + K*cx);
+        tess.set(tessidx, 1, (<number>tess.get(tessidx,1)) + K*cy);
       }
       return null;
     } else {
       let point = new Vector2();
-      let denominator = this.getTermDenominator(span, N);
       for(let i=0; i<p+1; i++) {
         let K;
         if(this.weights) {
@@ -247,20 +261,6 @@ class BSplineCurve2D extends BSplineCurve {
     return tess;
   }
 
-  tessellateBasis(resolution=10) : NDArray {
-    let n = this.cpoints.shape[0]-1;
-    let p = this.degree;
-    let Nip = zeros([n+1,resolution+1],'f32');
-    for(let i=0; i<resolution+1; i++) {
-      let u = i/resolution;
-      let span = this.findSpan(u);
-      let N = this.evaluateBasis(span, u);
-      for(let j=p; j>=0; j--) {
-        Nip.set(span-j,i,N[p-j]);
-      }
-    }
-    return Nip;
-  }
 }
 
 /**
@@ -277,28 +277,55 @@ class BSplineCurve3D extends BSplineCurve {
     super(degree, cpoints, knots, weights);
   }
 
-  evaluate(t:number) : Vector3 {
+  evaluate(t:number, tess?:NDArray, tessidx?:number) : Vector3|null {
     let p = this.degree;
     let span = this.findSpan(t);
     let N = this.evaluateBasis(span, t);
-    let point = new Vector3();
 
     let denominator = this.getTermDenominator(span, N);
-    for(let i=0; i<p+1; i++) {
-      let K;
-      if(this.weights) {
-        K = N[i] * <number>this.weights.get(span-p+i)/denominator;
-      } else {
-        K = N[i]/denominator;
+    if(tess) {
+      tessidx = tessidx || 0;
+      for(let i=0; i<p+1; i++) {
+        let K;
+        if(this.weights) {
+          K = N[i] * <number>this.weights.get(span-p+i)/denominator;
+        } else {
+          K = N[i]/denominator;
+        }
+        let cx = <number>this.cpoints.get(span-p+i,0);
+        let cy = <number>this.cpoints.get(span-p+i,1);
+        let cz = <number>this.cpoints.get(span-p+i,2);
+        tess.set(tessidx, 0, (<number>tess.get(tessidx,0)) + K*cx);
+        tess.set(tessidx, 1, (<number>tess.get(tessidx,1)) + K*cy);
+        tess.set(tessidx, 2, (<number>tess.get(tessidx,2)) + K*cz);
       }
-      let cx = <number>this.cpoints.get(span-p+i,0);
-      let cy = <number>this.cpoints.get(span-p+i,1);
-      let cz = <number>this.cpoints.get(span-p+i,2);
-      point.x += K * cx;
-      point.y += K * cy;
-      point.z += K * cz;
+      return null;
+    } else {
+      let point = new Vector3();
+      for(let i=0; i<p+1; i++) {
+        let K;
+        if(this.weights) {
+          K = N[i] * <number>this.weights.get(span-p+i)/denominator;
+        } else {
+          K = N[i]/denominator;
+        }
+        let cx = <number>this.cpoints.get(span-p+i,0);
+        let cy = <number>this.cpoints.get(span-p+i,1);
+        let cz = <number>this.cpoints.get(span-p+i,2);
+        point.x += K * cx;
+        point.y += K * cy;
+        point.z += K * cz;
+      }
+      return point;
     }
-    return point;
+  }
+
+  tessellate(resolution=10) : NDArray {
+    let tess = new NDArray({shape:[resolution+1,3], datatype:'f32'});
+    for(let i=0; i<resolution+1; i++) {
+      this.evaluate(i/resolution, tess, i);
+    }
+    return tess;
   }
 }
 
