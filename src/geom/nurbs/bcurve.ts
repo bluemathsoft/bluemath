@@ -64,6 +64,10 @@ class BSplineCurve {
     console.assert(m === n+p+1);
   }
 
+  getDimension() {
+    return this.cpoints.shape[1];
+  }
+
   setKnots(knots:NDArray) {
     if(!this.knots.isShapeEqual(knots)) {
       throw new Error('Invalid knot vector length');
@@ -153,6 +157,118 @@ class BSplineCurve {
       }
     }
     return Nip;
+  }
+
+  insertKnot(un:number, r:number) {
+    let p = this.degree;
+    let dim = this.getDimension();
+    let k = this.findSpan(un);
+    let isRational = this.isRational();
+
+    // If un already exists in the knot vector then s is it's multiplicity
+    let s =0;
+    for(let i=0; i<this.knots.shape[0]; i++) {
+      if(this.knots.get(i) === un) {
+        s++;
+      }
+    }
+
+    if(r+s >= p) {
+      throw new Error('Knot insertion exceeds knot multiplicity beyond degree');
+    }
+
+    let m = this.knots.shape[0] - 1;
+    let n = m-p-1;
+
+    let P = this.cpoints;
+    let Up = this.knots;
+    let Q = new NDArray({shape:[P.shape[0]+r,dim]});
+    let Uq = new NDArray({shape:[Up.shape[0]+r]});
+    let Rtmp, Wtmp;
+
+    Rtmp = new NDArray({shape:[p+1,dim]});
+
+    let Wp, Wq;
+    if(isRational) {
+      Wp = this.weights;
+      Wq = new NDArray({shape:[Wp.shape[0] + r]});
+      Wtmp = new NDArray({shape:[p+1]});
+    }
+
+    // Load new knot vector
+    for(let i=0; i<k+1; i++) {
+      Uq.set(i, Up.get(i));
+    }
+
+    for(let i=0; i<r+1; i++) {
+      Uq.set(k+i, un);
+    }
+
+    for(let i=k+1; i<m+1; i++) {
+      Uq.set(i+r, Up.get(i));
+    }
+
+    // Save unaltered control points
+    for(let i=0; i<k-p+1; i++) {
+      for(let j=0; j<dim; j++) {
+        Q.set(i,j, P.get(i,j));
+      }
+      if(isRational) {
+        Wq.set(i, Wp.get(i));
+      }
+    }
+
+    for(let i=k-s; i<n+1; i++) {
+      for(let j=0; j<dim; j++) {
+        Q.set(i+r,j, P.get(i,j));
+      }
+      if(isRational) {
+        Wq.set(i+r,Wp.get(i));
+      }
+    }
+
+    for(let i=0; i<p-s+1; i++) {
+      for(let j=0; j<dim; j++) {
+        Rtmp.set(i,j, P.get(k-p+i,j));
+      }
+    }
+
+    let L=0;
+    for(let j=1; j<r+1; j++) {
+      L = k-p+j;
+      for(let i=0; i<p-j-s+1; i++) {
+        let alpha = (un - <number>Up.get(L+i))/(<number>Up.get(i+k+1) - <number>Up.get(L+i));
+        for(let z=0; z<dim; z++) {
+          Rtmp.set(i,z, alpha * <number>Rtmp.get(i+1,z) + (1-alpha) * <number>Rtmp.get(i,z));
+        }
+        if(isRational) {
+          Wtmp.set(i, alpha * <number>Wtmp.get(i+1) + (1-alpha) * <number>Wtmp.get(i));
+        }
+      }
+      for(let z=0; z<dim; z++) {
+        Q.set(L,z, Rtmp.get(0,z));
+        Q.set(k+r-j-s,z, Rtmp.get(p-j-s,z));
+      }
+      if(isRational) {
+        Wq.set(L, Wtmp.get(0));
+        Wq.set(k+r-j-s, Wtmp.get(p-j-s));
+      }
+    }
+
+    for(let i=L+1; i<k-s+1; i++) {
+      for(let z=0; z<dim; z++) {
+        Q.set(i,z, Rtmp.get(i-L,z));
+      }
+      if(isRational) {
+        Wq.set(i, Wtmp.get(i-L));
+      }
+    }
+
+    this.knots = Uq;
+    this.cpoints = Q;
+    if(isRational) {
+      this.weights = Wq;
+    }
   }
 }
 
