@@ -402,14 +402,24 @@ window.onload = () => {
       $('<option></options>').val(''+i).html(entry.name));
   }
 
-  let curChoice = parseInt($('#geom-selection option:selected').val());
-  
   $('#geom-selection').on('change', ev => {
     let choice = parseInt($('#geom-selection option:selected').val());
-    displayCurve(pelem, CURVE_DATA[choice].object);
+    //displayCurve(pelem, CURVE_DATA[choice].object);
+    window.location.href =
+      window.location.protocol + '//' +
+      window.location.host + window.location.pathname + '#' + choice;
+    window.location.reload(true);
   });
 
+  let urlmatch = /#([\d\w -]+)$/.exec(window.location.href);
+
+  let curChoice;
+  if(urlmatch) {
+    curChoice = parseInt(urlmatch[1]);
+    $('#geom-selection').val(''+curChoice);
+  } else {
+    curChoice = parseInt($('#geom-selection option:selected').val());
+  }
   let crvData = CURVE_DATA[curChoice].object;
   displayCurve(pelem, CURVE_DATA[curChoice].object);
-
 };
