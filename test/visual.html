@@ -29,24 +29,24 @@
       text-align: center;
     }
 
-    #topwrapper {
+    #curve-viz {
       display : flex;
       flex-direction: column;
     }
-    #topwrapper #output {
+    #curve-viz #output {
       display : flex;
       flex-direction: row;
     }
-    #topwrapper #output #equations {
+    #curve-viz #output #equations {
       display : flex;
       flex-direction: column;
       justify-content: space-around;
     }
-    #topwrapper #output #equations > * {
+    #curve-viz #output #equations > * {
     }
-    #topwrapper #input #clamped-one-knots {
+    #curve-viz #input #clamped-one-knots {
     }
-    #topwrapper #input #weights #eq > span {
+    #curve-viz #input #weights #eq > span {
       height:120px;
       float:left;
       margin:15px
@@ -56,7 +56,7 @@
 
 <body>
 
-  <div id="topwrapper">
+  <div id="curve-viz">
     <div id="output">
       <div id="mainplot"></div>
       <div id="equations">
@@ -92,6 +92,9 @@
     </div>
   </div>
 
+  <div id="action-viz">
+    <div id="mainplot"></div>
+  </div>
 
 </body>
 

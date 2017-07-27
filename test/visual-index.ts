@@ -230,7 +230,12 @@ function updatePlot(elem, traces) {
   Plotly.newPlot(elem, traces, LAYOUT);
 }
 
-function displayCurve(pelem, crvData) {
+function displayCurve(crvData) {
+
+  let pelem = $('#curve-viz #mainplot').get(0);
+
+  $('#curve-viz').show();
+  $('#action-viz').hide();
 
   if(!crvData.knots) {
     // Assume it's a bezier curve
@@ -394,13 +399,16 @@ function displayCurve(pelem, crvData) {
     .text(knotones.join(',')));
 }
 
+function performAction(actionData) {
+  $('#curve-viz').hide();
+  $('#action-viz').show();
+}
+
 function nameToKey(name) {
   return name.replace(/[\(\)\s]+/g,'-').toLowerCase();
 }
 
 window.onload = () => {
-
-  let pelem = document.getElementById('mainplot');
 
   let CURVE_DATA_MAP = {};
 
@@ -429,6 +437,10 @@ window.onload = () => {
   } else {
     curChoice = $('#geom-selection option:selected').val();
   }
-  let crvData = CURVE_DATA_MAP[curChoice].object;
-  displayCurve(pelem, CURVE_DATA_MAP[curChoice].object);
+  let data = CURVE_DATA_MAP[curChoice];
+  if(data.type === 'BezierCurve' || data.type === 'BSplineCurve') {
+    displayCurve(data.object);
+  } else if(data.type === 'Action') {
+    performAction(data.object);
+  }
 };
