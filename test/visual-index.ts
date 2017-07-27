@@ -20,7 +20,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {NDArray,geom,range} from '../src'
-let {BSplineCurve2D,BSplineCurve3D} = geom.nurbs;
+let {BSplineCurve2D,BSplineCurve3D,BSplineCurve} = geom.nurbs;
 const RESOLUTION = 50;
 
 import {CURVE_DATA} from './nurbs-data'
@@ -201,6 +201,14 @@ function generatePlotlyData2D(bcrv : BSplineCurve2D) {
   return traces;
 }
 
+function generatePlotlyData(bcrv : BSplineCurve) {
+  if(bcrv instanceof BSplineCurve2D) {
+    return generatePlotlyData2D(bcrv);
+  } else if(bcrv instanceof BSplineCurve3D) {
+    return generatePlotlyData3D(bcrv);
+  }
+}
+
 let PLOT_WIDTH = 500;
 let GAP_FRACTION = 0.02;
 
@@ -249,13 +257,7 @@ function displayCurve(pelem, crvData) {
     throw new Error('Invalid dimension of control point');
   }
 
-
-  let traces;
-  if(bcrv instanceof BSplineCurve2D) {
-    traces = generatePlotlyData2D(bcrv);
-  } else if(bcrv instanceof BSplineCurve3D) {
-    traces = generatePlotlyData3D(bcrv);
-  }
+  let traces = generatePlotlyData(bcrv);
 
   createPlot(pelem, traces);
 
