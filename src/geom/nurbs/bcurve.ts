@@ -286,6 +286,14 @@ class BSplineCurve2D extends BSplineCurve {
     super(degree, cpoints, knots, weights);
   }
 
+  clone() : BSplineCurve2D {
+    return new BSplineCurve2D(
+      this.degree,
+      this.cpoints.clone(),
+      this.knots.clone(),
+      this.weights ? this.weights.clone() : undefined);
+  }
+
   evaluate(t:number, tess?:NDArray, tessidx?:number) : Vector2|null {
     let p = this.degree;
     let span = this.findSpan(t);
@@ -442,6 +450,14 @@ class BSplineCurve3D extends BSplineCurve {
       this.evaluate(i/resolution, tess, i);
     }
     return tess;
+  }
+
+  clone() : BSplineCurve3D {
+    return new BSplineCurve3D(
+      this.degree,
+      this.cpoints.clone(),
+      this.knots.clone(),
+      this.weights ? this.weights.clone() : undefined);
   }
 }
 

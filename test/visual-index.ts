@@ -212,7 +212,7 @@ function generatePlotlyData(bcrv : BSplineCurve) {
 let PLOT_WIDTH = 500;
 let GAP_FRACTION = 0.02;
 
-const LAYOUT = {
+const CURVE_CONSTRUCTION_LAYOUT = {
   width : 500,
   height : 500,
   margin : {t:0,b:0},
@@ -222,13 +222,15 @@ const LAYOUT = {
   yaxis: { domain: [0.5+GAP_FRACTION, 1] , title:'Euclidean space'},
 };
 
-function createPlot(elem, traces) {
-  Plotly.newPlot(elem, traces, LAYOUT);
-}
-
-function updatePlot(elem, traces) {
-  Plotly.newPlot(elem, traces, LAYOUT);
-}
+const CURVE_COMPARISION_LAYOUT = {
+  width : 500,
+  height : 500,
+  margin : {t:0,b:0},
+  xaxis: { anchor: 'y1' },
+  xaxis2: { anchor: 'y2' },
+  yaxis2: { domain: [0, 0.5-GAP_FRACTION] },
+  yaxis: { domain: [0.5+GAP_FRACTION, 1] },
+};
 
 function displayCurve(crvData) {
 
@@ -264,7 +266,7 @@ function displayCurve(crvData) {
 
   let traces = generatePlotlyData(bcrv);
 
-  createPlot(pelem, traces);
+  Plotly.newPlot(pelem, traces, CURVE_CONSTRUCTION_LAYOUT);
 
   let knotzeros = new Array(degree);
   knotzeros.fill(0);
@@ -308,7 +310,7 @@ function displayCurve(crvData) {
           let thisid = $(ev.target).attr('id');
           let thisnum = parseInt(/weight(\d+)/.exec(thisid)[1]);
           bcrv.setWeight(thisnum, ui.value);
-          updatePlot(pelem, generatePlotlyData(bcrv));
+          Plotly.newPlot(pelem, generatePlotlyData(bcrv), CURVE_CONSTRUCTION_LAYOUT);
           let handle = $(this).find('.ui-slider-handle');
           $(handle).text(''+ui.value);
         },
@@ -380,7 +382,7 @@ function displayCurve(crvData) {
           }
 
           if(needsUpdate) {
-            updatePlot(pelem, generatePlotlyData(bcrv));
+            Plotly.newPlot(pelem, generatePlotlyData(bcrv), CURVE_CONSTRUCTION_LAYOUT);
           }
         },
         create: function () {
@@ -399,18 +401,94 @@ function displayCurve(crvData) {
     .text(knotones.join(',')));
 }
 
+function displayCurveComparision(crvsrc, crvtgt, titles) {
+  let pelem = $('#action-viz #mainplot').get(0);
+
+  let traces = [];
+
+  let tessSource = crvsrc.tessellate(RESOLUTION);
+  traces.push({
+    x: Array.from(tessSource.slice(':',0).data),
+    y: Array.from(tessSource.slice(':',1).data),
+    xaxis : 'x1',
+    yaxis : 'y1',
+    type : 'scatter',
+    mode : 'lines',
+    name:'Curve'
+  });
+  traces.push({
+    points2d:crvsrc.cpoints,
+    x: Array.from(crvsrc.cpoints.slice(':',0).data),
+    y: Array.from(crvsrc.cpoints.slice(':',1).data),
+    xaxis : 'x1',
+    yaxis : 'y1',
+    type : 'scatter',
+    mode : 'markers',
+    name:'Control Points'
+  });
+
+  let tessTarget = crvtgt.tessellate(RESOLUTION);
+  traces.push({
+    x: Array.from(tessTarget.slice(':',0).data),
+    y: Array.from(tessTarget.slice(':',1).data),
+    xaxis : 'x2',
+    yaxis : 'y2',
+    type : 'scatter',
+    mode : 'lines',
+    name:'Curve'
+  });
+  traces.push({
+    points2d:crvtgt.cpoints,
+    x: Array.from(crvtgt.cpoints.slice(':',0).data),
+    y: Array.from(crvtgt.cpoints.slice(':',1).data),
+    xaxis : 'x2',
+    yaxis : 'y2',
+    type : 'scatter',
+    mode : 'markers',
+    name:'Control Points'
+  });
+
+  Plotly.newPlot(pelem, traces, CURVE_COMPARISION_LAYOUT);
+}
+
+function isCrvDef2D(crvdef) {
+  return crvdef.cpoints[0].length === 2;
+}
+
 function performAction(actionData) {
   $('#curve-viz').hide();
   $('#action-viz').show();
+
+  if(actionData.actiontype === 'insert_knot_curve') {
+    let crvdef = CURVE_DATA_MAP[nameToKey(actionData.input)].object;
+    let crvSource;
+    if(isCrvDef2D(crvdef)) {
+      crvSource = new BSplineCurve2D(crvdef.degree,
+        new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
+        crvdef.weights ? new NDArray(crvdef.weights) : undefined);
+    } else {
+      crvSource = new BSplineCurve3D(crvdef.degree,
+        new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
+        crvdef.weights ? new NDArray(crvdef.weights) : undefined);
+    }
+    let crvTarget = crvSource.clone();
+    let un = actionData['knot_to_insert'];
+    let r = actionData['num_insertions'];
+    crvTarget.insertKnot(un, r);
+
+    displayCurveComparision(crvSource, crvTarget,
+      ['Before Knot Insertion','After Knot Insertion']);
+
+  }
 }
 
 function nameToKey(name) {
   return name.replace(/[\(\)\s]+/g,'-').toLowerCase();
 }
 
-window.onload = () => {
+let CURVE_DATA_MAP = {};
 
-  let CURVE_DATA_MAP = {};
+window.onload = () => {
 
   for(let i=0; i<CURVE_DATA.length; i++) {
     let entry = CURVE_DATA[i];
