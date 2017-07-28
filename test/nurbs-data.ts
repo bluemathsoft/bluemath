@@ -377,6 +377,16 @@ export const CURVE_DATA = [
       "knot_to_insert" : 0.6,
       "num_insertions" : 1
     }
+  },
+  {
+    "name" : "Insert 3 Knots in Simple BSpline 5",
+    "type" : "Action",
+    "object" : {
+      "actiontype" : "insert_knot_curve",
+      "input" : "Simple BSpline 5",
+      "knot_to_insert" : 0.24,
+      "num_insertions" : 2
+    }
   }
 ];
 

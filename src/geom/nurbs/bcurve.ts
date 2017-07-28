@@ -200,7 +200,7 @@ class BSplineCurve {
       Uq.set(i, Up.get(i));
     }
 
-    for(let i=0; i<r+1; i++) {
+    for(let i=1; i<r+1; i++) {
       Uq.set(k+i, un);
     }
 
