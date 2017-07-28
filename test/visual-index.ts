@@ -448,6 +448,14 @@ function displayCurveComparision(crvsrc, crvtgt, titles) {
     name:'Control Points'
   });
 
+  if(titles) {
+    CURVE_COMPARISION_LAYOUT.yaxis.title = titles[0];
+    CURVE_COMPARISION_LAYOUT.yaxis2.title = titles[1];
+  } else {
+    CURVE_COMPARISION_LAYOUT.yaxis.title = undefined;
+    CURVE_COMPARISION_LAYOUT.yaxis2.title = undefined;
+  }
+
   Plotly.newPlot(pelem, traces, CURVE_COMPARISION_LAYOUT);
 }
 
@@ -478,6 +486,24 @@ function performAction(actionData) {
 
     displayCurveComparision(crvSource, crvTarget,
       ['Before Knot Insertion','After Knot Insertion']);
+
+  } else if(actionData.actiontype === 'refine_knot_curve') {
+    let crvdef = CURVE_DATA_MAP[nameToKey(actionData.input)].object;
+    let crvSource;
+    if(isCrvDef2D(crvdef)) {
+      crvSource = new BSplineCurve2D(crvdef.degree,
+        new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
+        crvdef.weights ? new NDArray(crvdef.weights) : undefined);
+    } else {
+      crvSource = new BSplineCurve3D(crvdef.degree,
+        new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
+        crvdef.weights ? new NDArray(crvdef.weights) : undefined);
+    }
+    let crvTarget = crvSource.clone();
+    let uklist = actionData['knots_to_add'];
+    crvTarget.refineKnots(uklist);
+    displayCurveComparision(crvSource, crvTarget,
+      ['Before Knot Refinement','After Knot Refinement']);
 
   }
 }

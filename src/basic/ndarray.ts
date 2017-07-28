@@ -252,6 +252,13 @@ export default class NDArray {
     return this.shape.length === 2;
   }
 
+  /**
+   * Number of elements in outermost (i.e. 0th) dimension
+   */
+  get length() {
+    return this.shape[0];
+  }
+
   get data() {
     return this._data;
   }

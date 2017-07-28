@@ -387,6 +387,15 @@ export const CURVE_DATA = [
       "knot_to_insert" : 0.24,
       "num_insertions" : 2
     }
+  },
+  {
+    "name" : "Refine knots of Simple BSpline 5",
+    "type" : "Action",
+    "object" : {
+      "actiontype" : "refine_knot_curve",
+      "input" : "Simple BSpline 5",
+      "knots_to_add" : [0.6,0.6,0.7]
+    }
   }
 ];
 

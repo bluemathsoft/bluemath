@@ -270,6 +270,112 @@ class BSplineCurve {
       this.weights = Wq;
     }
   }
+
+  refineKnots(ukList:number[]) {
+    let m = this.knots.length-1;
+    let p = this.degree;
+    let n = m-p-1;
+    let dim = this.getDimension();
+    let X = ukList;
+    let r = ukList.length-1;
+    let P = this.cpoints;
+    let Q = new NDArray({shape:[P.length+r+1, dim]});
+    let U = this.knots;
+    let Ubar = new NDArray({shape:[U.length+r+1]});
+    let isRational = this.isRational();
+
+    let Wp,Wq;
+    if(isRational) {
+      Wq = new NDArray({shape:[P.length+r+1]});
+      Wp = this.weights;
+    }
+
+    let a = this.findSpan(X[0]);
+    let b = this.findSpan(X[r]);
+    b += 1;
+
+    // Copy control points and weights for u < a and u > b
+    for(let j=0; j<a-p+1; j++) {
+      for(let k=0; k<dim; k++) {
+        Q.set(j,k, P.get(j,k));
+      }
+      if(isRational) {
+        Wq.set(j, Wp.get(j));
+      }
+    }
+    for(let j=b-1; j<n+1; j++) {
+      for(let k=0; k<dim; k++) {
+        Q.set(j+r+1,k, P.get(j,k));
+      }
+      if(isRational) {
+        Wq.set(j+r+1, Wp.get(j));
+      }
+    }
+
+    // Copy knots for u < a and u > b
+    for(let j=0; j<a+1; j++) {
+      Ubar.set(j, U.get(j));
+    }
+    for(let j=b+p; j<m+1; j++) {
+      Ubar.set(j+r+1, U.get(j));
+    }
+
+    // For values of u between a and b
+    let i = b+p-1;
+    let k = b+p+r;
+
+    for(let j=r; j>=0; j--) {
+      while(X[j] <= U.get(i) && i>a) {
+        for(let z=0; z<dim; z++) {
+          Q.set(k-p-1,z, P.get(i-p-1,z));
+        }
+        if(isRational) {
+          Wq.set(k-p-1, Wp.get(i-p-1));
+        }
+        Ubar.set(k,U.get(i));
+        k -= 1;
+        i -= 1;
+      }
+      for(let z=0; z<dim; z++) {
+        Q.set(k-p-1,z, Q.get(k-p,z));
+      }
+      if(isRational) {
+        Wq.set(k-p-1, Wq.get(k-p));
+      }
+
+      for(let l=1; l<p+1; l++) {
+        let ind = k-p+l;
+        let alpha = <number>Ubar.get(k+l)-X[j];
+        if(Math.abs(alpha) === 0.0) {
+          for(let z=0; z<dim; z++) {
+            Q.set(ind-1,z, Q.get(ind,z));
+          }
+          if(isRational) {
+            Wq.set(ind-1, Wq.get(ind));
+          }
+        } else {
+          alpha = alpha/(<number>Ubar.get(k+l)-<number>U.get(i-p+l));
+          for(let z=0; z<dim; z++) {
+            Q.set(ind-1,z,
+              alpha * <number>Q.get(ind-1,z) +
+              (1.0-alpha) * <number>Q.get(ind,z));
+          }
+          if(isRational) {
+            Wq.set(ind-1,
+              alpha*<number>Wq.get(ind-1) +
+              (1.0-alpha)*<number>Wq.get(ind));
+          }
+        }
+      }
+      Ubar.set(k, X[j]);
+      k -= 1;
+    }
+    this.knots = Ubar;
+    this.cpoints = Q;
+    if(isRational) {
+      this.weights = Wq;
+    }
+  }
 }
 
 /**
