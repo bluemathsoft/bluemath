@@ -26,6 +26,18 @@ import {
 import {NDArray, Vector2, Vector3} from '../../basic'
 import {zeros,range} from '../..'
 
+class BezierCurve {
+  degree : number;
+  cpoints : NDArray;
+  weights? : NDArray;
+
+  constructor(degree:number, cpoints:NDArray, weights?:NDArray) {
+    this.degree = degree;
+    this.cpoints = cpoints;
+    this.weights = weights;
+  }
+}
+
 /**
  * @hidden
  */
@@ -159,6 +171,9 @@ class BSplineCurve {
     return Nip;
   }
 
+  /**
+   * Algorithm A5.1 from "The NURBS Book"
+   */
   insertKnot(un:number, r:number) {
     let p = this.degree;
     let dim = this.getDimension();
@@ -271,6 +286,9 @@ class BSplineCurve {
     }
   }
 
+  /**
+   * Algorithm A5.4 from "The NURBS Book"
+   */
   refineKnots(ukList:number[]) {
     let m = this.knots.length-1;
     let p = this.degree;
@@ -375,6 +393,90 @@ class BSplineCurve {
     if(isRational) {
       this.weights = Wq;
     }
+  }
+
+  /**
+   * Algorithm A5.6 from "The NURBS Book"
+   * The total number of bezier segments required to decompose a
+   * given bspline curve
+   *  = Number of internal knots + 1
+   *  = Length of knot vector - 2*(p+1) + 1
+   *  = (m+1) - 2*(p+1) + 1
+   *  = m - 2*p
+   */
+  decompose() {
+    let p = this.degree;
+    let U = this.knots;
+    let m = U.length-1;
+    let n = m-p-1;
+    let P = this.cpoints;
+    let dim = this.getDimension();
+    let alphas = new NDArray({shape:[p]});
+
+    let a = p;
+    let b = p+1;
+
+    let total_bezier = m-2*p;
+
+    let Q = new NDArray({shape:[total_bezier,p+1,dim]});
+    let nb = 0; // Counter for Bezier segments
+    for(let i=0; i<p+1; i++) {
+      for(let z=0; z<dim; z++) {
+        Q.set(nb,i,z, P.get(i,z))
+      }
+    }
+
+    let i;
+
+    while(b<m) {
+      i = b;
+      while(b<m && U.get(b+1) === U.get(b)) {
+        b += 1;
+      }
+      let mult = b-i+1;
+      if(mult < p) {
+        let numerator = <number>U.get(b) - <number>U.get(a);
+
+        // Compute and store alphas
+        for(let j=p; j>mult; j--) {
+          alphas.set(j-mult-1, numerator/(<number>U.get(a+j)-<number>U.get(a)));
+        }
+        let r = p-mult; // Insert knot r times
+        for(let j=1; j<r+1; j++) {
+          let save = r-j;
+          let s = mult+j; // This many new points
+          for(let k=p; k>s-1; k--) {
+            let alpha = <number>alphas.get(k-s);
+            for(let z=0; z<dim; z++) {
+              Q.set(nb,k,z,
+                alpha*<number>Q.get(nb,k,z) +
+                (1.0-alpha)*<number>Q.get(nb,k-1,z));
+            }
+          }
+          if(b<m) {
+            for(let z=0; z<dim; z++) {
+              Q.set(nb+1,save,z, Q.get(nb,p,z));
+            }
+          }
+        }
+      }
+      nb += 1;
+      if(b<m) { // Initilize for next segment
+        for(let i=p-mult; i<p+1; i++) {
+          for(let z=0; z<dim; z++) {
+            Q.set(nb,i,z, P.get(b-p+i,z))
+          }
+        }
+        a = b;
+        b += 1;
+      }
+    }
+
+    let bezlist = [];
+    for(let i=0; i<Q.length; i++) {
+      bezlist.push(new BezierCurve(p, Q.slice(i)));
+    }
+    return Q;
   }
 }
 
@@ -568,6 +670,7 @@ class BSplineCurve3D extends BSplineCurve {
 }
 
 export {
+  BezierCurve,
   BSplineCurve,
   BSplineCurve2D,
   BSplineCurve3D
