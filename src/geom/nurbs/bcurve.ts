@@ -482,7 +482,6 @@ class BSplineCurve {
     let p = this.degree;
     let U = this.knots;
     let m = U.length-1;
-    let n = m-p-1;
     let P = this.cpoints;
     let dim = this.dimension;
     let alphas = new NDArray({shape:[p]});

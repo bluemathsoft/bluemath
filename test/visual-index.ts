@@ -464,7 +464,6 @@ function displayCurveDecomposition(crvsrc, bezcrvs) {
   });
 
   for(let bezcrv of bezcrvs) {
-    console.log(bezcrv.toString());
     let tess = bezcrv.tessellate(RESOLUTION);
     traces.push({
       x: Array.from(tess.slice(':',0).data),
