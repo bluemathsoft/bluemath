@@ -88,6 +88,7 @@ function generateBSplinePlotlyData3D(bcrv) {
     points2d:bcrv.cpoints,
     x: Array.from(bcrv.cpoints.slice(':',0).data),
     y: Array.from(bcrv.cpoints.slice(':',1).data),
+    z: Array.from(bcrv.cpoints.slice(':',2).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter3d',
@@ -224,8 +225,6 @@ function generateBezierPlotlyData(bezcrv : BezierCurve) {
       x: Array.from(tess.slice(':',0).data),
       y: Array.from(tess.slice(':',1).data),
       z: Array.from(tess.slice(':',2).data),
-      xaxis : 'x1',
-      yaxis : 'y1',
       type : 'scatter3d',
       mode : 'lines',
       name:'Curve'
@@ -233,14 +232,12 @@ function generateBezierPlotlyData(bezcrv : BezierCurve) {
     traces.push({
       x: Array.from(bezcrv.cpoints.slice(':',0).data),
       y: Array.from(bezcrv.cpoints.slice(':',1).data),
-      xaxis : 'x1',
-      yaxis : 'y1',
+      z: Array.from(bezcrv.cpoints.slice(':',2).data),
       type : 'scatter3d',
       mode : 'markers',
       name:'Control Points'
     });
   }
-
   return traces;
 }
 
@@ -250,7 +247,7 @@ let GAP_FRACTION = 0.02;
 const BEZCURVE_CONSTRUCTION_LAYOUT = {
   width : 500,
   height : 500,
-  margin : {t:0},
+  margin : {},
 };
 
 const CURVE_CONSTRUCTION_LAYOUT = {
