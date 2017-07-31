@@ -666,6 +666,64 @@ export default class NDArray {
     return newndarray;
   }
 
+  sliceX(...slices:(string|number|undefined|null)[]):NDArray {
+    if(slices.length > this.shape.length) {
+      throw new Error('Excess number of dimensions specified');
+    }
+    let slice_recipe:Array<number|number[]> = [];
+    // Each slice specifies the index-range in that dimension to return
+    for(let i=0; i<slices.length; i++) {
+      let slice = slices[i];
+      let max = this.shape[i];
+      if(slice === undefined || slice === null || slice === ':') {
+        // gather all indices in this dimension
+        slice_recipe.push([0,max]);
+      } else if(typeof slice === 'string') {
+        // assume the slice format to be [<from_index>:<to_index>]
+        // if from_index or to_index is missing then they are replaced
+        // by 0 or max respectively
+        let match = /([-\d]*)\:([-\d]*)/.exec(slice);
+        let from = 0;
+        let to = max;
+        if(match) {
+          if(match[1] !== '') {
+            from = parseInt(match[1],10);
+          }
+          if(match[2] !== '') {
+            to = Math.min(parseInt(match[2],10), max);
+          }
+        }
+        slice_recipe.push([from,to]);
+      } else if(typeof slice === 'number') {
+        slice_recipe.push(slice);
+      } else {
+        throw new Error("Unexpected slice :"+slice);
+      }
+    }
+
+    // If slices argument has less slices than the number of dimensions
+    // of this array (i.e. this.shape.length),
+    // then we assume that lower (i.e. inner) dimensions are missing and
+    // we take that as wildcard and return all indices in those
+    // dimensions
+    for(let i=slice_recipe.length; i<this.shape.length; i++) {
+      slice_recipe.push([0,this.shape[i]]);
+    }
+    console.assert(slice_recipe.length === this.shape.length);
+
+    // The number of dimensions of the resulting slice equals the
+    // number of slice recipies that are ranges and not constant indices
+    let newshape = [];
+    for(let i=slice_recipe.length-1; i>=0; i--) {
+      if(Array.isArray(slice_recipe[i])) {
+        let recipe:number[] = <number[]>slice_recipe[i];
+        let dim = recipe[1]-recipe[0];
+        newshape.push(dim);
+      }
+    }
+
+  }
+
   /**
    * @hidden
    */
