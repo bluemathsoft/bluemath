@@ -20,7 +20,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {NDArray,geom,range} from '../src'
-let {BSplineCurve2D,BSplineCurve3D,BSplineCurve} = geom.nurbs;
+let {BSplineCurve2D,BSplineCurve3D,BSplineCurve,BezierCurve} = geom.nurbs;
 const RESOLUTION = 50;
 
 import {CURVE_DATA} from './nurbs-data'
@@ -78,7 +78,7 @@ function bmplot(name: string, spec: PlotSpec) {
   document.body.appendChild(pelem);
 };
 
-function generatePlotlyData3D(bcrv : BSplineCurve3D) {
+function generateBSplinePlotlyData3D(bcrv : BSplineCurve3D) {
   let traces = [];
   let Nip = bcrv.tessellateBasis(RESOLUTION);
   let u = new NDArray({shape:[RESOLUTION+1]});
@@ -134,7 +134,7 @@ function generatePlotlyData3D(bcrv : BSplineCurve3D) {
   return traces;
 }
 
-function generatePlotlyData2D(bcrv : BSplineCurve2D) {
+function generateBSplinePlotlyData2D(bcrv : BSplineCurve2D) {
 
   let traces = [];
   let Nip = bcrv.tessellateBasis(RESOLUTION);
@@ -201,16 +201,49 @@ function generatePlotlyData2D(bcrv : BSplineCurve2D) {
   return traces;
 }
 
-function generatePlotlyData(bcrv : BSplineCurve) {
+function generateBSplinePlotlyData(bcrv : BSplineCurve) {
   if(bcrv instanceof BSplineCurve2D) {
-    return generatePlotlyData2D(bcrv);
+    return generateBSplinePlotlyData2D(bcrv);
   } else if(bcrv instanceof BSplineCurve3D) {
-    return generatePlotlyData3D(bcrv);
+    return generateBSplinePlotlyData3D(bcrv);
   }
+}
+
+function generateBezierPlotlyData(bezcrv : BezierCurve) {
+  let traces = [];  
+  let tess = bezcrv.tessellate(RESOLUTION);
+
+  traces.push({
+    x: Array.from(tess.slice(':',0).data),
+    y: Array.from(tess.slice(':',1).data),
+    xaxis : 'x1',
+    yaxis : 'y1',
+    type : 'scatter',
+    mode : 'lines',
+    name:'Curve'
+  });
+  traces.push({
+    points2d:bezcrv.cpoints,
+    x: Array.from(bezcrv.cpoints.slice(':',0).data),
+    y: Array.from(bezcrv.cpoints.slice(':',1).data),
+    xaxis : 'x1',
+    yaxis : 'y1',
+    type : 'scatter',
+    mode : 'markers',
+    name:'Control Points'
+  });
+
+  return traces;
 }
 
 let PLOT_WIDTH = 500;
 let GAP_FRACTION = 0.02;
+
+const BEZCURVE_CONSTRUCTION_LAYOUT = {
+  width : 500,
+  height : 500,
+  margin : {t:0},
+};
 
 const CURVE_CONSTRUCTION_LAYOUT = {
   width : 500,
@@ -232,7 +265,23 @@ const CURVE_COMPARISION_LAYOUT = {
   yaxis: { domain: [0.5+GAP_FRACTION, 1] },
 };
 
-function displayCurve(crvData) {
+function displayBezierCurve(crvData) {
+  let pelem = $('#curve-viz #mainplot').get(0);
+
+  $('#curve-viz').show();
+  $('#action-viz').hide();
+
+  let {degree, cpoints, weights} = crvData;
+
+  let bezcrv = new BezierCurve(degree,new NDArray(cpoints),
+    weights ? new NDArray(weights) : null);
+
+  let traces = generateBezierPlotlyData(bezcrv);
+
+  Plotly.newPlot(pelem, traces, BEZCURVE_CONSTRUCTION_LAYOUT);
+}
+
+function displayBSplineCurve(crvData) {
 
   let pelem = $('#curve-viz #mainplot').get(0);
 
@@ -264,7 +313,7 @@ function displayCurve(crvData) {
     throw new Error('Invalid dimension of control point');
   }
 
-  let traces = generatePlotlyData(bcrv);
+  let traces = generateBSplinePlotlyData(bcrv);
 
   Plotly.newPlot(pelem, traces, CURVE_CONSTRUCTION_LAYOUT);
 
@@ -310,7 +359,7 @@ function displayCurve(crvData) {
           let thisid = $(ev.target).attr('id');
           let thisnum = parseInt(/weight(\d+)/.exec(thisid)[1]);
           bcrv.setWeight(thisnum, ui.value);
-          Plotly.newPlot(pelem, generatePlotlyData(bcrv), CURVE_CONSTRUCTION_LAYOUT);
+          Plotly.newPlot(pelem, generateBSplinePlotlyData(bcrv), CURVE_CONSTRUCTION_LAYOUT);
           let handle = $(this).find('.ui-slider-handle');
           $(handle).text(''+ui.value);
         },
@@ -382,7 +431,7 @@ function displayCurve(crvData) {
           }
 
           if(needsUpdate) {
-            Plotly.newPlot(pelem, generatePlotlyData(bcrv), CURVE_CONSTRUCTION_LAYOUT);
+            Plotly.newPlot(pelem, generateBSplinePlotlyData(bcrv), CURVE_CONSTRUCTION_LAYOUT);
           }
         },
         create: function () {
@@ -542,8 +591,10 @@ window.onload = () => {
     curChoice = $('#geom-selection option:selected').val();
   }
   let data = CURVE_DATA_MAP[curChoice];
-  if(data.type === 'BezierCurve' || data.type === 'BSplineCurve') {
-    displayCurve(data.object);
+  if(data.type === 'BezierCurve') {
+    displayBezierCurve(data.object);
+  } else if(data.type === 'BSplineCurve') {
+    displayBSplineCurve(data.object);
   } else if(data.type === 'Action') {
     performAction(data.object);
   }

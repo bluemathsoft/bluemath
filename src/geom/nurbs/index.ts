@@ -20,9 +20,12 @@
 
 */
 
-import {BSplineCurve,BSplineCurve2D,BSplineCurve3D} from './bcurve'
+import {
+  BezierCurve,BSplineCurve,BSplineCurve2D,BSplineCurve3D
+} from './bcurve'
 
 export {
+  BezierCurve,
   BSplineCurve,
   BSplineCurve2D,
   BSplineCurve3D

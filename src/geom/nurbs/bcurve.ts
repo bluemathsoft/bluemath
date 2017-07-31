@@ -21,9 +21,10 @@
 */
 
 import {                                                                                                                                                      
-  findSpan, getBasisFunction, getBasisFunctionDerivatives                                                                                                     
+  findSpan, getBasisFunction, getBasisFunctionDerivatives,
+  bernstein                                                                                                     
 } from './helper'
-import {NDArray, Vector2, Vector3} from '../../basic'
+import {NDArray, Vector, Vector2, Vector3} from '../../basic'
 import {zeros,range} from '../..'
 
 class BezierCurve {
@@ -33,8 +34,73 @@ class BezierCurve {
 
   constructor(degree:number, cpoints:NDArray, weights?:NDArray) {
     this.degree = degree;
+    console.assert(cpoints.is2D());
     this.cpoints = cpoints;
+    if(weights) {
+      console.assert(weights.length === degree+1);
+    }
     this.weights = weights;
+  }
+
+  get dimension() {
+    return this.cpoints.shape[1];
+  }
+
+  /**
+   * Is this Rational Bezier Curve
+   */
+  isRational() : boolean {
+    return !!this.weights;
+  }
+
+  evaluate(u:number, tess?:NDArray, tessidx?:number) {
+    let B = bernstein(this.degree, u);
+    let dim = this.dimension;
+    let isRational = this.isRational();
+
+    let denominator;
+    if(isRational) {
+      denominator = 0;
+      for(let i=0; i<this.degree+1; i++) {
+        denominator += B[i] * <number>this.weights.get(i);
+      }
+    } else {
+      denominator = 1;
+    }
+
+    if(tess !== undefined && tessidx !== undefined) {
+
+      for(let k=0; k<this.degree+1; k++) {
+        if(isRational) {
+          for(let z=0; z<dim; z++) {
+            tess.set(tessidx,z,
+              <number>tess.get(tessidx,z) +
+              B[k] * <number>this.cpoints.get(k,z) *
+              <number>this.weights.get(k));
+          }
+        } else {
+          for(let z=0; z<dim; z++) {
+            tess.set(tessidx,z, 
+              <number>tess.get(tessidx,z) +
+              B[k] * <number>this.cpoints.get(k,z));
+          }
+        }
+      }
+      for(let z=0; z<dim; z++) {
+        tess.set(tessidx,z,<number>tess.get(tessidx,z)/denominator);
+      }
+      return null;
+    } else {
+      throw new Error('Not implemented');
+    }
+  }
+
+  tessellate(resolution=10) : NDArray {
+    let tess = new NDArray({shape:[resolution+1,2],datatype:'f32'});
+    for(let i=0; i<resolution+1; i++) {
+      this.evaluate(i/resolution, tess, i);
+    }
+    return tess;
   }
 }
 
@@ -76,7 +142,7 @@ class BSplineCurve {
     console.assert(m === n+p+1);
   }
 
-  getDimension() {
+  get dimension() {
     return this.cpoints.shape[1];
   }
 
@@ -176,7 +242,7 @@ class BSplineCurve {
    */
   insertKnot(un:number, r:number) {
     let p = this.degree;
-    let dim = this.getDimension();
+    let dim = this.dimension;
     let k = this.findSpan(un);
     let isRational = this.isRational();
 
@@ -293,7 +359,7 @@ class BSplineCurve {
     let m = this.knots.length-1;
     let p = this.degree;
     let n = m-p-1;
-    let dim = this.getDimension();
+    let dim = this.dimension;
     let X = ukList;
     let r = ukList.length-1;
     let P = this.cpoints;
@@ -410,7 +476,7 @@ class BSplineCurve {
     let m = U.length-1;
     let n = m-p-1;
     let P = this.cpoints;
-    let dim = this.getDimension();
+    let dim = this.dimension;
     let alphas = new NDArray({shape:[p]});
 
     let a = p;
