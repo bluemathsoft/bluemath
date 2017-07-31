@@ -453,7 +453,6 @@ function displayCurveDecomposition(crvsrc, bezcrvs) {
     name:'Curve'
   });
   traces.push({
-    points2d:crvsrc.cpoints,
     x: Array.from(crvsrc.cpoints.slice(':',0).data),
     y: Array.from(crvsrc.cpoints.slice(':',1).data),
     xaxis : 'x1',
