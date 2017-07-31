@@ -280,6 +280,7 @@ export default class NDArray {
       // Fill the excess elements in new buffer with 0
       this._data.fill(0,oldsize);
     }
+    return this;
   }
 
   /**

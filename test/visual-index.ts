@@ -25,22 +25,9 @@ const RESOLUTION = 50;
 
 import {CURVE_DATA} from './nurbs-data'
 
-interface TraceSpec {
-  x?: number[];
-  y?: number[];
-  points2d? : NDArray;
-  points3d? : NDArray;
-  type : 'line'|'point';
-  name? : string;
-};
-
-interface PlotSpec {
-  traces : TraceSpec[];
-}
-
 let plots = [];
 
-function bmplot(name: string, spec: PlotSpec) {
+function bmplot(name: string, spec) {
 
   let pelem = document.createElement('div');
   pelem.setAttribute('id', 'plot-' + name);
@@ -450,7 +437,7 @@ function displayBSplineCurve(crvData) {
     .text(knotones.join(',')));
 }
 
-function displayCurveComparision(crvsrc, crvtgt, titles) {
+function displayCurveDecomposition(crvsrc, bezcrvs) {
   let pelem = $('#action-viz #mainplot').get(0);
 
   let traces = [];
@@ -476,6 +463,57 @@ function displayCurveComparision(crvsrc, crvtgt, titles) {
     name:'Control Points'
   });
 
+  for(let bezcrv of bezcrvs) {
+    console.log(bezcrv.toString());
+    let tess = bezcrv.tessellate(RESOLUTION);
+    traces.push({
+      x: Array.from(tess.slice(':',0).data),
+      y: Array.from(tess.slice(':',1).data),
+      xaxis : 'x2',
+      yaxis : 'y2',
+      type : 'scatter',
+      mode : 'lines',
+      name:'Curve'
+    });
+    traces.push({
+      x: Array.from(bezcrv.cpoints.slice(':',0).data),
+      y: Array.from(bezcrv.cpoints.slice(':',1).data),
+      xaxis : 'x2',
+      yaxis : 'y2',
+      type : 'scatter',
+      mode : 'markers',
+      name:'Control Points'
+    });
+  }
+
+  Plotly.newPlot(pelem, traces, CURVE_COMPARISION_LAYOUT);
+}
+
+function displayCurveComparision(crvsrc, crvtgt, titles) {
+  let pelem = $('#action-viz #mainplot').get(0);
+
+  let traces = [];
+
+  let tessSource = crvsrc.tessellate(RESOLUTION);
+  traces.push({
+    x: Array.from(tessSource.slice(':',0).data),
+    y: Array.from(tessSource.slice(':',1).data),
+    xaxis : 'x1',
+    yaxis : 'y1',
+    type : 'scatter',
+    mode : 'lines',
+    name:'Curve'
+  });
+  traces.push({
+    x: Array.from(crvsrc.cpoints.slice(':',0).data),
+    y: Array.from(crvsrc.cpoints.slice(':',1).data),
+    xaxis : 'x1',
+    yaxis : 'y1',
+    type : 'scatter',
+    mode : 'markers',
+    name:'Control Points'
+  });
+
   let tessTarget = crvtgt.tessellate(RESOLUTION);
   traces.push({
     x: Array.from(tessTarget.slice(':',0).data),
@@ -487,7 +525,6 @@ function displayCurveComparision(crvsrc, crvtgt, titles) {
     name:'Curve'
   });
   traces.push({
-    points2d:crvtgt.cpoints,
     x: Array.from(crvtgt.cpoints.slice(':',0).data),
     y: Array.from(crvtgt.cpoints.slice(':',1).data),
     xaxis : 'x2',
@@ -554,6 +591,20 @@ function performAction(actionData) {
     displayCurveComparision(crvSource, crvTarget,
       ['Before Knot Refinement','After Knot Refinement']);
 
+  } else if(actionData.actiontype === 'decompose_curve') {
+    let crvdef = CURVE_DATA_MAP[nameToKey(actionData.input)].object;
+    let crvSource;
+    if(isCrvDef2D(crvdef)) {
+      crvSource = new BSplineCurve2D(crvdef.degree,
+        new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
+        crvdef.weights ? new NDArray(crvdef.weights) : undefined);
+    } else {
+      crvSource = new BSplineCurve3D(crvdef.degree,
+        new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
+        crvdef.weights ? new NDArray(crvdef.weights) : undefined);
+    }
+    let bezcrvs = crvSource.decompose();
+    displayCurveDecomposition(crvSource, bezcrvs);
   }
 }
 

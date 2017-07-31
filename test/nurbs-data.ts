@@ -396,6 +396,14 @@ export const CURVE_DATA = [
       "input" : "Simple BSpline 5",
       "knots_to_add" : [0.6,0.6,0.7]
     }
+  },
+  {
+    "name" : "Decompose Simple BSpline 5",
+    "type" : "Action",
+    "object" : {
+      "actiontype" : "decompose_curve",
+      "input" : "Simple BSpline 5"
+    }
   }
 ];
 

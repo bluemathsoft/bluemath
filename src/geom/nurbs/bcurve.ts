@@ -102,6 +102,14 @@ class BezierCurve {
     }
     return tess;
   }
+
+  toString() {
+    let s = `Bezier(Deg ${this.degree} cpoints ${this.cpoints.toString()})`;
+    if(this.isRational()) {
+      s += ` weights ${this.weights.toString()}`;
+    }
+    return s;
+  }
 }
 
 /**
@@ -540,9 +548,18 @@ class BSplineCurve {
 
     let bezlist = [];
     for(let i=0; i<Q.length; i++) {
-      bezlist.push(new BezierCurve(p, Q.slice(i)));
+      bezlist.push(new BezierCurve(p, Q.slice(i).reshape([p+1,dim])));
     }
-    return Q;
+    return bezlist;
+  }
+
+  toString() {
+    let s = `BSpline(Deg ${this.degree} cpoints ${this.cpoints.toString()})`;
+    s += ` knots ${this.knots.toString}`;
+    if(this.isRational()) {
+      s += ` weights ${this.weights.toString()}`;
+    }
+    return s;
   }
 }
 
