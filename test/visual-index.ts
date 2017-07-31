@@ -20,7 +20,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {NDArray,geom,range} from '../src'
-let {BSplineCurve2D,BSplineCurve3D,BSplineCurve,BezierCurve} = geom.nurbs;
+let {BSplineCurve,BezierCurve} = geom.nurbs;
 const RESOLUTION = 50;
 
 import {CURVE_DATA} from './nurbs-data'
@@ -65,7 +65,7 @@ function bmplot(name: string, spec) {
   document.body.appendChild(pelem);
 };
 
-function generateBSplinePlotlyData3D(bcrv : BSplineCurve3D) {
+function generateBSplinePlotlyData3D(bcrv) {
   let traces = [];
   let Nip = bcrv.tessellateBasis(RESOLUTION);
   let u = new NDArray({shape:[RESOLUTION+1]});
@@ -121,7 +121,7 @@ function generateBSplinePlotlyData3D(bcrv : BSplineCurve3D) {
   return traces;
 }
 
-function generateBSplinePlotlyData2D(bcrv : BSplineCurve2D) {
+function generateBSplinePlotlyData2D(bcrv) {
 
   let traces = [];
   let Nip = bcrv.tessellateBasis(RESOLUTION);
@@ -189,9 +189,9 @@ function generateBSplinePlotlyData2D(bcrv : BSplineCurve2D) {
 }
 
 function generateBSplinePlotlyData(bcrv : BSplineCurve) {
-  if(bcrv instanceof BSplineCurve2D) {
+  if(bcrv.dimension === 2) {
     return generateBSplinePlotlyData2D(bcrv);
-  } else if(bcrv instanceof BSplineCurve3D) {
+  } else if(bcrv.dimension === 3) {
     return generateBSplinePlotlyData3D(bcrv);
   }
 }
@@ -200,25 +200,46 @@ function generateBezierPlotlyData(bezcrv : BezierCurve) {
   let traces = [];  
   let tess = bezcrv.tessellate(RESOLUTION);
 
-  traces.push({
-    x: Array.from(tess.slice(':',0).data),
-    y: Array.from(tess.slice(':',1).data),
-    xaxis : 'x1',
-    yaxis : 'y1',
-    type : 'scatter',
-    mode : 'lines',
-    name:'Curve'
-  });
-  traces.push({
-    points2d:bezcrv.cpoints,
-    x: Array.from(bezcrv.cpoints.slice(':',0).data),
-    y: Array.from(bezcrv.cpoints.slice(':',1).data),
-    xaxis : 'x1',
-    yaxis : 'y1',
-    type : 'scatter',
-    mode : 'markers',
-    name:'Control Points'
-  });
+  if(bezcrv.dimension === 2) {
+    traces.push({
+      x: Array.from(tess.slice(':',0).data),
+      y: Array.from(tess.slice(':',1).data),
+      xaxis : 'x1',
+      yaxis : 'y1',
+      type : 'scatter',
+      mode : 'lines',
+      name:'Curve'
+    });
+    traces.push({
+      x: Array.from(bezcrv.cpoints.slice(':',0).data),
+      y: Array.from(bezcrv.cpoints.slice(':',1).data),
+      xaxis : 'x1',
+      yaxis : 'y1',
+      type : 'scatter',
+      mode : 'markers',
+      name:'Control Points'
+    });
+  } else if(bezcrv.dimension === 3) {
+    traces.push({
+      x: Array.from(tess.slice(':',0).data),
+      y: Array.from(tess.slice(':',1).data),
+      z: Array.from(tess.slice(':',2).data),
+      xaxis : 'x1',
+      yaxis : 'y1',
+      type : 'scatter3d',
+      mode : 'lines',
+      name:'Curve'
+    });
+    traces.push({
+      x: Array.from(bezcrv.cpoints.slice(':',0).data),
+      y: Array.from(bezcrv.cpoints.slice(':',1).data),
+      xaxis : 'x1',
+      yaxis : 'y1',
+      type : 'scatter3d',
+      mode : 'markers',
+      name:'Control Points'
+    });
+  }
 
   return traces;
 }
@@ -287,18 +308,9 @@ function displayBSplineCurve(crvData) {
   }
   let {degree, cpoints, knots} = crvData;
 
-  let bcrv;
-  if(cpoints[0].length === 2) {
-    bcrv = new BSplineCurve2D(degree,
+  let bcrv = new BSplineCurve(degree,
       new NDArray(cpoints), new NDArray(knots),
       crvData.weights ? new NDArray(crvData.weights) : undefined);
-  } else if(cpoints[0].length === 3) {
-    bcrv = new BSplineCurve3D(degree,
-      new NDArray(cpoints), new NDArray(knots),
-      crvData.weights ? new NDArray(crvData.weights) : undefined);
-  } else {
-    throw new Error('Invalid dimension of control point');
-  }
 
   let traces = generateBSplinePlotlyData(bcrv);
 
@@ -543,26 +555,15 @@ function displayCurveComparision(crvsrc, crvtgt, titles) {
   Plotly.newPlot(pelem, traces, CURVE_COMPARISION_LAYOUT);
 }
 
-function isCrvDef2D(crvdef) {
-  return crvdef.cpoints[0].length === 2;
-}
-
 function performAction(actionData) {
   $('#curve-viz').hide();
   $('#action-viz').show();
 
   if(actionData.actiontype === 'insert_knot_curve') {
     let crvdef = CURVE_DATA_MAP[nameToKey(actionData.input)].object;
-    let crvSource;
-    if(isCrvDef2D(crvdef)) {
-      crvSource = new BSplineCurve2D(crvdef.degree,
+    let crvSource = new BSplineCurve(crvdef.degree,
         new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
         crvdef.weights ? new NDArray(crvdef.weights) : undefined);
-    } else {
-      crvSource = new BSplineCurve3D(crvdef.degree,
-        new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
-        crvdef.weights ? new NDArray(crvdef.weights) : undefined);
-    }
     let crvTarget = crvSource.clone();
     let un = actionData['knot_to_insert'];
     let r = actionData['num_insertions'];
@@ -574,15 +575,9 @@ function performAction(actionData) {
   } else if(actionData.actiontype === 'refine_knot_curve') {
     let crvdef = CURVE_DATA_MAP[nameToKey(actionData.input)].object;
     let crvSource;
-    if(isCrvDef2D(crvdef)) {
-      crvSource = new BSplineCurve2D(crvdef.degree,
-        new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
-        crvdef.weights ? new NDArray(crvdef.weights) : undefined);
-    } else {
-      crvSource = new BSplineCurve3D(crvdef.degree,
-        new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
-        crvdef.weights ? new NDArray(crvdef.weights) : undefined);
-    }
+    crvSource = new BSplineCurve(crvdef.degree,
+      new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
+      crvdef.weights ? new NDArray(crvdef.weights) : undefined);
     let crvTarget = crvSource.clone();
     let uklist = actionData['knots_to_add'];
     crvTarget.refineKnots(uklist);
@@ -591,16 +586,9 @@ function performAction(actionData) {
 
   } else if(actionData.actiontype === 'decompose_curve') {
     let crvdef = CURVE_DATA_MAP[nameToKey(actionData.input)].object;
-    let crvSource;
-    if(isCrvDef2D(crvdef)) {
-      crvSource = new BSplineCurve2D(crvdef.degree,
+    let crvSource = new BSplineCurve(crvdef.degree,
         new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
         crvdef.weights ? new NDArray(crvdef.weights) : undefined);
-    } else {
-      crvSource = new BSplineCurve3D(crvdef.degree,
-        new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
-        crvdef.weights ? new NDArray(crvdef.weights) : undefined);
-    }
     let bezcrvs = crvSource.decompose();
     displayCurveDecomposition(crvSource, bezcrvs);
   }

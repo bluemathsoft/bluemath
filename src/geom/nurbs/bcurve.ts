@@ -24,8 +24,8 @@ import {
   findSpan, getBasisFunction, getBasisFunctionDerivatives,
   bernstein                                                                                                     
 } from './helper'
-import {NDArray, Vector, Vector2, Vector3} from '../../basic'
-import {zeros,range} from '../..'
+import {NDArray} from '../../basic'
+import {zeros} from '../..'
 
 class BezierCurve {
   degree : number;
@@ -96,7 +96,10 @@ class BezierCurve {
   }
 
   tessellate(resolution=10) : NDArray {
-    let tess = new NDArray({shape:[resolution+1,2],datatype:'f32'});
+    let tess = new NDArray({
+      shape:[resolution+1,this.dimension],
+      datatype:'f32'
+    });
     for(let i=0; i<resolution+1; i++) {
       this.evaluate(i/resolution, tess, i);
     }
@@ -552,41 +555,10 @@ class BSplineCurve {
     return bezlist;
   }
 
-  toString() {
-    let s = `BSpline(Deg ${this.degree} cpoints ${this.cpoints.toString()})`;
-    s += ` knots ${this.knots.toString}`;
-    if(this.isRational()) {
-      s += ` weights ${this.weights.toString()}`;
-    }
-    return s;
-  }
-}
-
-/**
- * @hidden
- */
-class BSplineCurve2D extends BSplineCurve {
-
-  constructor(
-    degree:number,
-    cpoints:NDArray,
-    knots:NDArray,
-    weights?:NDArray)
-  {
-    super(degree, cpoints, knots, weights);
-  }
-
-  clone() : BSplineCurve2D {
-    return new BSplineCurve2D(
-      this.degree,
-      this.cpoints.clone(),
-      this.knots.clone(),
-      this.weights ? this.weights.clone() : undefined);
-  }
-
-  evaluate(t:number, tess?:NDArray, tessidx?:number) : Vector2|null {
+  evaluate(t:number, tess?:NDArray, tessidx?:number) : NDArray|null {
     let p = this.degree;
     let span = this.findSpan(t);
+    let dim = this.dimension;
     let N = this.evaluateBasis(span, t);
     let denominator = this.getTermDenominator(span, N);
     if(tess) {
@@ -598,14 +570,14 @@ class BSplineCurve2D extends BSplineCurve {
         } else {
           K = N[i]/denominator;
         }
-        let cx = <number>this.cpoints.get(span-p+i, 0);
-        let cy = <number>this.cpoints.get(span-p+i, 1);
-        tess.set(tessidx, 0, (<number>tess.get(tessidx,0)) + K*cx);
-        tess.set(tessidx, 1, (<number>tess.get(tessidx,1)) + K*cy);
+        for(let z=0; z<dim; z++) {
+          let c = <number>this.cpoints.get(span-p+i, z);
+          tess.set(tessidx, z, (<number>tess.get(tessidx,z)) + K*c);
+        }
       }
       return null;
     } else {
-      let point = new Vector2();
+      let point = new NDArray({shape:[dim]});
       for(let i=0; i<p+1; i++) {
         let K;
         if(this.weights) {
@@ -613,17 +585,17 @@ class BSplineCurve2D extends BSplineCurve {
         } else {
           K = N[i]/denominator;
         }
-        let cx = <number>this.cpoints.get(span-p+i, 0);
-        let cy = <number>this.cpoints.get(span-p+i, 1);
-        point.x += K * cx;
-        point.y += K * cy;
+        for(let z=0; z<dim; z++) {
+          let c = <number>this.cpoints.get(span-p+i, z);
+          point.set(z, <number>point.get(z) + K*c);
+        }
       }
       return point;
     }
   }
 
   evaluateDerivative(
-    t:number, d:number, tess?:NDArray, tessidx?:number) : Vector2[]|null
+    t:number, d:number, tess?:NDArray, tessidx?:number) : NDArray|null
   {
     let p = this.degree;
     let P = this.cpoints;
@@ -650,17 +622,23 @@ class BSplineCurve2D extends BSplineCurve {
       }
       return null;
     } else {
+      throw new Error('Not implemented');
+      /*
       let varr = [];
       for(let i=0; i<du+1; i++) {
         varr.push(new Vector2(
           <number>ders.get(i,0), <number>ders.get(i,1)));
       }
       return varr;
+      */
     }
   }
 
   tessellate(resolution=10) : NDArray {
-    let tess = new NDArray({shape:[resolution+1,2],datatype:'f32'});
+    let tess = new NDArray({
+      shape:[resolution+1,this.dimension],
+      datatype:'f32'
+    });
     for(let i=0; i<resolution+1; i++) {
       this.evaluate(i/resolution, tess, i);
     }
@@ -668,92 +646,35 @@ class BSplineCurve2D extends BSplineCurve {
   }
 
   tessellateDerivatives(resolution=10, d:number) : NDArray {
-    let tess = new NDArray({shape:[resolution+1,d,2], datatype:'f32'});
+    let tess = new NDArray({
+      shape:[resolution+1,d,this.dimension],
+      datatype:'f32'
+    });
     for(let i=0; i<resolution+1; i++) {
       this.evaluateDerivative(i/resolution, d, tess, i);
     }
     return tess;
   }
 
-}
-
-/**
- * @hidden
- */
-class BSplineCurve3D extends BSplineCurve {
-
-  constructor(
-    degree:number,
-    cpoints:NDArray,
-    knots:NDArray,
-    weights?:NDArray)
-  {
-    super(degree, cpoints, knots, weights);
-  }
-
-  evaluate(t:number, tess?:NDArray, tessidx?:number) : Vector3|null {
-    let p = this.degree;
-    let span = this.findSpan(t);
-    let N = this.evaluateBasis(span, t);
-
-    let denominator = this.getTermDenominator(span, N);
-    if(tess) {
-      tessidx = tessidx || 0;
-      for(let i=0; i<p+1; i++) {
-        let K;
-        if(this.weights) {
-          K = N[i] * <number>this.weights.get(span-p+i)/denominator;
-        } else {
-          K = N[i]/denominator;
-        }
-        let cx = <number>this.cpoints.get(span-p+i,0);
-        let cy = <number>this.cpoints.get(span-p+i,1);
-        let cz = <number>this.cpoints.get(span-p+i,2);
-        tess.set(tessidx, 0, (<number>tess.get(tessidx,0)) + K*cx);
-        tess.set(tessidx, 1, (<number>tess.get(tessidx,1)) + K*cy);
-        tess.set(tessidx, 2, (<number>tess.get(tessidx,2)) + K*cz);
-      }
-      return null;
-    } else {
-      let point = new Vector3();
-      for(let i=0; i<p+1; i++) {
-        let K;
-        if(this.weights) {
-          K = N[i] * <number>this.weights.get(span-p+i)/denominator;
-        } else {
-          K = N[i]/denominator;
-        }
-        let cx = <number>this.cpoints.get(span-p+i,0);
-        let cy = <number>this.cpoints.get(span-p+i,1);
-        let cz = <number>this.cpoints.get(span-p+i,2);
-        point.x += K * cx;
-        point.y += K * cy;
-        point.z += K * cz;
-      }
-      return point;
-    }
-  }
-
-  tessellate(resolution=10) : NDArray {
-    let tess = new NDArray({shape:[resolution+1,3], datatype:'f32'});
-    for(let i=0; i<resolution+1; i++) {
-      this.evaluate(i/resolution, tess, i);
-    }
-    return tess;
-  }
-
-  clone() : BSplineCurve3D {
-    return new BSplineCurve3D(
+  clone() : BSplineCurve {
+    return new BSplineCurve(
       this.degree,
       this.cpoints.clone(),
       this.knots.clone(),
       this.weights ? this.weights.clone() : undefined);
   }
+
+  toString() {
+    let s = `BSpline(Deg ${this.degree} cpoints ${this.cpoints.toString()})`;
+    s += ` knots ${this.knots.toString}`;
+    if(this.isRational()) {
+      s += ` weights ${this.weights.toString()}`;
+    }
+    return s;
+  }
 }
 
 export {
   BezierCurve,
-  BSplineCurve,
-  BSplineCurve2D,
-  BSplineCurve3D
+  BSplineCurve
 }
