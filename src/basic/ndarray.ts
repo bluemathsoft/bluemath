@@ -306,14 +306,16 @@ export default class NDArray {
     }
   }
 
-  private _indexToAddress(...indices:number[]) {
+  _indexToAddress(...indices:number[]) {
     if(indices.length !== this.shape.length) {
       throw new Error('Mismatched number of dimensions');
     }
     let addr = 0;
-    for (let i = 0; i < this.shape.length; i++) {
-      if (i < this.shape.length - 1) {
-        addr += this.shape[i + 1] * indices[i];
+    let acc = 0;
+    for(let i=this.shape.length-1; i>=0; i--) {
+      if(i < this.shape.length-1) {
+        addr += acc * indices[i];
+        acc = acc * this.shape[i];
       } else {
         if(indices[i] < 0) {
           throw new Error('Invalid index '+indices[i]);
@@ -322,6 +324,7 @@ export default class NDArray {
           throw new Error('Index out of bounds '+indices[i]);
         }
         addr += indices[i];
+        acc = this.shape[i];
       }
     }
     return addr;
