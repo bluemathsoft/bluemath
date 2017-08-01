@@ -20,7 +20,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {NDArray,geom,range} from '../src'
-let {BSplineCurve,BezierCurve} = geom.nurbs;
+let {BSplineCurve,BezierCurve,BezierSurface} = geom.nurbs;
 const RESOLUTION = 50;
 
 import {CURVE_DATA} from './nurbs-data'
@@ -208,6 +208,11 @@ const BEZCURVE_CONSTRUCTION_LAYOUT = {
   width : 500,
   height : 500,
   margin : {},
+};
+const BEZSURF_CONSTRUCTION_LAYOUT = {
+  width : 700,
+  height : 700,
+  margin : {t:0,b:0},
 };
 
 const CURVE_CONSTRUCTION_LAYOUT = {
@@ -406,6 +411,67 @@ function displayBSplineCurve(crvData) {
     .text(knotones.join(',')));
 }
 
+function displayBezierSurface(bezsrfData) {
+  let pelem = $('#action-viz #mainplot').get(0);
+
+  let bezsrf = new BezierSurface(
+    bezsrfData.u_degree, bezsrfData.v_degree,
+    new NDArray(bezsrfData.cpoints));
+
+  let tess = bezsrf.tessellatePoints(10);
+  let traces = [];
+
+  let ures = tess.shape[0];
+  let vres = tess.shape[1];
+  let xdata = [];
+  let ydata = [];
+  let zdata = [];
+  for(let i=0; i<ures; i++) {
+    for(let j=0; j<vres; j++) {
+      let pt:NDArray = <NDArray>(tess.slice(i,j));
+      xdata.push(<number>pt.get(0));
+      ydata.push(<number>pt.get(1));
+      zdata.push(<number>pt.get(2));
+    }
+  }
+
+  traces.push({
+    x: xdata,
+    y: ydata,
+    z: zdata,
+    xaxis : 'x1',
+    yaxis : 'y1',
+    type : 'scatter3d',
+    mode : 'markers',
+    name:'Curve'
+  });
+
+  let uncp = bezsrf.cpoints.shape[0];
+  let vncp = bezsrf.cpoints.shape[1];
+  let cxdata = [];
+  let cydata = [];
+  let czdata = [];
+  for(let i=0; i<uncp; i++) {
+    for(let j=0; j<vncp; j++) {
+      let cp:NDArray = <NDArray>(bezsrf.cpoints.slice(i,j));
+      cxdata.push(<number>cp.get(0));
+      cydata.push(<number>cp.get(1));
+      czdata.push(<number>cp.get(2));
+    }
+  }
+
+  traces.push({
+    x: cxdata,
+    y: cydata,
+    z: czdata,
+    type : 'scatter3d',
+    mode : 'markers',
+    name:'Control Points'
+  });
+
+  Plotly.newPlot(pelem, traces, BEZSURF_CONSTRUCTION_LAYOUT);
+}
+
 function displayCurveDecomposition(crvsrc, bezcrvs) {
   let pelem = $('#action-viz #mainplot').get(0);
 
@@ -589,6 +655,8 @@ window.onload = () => {
     displayBezierCurve(data.object);
   } else if(data.type === 'BSplineCurve') {
     displayBSplineCurve(data.object);
+  } else if(data.type === 'BezSurf') {
+    displayBezierSurface(data.object);
   } else if(data.type === 'Action') {
     performAction(data.object);
   }

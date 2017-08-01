@@ -95,7 +95,22 @@ class BezierSurface {
     }
   }
 
+  tessellatePoints(resolution=10) {
+    let tess = new NDArray({
+      shape : [resolution+1, resolution+1, this.dimension],
+      datatype : 'f32'
+    });
+    for(let i=0; i<resolution+1; i++) {
+      for(let j=0; j<resolution+1; j++) {
+        let u = i/resolution;
+        let v = j/resolution;
+        this.evaluate(u,v,tess,i,j);
+      }
+    }
+    return tess;
+  }
 }
+
 
 export {
   BezierSurface
