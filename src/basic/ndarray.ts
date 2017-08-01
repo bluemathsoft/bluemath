@@ -546,6 +546,7 @@ export default class NDArray {
   }
 
   /**
+   * @hidden
    * Bluemath supports extracting of NDArray slices using a syntax similar
    * to numpy. Slicing is supported by NDArray.slice function.
    *
@@ -666,6 +667,21 @@ export default class NDArray {
     return newndarray;
   }
 
+  /**
+   * Returns a specific element or a new NDArray that's a subset of
+   * this array as defined by the slicing recipe.
+   * Each element of the slicing recipe (i.e. any argument) can be
+   * * A number specifying a specific element or slice of the array
+   * in given dimension. 
+   * * A string of the form '<start>:<stop>', specifying the range of
+   * slices in the given dimension. Both '<start>' and '<stop>' are
+   * optional
+   * 
+   * Caveats
+   * ---
+   * * Negative indices not supported yet
+   * * No support for `<start>:<stop>:<step>` format yet
+   */
   slice(...slices:(string|number|undefined|null)[]):NDArray|number|Complex {
     if(slices.length > this.shape.length) {
       throw new Error('Excess number of dimensions specified');

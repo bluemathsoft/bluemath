@@ -566,7 +566,7 @@ export default function testNDArray() {
         ])));
       });
 
-      QUnit.test('sliceX', assert => {
+      QUnit.test('3x3x3', assert => {
         let A = range(27);
         A.reshape([3,3,3]);
 
@@ -586,6 +586,21 @@ export default function testNDArray() {
           [0,1,2],
           [3,4,5]
         ])));
+
+        assert.ok((<NDArray>A.slice(0)).isEqual(new NDArray([
+          [0,1,2],
+          [3,4,5],
+          [6,7,8]
+        ])));
+        assert.ok((<NDArray>A.slice(0,null,2)).isEqual(new NDArray([
+          2,5,8
+        ])));
+
+        assert.ok((<NDArray>A.slice(0,1)).isEqual(new NDArray([
+          3,4,5
+        ])));
+        assert.ok((<NDArray>A.slice()).isEqual(A));
+        assert.ok((<NDArray>A.slice(null,null)).isEqual(A));
       });
     });
 
