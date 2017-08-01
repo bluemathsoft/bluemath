@@ -115,7 +115,7 @@ function getBasisFunction(
  *            basic function N(i-p+j,p), where 0<=k<=n and 0<=j<=p
  */
 function getBasisFunctionDerivatives(
-  p:number, u:number, i:number, knots:NDArray, n:number)
+  p:number, u:number, ki:number, knots:NDArray, n:number)
   : NDArray
 {
   let U = knots.data;
@@ -131,8 +131,8 @@ function getBasisFunctionDerivatives(
   let right = [];
 
   for(let j=1; j<=p; j++) {
-    left[j] = u - U[i+1-j];
-    right[j] = U[i+j]-u;
+    left[j] = u - U[ki+1-j];
+    right[j] = U[ki+j]-u;
     let saved = 0.0;
     for(let r=0; r<j; r++) {
       // Lower triangle
