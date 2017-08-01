@@ -111,7 +111,94 @@ class BezierSurface {
   }
 }
 
+class BSplineSurface {
+
+  u_degree : number;
+  v_degree : number;
+  cpoints : NDArray;
+  u_knots : NDArray;
+  v_knots : NDArray;
+  weights? : NDArray;
+
+  constructor(
+    u_degree:number,
+    v_degree:number,
+    u_knots:NDArray,
+    v_knots:NDArray,
+    cpoints:NDArray,
+    weights?:NDArray)
+  {
+    this.u_degree = u_degree;
+    this.v_degree = v_degree;
+    this.u_knots = u_knots;
+    this.v_knots = v_knots;
+    this.cpoints = cpoints;
+    this.weights = weights;
+  }
+
+  get dimension() {
+    return this.cpoints.shape[2];
+  }
+
+  clone() {
+    return new BSplineSurface(
+      this.u_degree,
+      this.v_degree,
+      this.u_knots.clone(),
+      this.v_knots.clone(),
+      this.cpoints.clone(),
+      this.weights ? this.weights.clone() : undefined
+    );
+  }
+
+  isRational() {
+    return !!this.weights;
+  }
+
+  evaluate(u:number, v:number, tess:NDArray, uidx:number, vidx:number) {
+    let u_span = findSpan(this.u_degree, this.u_knots.data, u);
+    let v_span = findSpan(this.v_degree, this.v_knots.data, v);
+    let Nu = getBasisFunction(this.u_degree, this.u_knots.data, u_span, u);
+    let Nv = getBasisFunction(this.v_degree, this.v_knots.data, v_span, v);
+    let dim = this.dimension;
+
+    let u_ind = u_span - this.u_degree;
+    let temp;
+    for(let l=0; l<this.v_degree+1; l++) {
+      temp = zeros([dim]); 
+      let v_ind = v_span - this.v_degree + l;
+      for(let k=0; k<this.u_degree+1; k++) {
+        for(let z=0; z<dim; z++) {
+          temp.set(z,
+            <number>temp.get(z) +
+            Nu[k] * <number>this.cpoints.get(u_ind+k,v_ind, z)
+          );
+        }
+      }
+      for(let z=0; z<dim; z++) {
+        tess.set(uidx,vidx,z,
+          <number>tess.get(uidx,vidx,z) + Nv[l] * <number>temp.get(z));
+      }
+    }
+  }
+
+  tessellatePoints(resolution=10) {
+    let tess = new NDArray({
+      shape : [resolution+1, resolution+1, this.dimension],
+      datatype : 'f32'
+    });
+    for(let i=0; i<resolution+1; i++) {
+      for(let j=0; j<resolution+1; j++) {
+        let u = i/resolution;
+        let v = j/resolution;
+        this.evaluate(u,v,tess,i,j);
+      }
+    }
+    return tess;
+  }
+}
 
 export {
-  BezierSurface
+  BezierSurface,
+  BSplineSurface
 }
