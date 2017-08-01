@@ -333,17 +333,24 @@ export default class NDArray {
   /**
    * @hidden
    */
-  _addressToIndex(di:number) {
-    if(di >= this.size) {
-      throw new Error("Data index out of range");
-    }
-    let index = new Array(this.shape.length);
-    for(let i=this.shape.length-1; i>=0; i--) {
-      let d = this.shape[i];
-      index[i] = di%d;
-      di = Math.floor(di/d);
+  private static mapAddressToIndex(addr:number, shape:number[]) {
+    let index = new Array(shape.length);
+    for(let i=shape.length-1; i>=0; i--) {
+      let d = shape[i];
+      index[i] = addr%d;
+      addr = Math.floor(addr/d);
     }
     return index;
+  }
+
+  /**
+   * @hidden
+   */
+  _addressToIndex(addr:number) {
+    if(addr >= this.size) {
+      throw new Error("Data index out of range");
+    }
+    return NDArray.mapAddressToIndex(addr, this.shape);
   }
 
   /**
@@ -411,21 +418,85 @@ export default class NDArray {
     }
   }
 
+  private isSliceIndex(index:(number|Complex|string|undefined|null)[]) {
+    if(index.length < this.shape.length) {
+      return true;
+    }
+    for(let i=0; i<index.length; i++) {
+      let item = index[i];
+      if(item === undefined ||
+        item === null ||
+        typeof item === 'string')
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * Set member at given index
    * All but the last argument should specify the index.
    * The last argument is the value to set.
    */
-  set(...args:(number|Complex)[]) {
+  set(...args:(number|Complex|string|undefined|null|NDArray)[]) {
     let nargs = args.length;
     let index = <number[]>(args.slice(0,nargs-1));
-    let addr = this._indexToAddress(...index);
     let val = args[nargs-1];
-    if(val instanceof Complex) {
-      this._data[addr] = val.real;
-      this._idata[addr] = val.imag;
+    if(this.isSliceIndex(index)) {
+      //
+      // Input value must be an array and the specified index
+      // must resolve to a slice instead of a single item.
+      // Assign the contents of input value array to the 
+      // this array's slice for specified index
+      //
+      if(!(val instanceof NDArray)) {
+        throw new Error('Input value should be NDArray');
+      }
+      let valslice = <NDArray>val;
+      let slice_recipe = this.createSliceRecipe(index);
+      let {shape:sliceshape,size:slicesize} =
+        this.computeSliceShapeAndSize(slice_recipe);
+
+      if(!NDArray.areShapesEqual(sliceshape, valslice.shape)) {
+        throw new Error("Input value has incompatible shape");
+      }
+
+      for(let i=0; i<slicesize; i++) {
+        // Convert each address of slice array to index
+        let sliceidx = NDArray.mapAddressToIndex(i,sliceshape);
+
+        // Find index into the original array (oldidx) that corresponds
+        // to the newidx
+        let targetidx:number[] = [];
+        let rangecount = 0;
+        for(let i=slice_recipe.length-1; i>=0; i--) {
+          if(Array.isArray(slice_recipe[i])) {
+            // Every element of the new index corresponds to a range element
+            // in the slice recipe. To map the new index to old index, we
+            // have to take the lower end of the range in slice recipe and
+            // add it to the element in new index
+            let range = <number[]>slice_recipe[i];
+            let low = range[0];
+            let idxelem = sliceidx[sliceidx.length-1-rangecount];
+            targetidx.unshift(idxelem+low);
+            rangecount++;
+          } else {
+            // Copy the constant recipe element as-is into index
+            targetidx.unshift(<number>slice_recipe[i]);
+          }
+        }
+        this.set(...targetidx, (<NDArray>val).get(...sliceidx));
+      }
     } else {
-      this._data[addr] = val;
+      // Assignment of single item
+      let addr = this._indexToAddress(...index);
+      if(val instanceof Complex) {
+        this._data[addr] = val.real;
+        this._idata[addr] = val.imag;
+      } else {
+        this._data[addr] = <number>val;
+      }
     }
   }
 
@@ -488,18 +559,25 @@ export default class NDArray {
   }
 
   /**
-   * Checks if the shape of this ndarray matches the shape of other
+   * @hidden
    */
-  isShapeEqual(other:NDArray) : boolean {
-    if(this.shape.length !== other.shape.length) {
+  private static areShapesEqual(shape1:number[], shape2:number[]) : boolean {
+    if(shape1.length !== shape2.length) {
       return false;
     }
-    for(let i=0; i<this.shape.length; i++) {
-      if(this.shape[i] !== other.shape[i]) {
+    for(let i=0; i<shape1.length; i++) {
+      if(shape1[i] !== shape2[i]) {
         return false;
       }
     }
     return true;
+  }
+
+  /**
+   * Checks if the shape of this ndarray matches the shape of other
+   */
+  isShapeEqual(other:NDArray) : boolean {
+    return NDArray.areShapesEqual(this.shape, other.shape);
   }
 
   /**
@@ -545,58 +623,11 @@ export default class NDArray {
     }
   }
 
-  /**
-   * @hidden
-   * Bluemath supports extracting of NDArray slices using a syntax similar
-   * to numpy. Slicing is supported by NDArray.slice function.
-   *
-   * The function accepts number of arguments not greater than the dimensions
-   * of the NDArray.
-   * Each argument could be a `number`, a `string` in format `<start>:<stop>`
-   * or `undefined` or `null`.
-   *
-   * If the argument is a number then it represents a single slice,
-   * i.e. all the elements in the lower dimension
-   * are returned for this index in given dimension.
-   * ```javascript
-   * let A = new NDArray([
-   *   [2,4,6],
-   *   [1,0,9],
-   *   [0,2,3]
-   * ]);
-   * A.slice(0); // [[2,4,6]]
-   * ```
-   *
-   * If the argument is `undefined` or `null`, then that's interpreted as
-   * all items in the given dimension.
-   * ```javascript
-   * A.slice(null); // [[2,4,6],[1,0,9],[0,2,3]]
-   * A.slice(1,null); // [[1,0,9]]
-   * ```
-   *
-   * A string argument of format `<start>:<stop>` is used to specify range of
-   * slices in the given dimension.
-   * Both `<start>` and `<stop>` are optional.
-   * ```javascript
-   * A.slice('1:2'); // [[1,0,9]]
-   * A.slice(':1'); // [[2,4,6]]
-   * A.slice(':'); // [[2,4,6],[1,0,9],[0,2,3]] 
-   * A.slice(':',2); // [[6],[9],[3]]
-   * ```
-   *
-   * The argument order is interpreted as going from outermost dimension to
-   * innermost.
-   *
-   * Caveats
-   * ---
-   * * Negative indices not supported yet
-   * * No support for `<start>:<stop>:<step>` format yet
-   */
-  sliceOld(...slices:(string|number|undefined|null)[]):NDArray {
+  private createSliceRecipe(slices:(string|number|undefined|null)[]) {
     if(slices.length > this.shape.length) {
       throw new Error('Excess number of dimensions specified');
     }
-    let slice_recipe:number[][] = [];
+    let slice_recipe:Array<number|number[]> = [];
     // Each slice specifies the index-range in that dimension to return
     for(let i=0; i<slices.length; i++) {
       let slice = slices[i];
@@ -621,13 +652,12 @@ export default class NDArray {
         }
         slice_recipe.push([from,to]);
       } else if(typeof slice === 'number') {
-        slice_recipe.push([slice,slice+1]);
+        slice_recipe.push(slice);
       } else {
         throw new Error("Unexpected slice :"+slice);
       }
     }
-    // At this point slice_recipe contains an array of index ranges
-    // index range is an array [from_index,to_index]
+
     // If slices argument has less slices than the number of dimensions
     // of this array (i.e. this.shape.length),
     // then we assume that lower (i.e. inner) dimensions are missing and
@@ -636,35 +666,24 @@ export default class NDArray {
     for(let i=slice_recipe.length; i<this.shape.length; i++) {
       slice_recipe.push([0,this.shape[i]]);
     }
-    console.assert(slice_recipe.length === this.shape.length);
 
-    // From slice_recipe find the total size of the result array
-    // and also the shape of the result array
-    let newsize = 1;
-    let newshape = [];
-    for(let i=0; i<slice_recipe.length; i++) {
-      let recipe = slice_recipe[i];
-      let dimsize = recipe[1]-recipe[0];
-      newshape.push(dimsize);
-      newsize *= dimsize;
-    }
+    return slice_recipe;
+  }
 
-    let newndarray;
-    let dataArrayType = getDataArrayType(this.datatype);
-    if(newsize > 0) {
-      // Create result array of the calculated size
-      newndarray = new NDArray(
-        new dataArrayType(newsize), {shape:newshape});
-      // populate the result array from the original array (i.e. this)
-      for(let i=0; i<newsize; i++) {
-        let newindices = newndarray._addressToIndex(i);
-        let oldindices = newindices.map((idx,i) => idx+slice_recipe[i][0]);
-        newndarray.set(...newindices,this.get(...oldindices)); // todo
+  private computeSliceShapeAndSize(slice_recipe:Array<number|number[]>) {
+    // The number of dimensions of the resulting slice equals the
+    // number of slice recipies that are ranges
+    let shape = [];
+    let size = 1;
+    for(let i=slice_recipe.length-1; i>=0; i--) {
+      if(Array.isArray(slice_recipe[i])) {
+        let recipe:number[] = <number[]>slice_recipe[i];
+        let dim = recipe[1]-recipe[0];
+        shape.unshift(dim); // Prepend
+        size *= dim;
       }
-    } else {
-      newndarray = new NDArray({shape:[0]});
     }
-    return newndarray;
+    return {shape, size}
   }
 
   /**
@@ -683,53 +702,15 @@ export default class NDArray {
    * * No support for `<start>:<stop>:<step>` format yet
    */
   slice(...slices:(string|number|undefined|null)[]):NDArray|number|Complex {
-    if(slices.length > this.shape.length) {
-      throw new Error('Excess number of dimensions specified');
-    }
-    let nranges = 0;
-    let slice_recipe:Array<number|number[]> = [];
-    // Each slice specifies the index-range in that dimension to return
-    for(let i=0; i<slices.length; i++) {
-      let slice = slices[i];
-      let max = this.shape[i];
-      if(slice === undefined || slice === null || slice === ':') {
-        // gather all indices in this dimension
-        slice_recipe.push([0,max]);
-        nranges++;
-      } else if(typeof slice === 'string') {
-        // assume the slice format to be [<from_index>:<to_index>]
-        // if from_index or to_index is missing then they are replaced
-        // by 0 or max respectively
-        let match = /([-\d]*)\:([-\d]*)/.exec(slice);
-        let from = 0;
-        let to = max;
-        if(match) {
-          if(match[1] !== '') {
-            from = parseInt(match[1],10);
-          }
-          if(match[2] !== '') {
-            to = Math.min(parseInt(match[2],10), max);
-          }
-        }
-        slice_recipe.push([from,to]);
-        nranges++;
-      } else if(typeof slice === 'number') {
-        slice_recipe.push(slice);
-      } else {
-        throw new Error("Unexpected slice :"+slice);
-      }
-    }
 
-    // If slices argument has less slices than the number of dimensions
-    // of this array (i.e. this.shape.length),
-    // then we assume that lower (i.e. inner) dimensions are missing and
-    // we take that as wildcard and return all indices in those
-    // dimensions
-    for(let i=slice_recipe.length; i<this.shape.length; i++) {
-      slice_recipe.push([0,this.shape[i]]);
-      nranges++;
-    }
+    let slice_recipe = this.createSliceRecipe(slices);
     console.assert(slice_recipe.length === this.shape.length);
+
+    // Count elements of slice recipe that are ranges
+    let nranges = 0;
+    for(let i=0; i<slice_recipe.length; i++) {
+      if(Array.isArray(slice_recipe[i])) { nranges++; }
+    }
 
     // If the slice recipe doesn't contain any ranges, then the
     // result is a single element of the array
@@ -738,22 +719,12 @@ export default class NDArray {
       return this.get(...idx);
     }
 
-    // The number of dimensions of the resulting slice equals the
-    // number of slice recipies that are ranges and not constant indices
-    let newshape = [];
-    let newsize = 1;
-    for(let i=slice_recipe.length-1; i>=0; i--) {
-      if(Array.isArray(slice_recipe[i])) {
-        let recipe:number[] = <number[]>slice_recipe[i];
-        let dim = recipe[1]-recipe[0];
-        newshape.unshift(dim); // Prepend
-        newsize *= dim;
-      }
-    }
+    let {shape:sliceshape,size:slicesize} =
+      this.computeSliceShapeAndSize(slice_recipe);
 
-    let slicearr = new NDArray({shape:newshape, datatype:this.datatype});
+    let slicearr = new NDArray({shape:sliceshape, datatype:this.datatype});
 
-    for(let i=0; i<newsize; i++) {
+    for(let i=0; i<slicesize; i++) {
 
       // Convert each address of slice array to index
       let newidx = slicearr._addressToIndex(i);

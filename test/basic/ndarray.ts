@@ -366,6 +366,52 @@ export default function testNDArray() {
           A.set(0,2,589);
           assert.equal(A.get(0,2),589);
         });
+        QUnit.test('Slice Assignment', assert => {
+          let A = range(9);
+          A.reshape([3,3]);
+
+          A.set(0,new NDArray([-1,-1,-1]));
+          assert.ok(A.isEqual(new NDArray([
+            [-1,-1,-1],
+            [3,4,5],
+            [6,7,8]
+          ])));
+
+          A.set(0,':',new NDArray([-2,-2,-2]));
+          assert.ok(A.isEqual(new NDArray([
+            [-2,-2,-2],
+            [3,4,5],
+            [6,7,8]
+          ])));
+
+          A.set(':',0,new NDArray([-3,-3,-3]));
+          assert.ok(A.isEqual(new NDArray([
+            [-3,-2,-2],
+            [-3,4,5],
+            [-3,7,8]
+          ])));
+
+          A.set(':1',1,new NDArray([-4]));
+          assert.ok(A.isEqual(new NDArray([
+            [-3,-4,-2],
+            [-3,4,5],
+            [-3,7,8]
+          ])));
+
+          A.set(':2',':2',new NDArray([[-5,-5],[-5,-5]]));
+          assert.ok(A.isEqual(new NDArray([
+            [-5,-5,-2],
+            [-5,-5,5],
+            [-3,7,8]
+          ])));
+
+          A.set(2,':',new NDArray([0,0,0]));
+          assert.ok(A.isEqual(new NDArray([
+            [-5,-5,-2],
+            [-5,-5,5],
+            [0,0,0]
+          ])));
+        });
       });
     });
 
