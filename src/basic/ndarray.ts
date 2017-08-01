@@ -591,7 +591,7 @@ export default class NDArray {
    * * Negative indices not supported yet
    * * No support for `<start>:<stop>:<step>` format yet
    */
-  slice(...slices:(string|number|undefined|null)[]):NDArray {
+  sliceOld(...slices:(string|number|undefined|null)[]):NDArray {
     if(slices.length > this.shape.length) {
       throw new Error('Excess number of dimensions specified');
     }
@@ -666,10 +666,11 @@ export default class NDArray {
     return newndarray;
   }
 
-  sliceX(...slices:(string|number|undefined|null)[]):NDArray {
+  slice(...slices:(string|number|undefined|null)[]):NDArray|number|Complex {
     if(slices.length > this.shape.length) {
       throw new Error('Excess number of dimensions specified');
     }
+    let nranges = 0;
     let slice_recipe:Array<number|number[]> = [];
     // Each slice specifies the index-range in that dimension to return
     for(let i=0; i<slices.length; i++) {
@@ -678,6 +679,7 @@ export default class NDArray {
       if(slice === undefined || slice === null || slice === ':') {
         // gather all indices in this dimension
         slice_recipe.push([0,max]);
+        nranges++;
       } else if(typeof slice === 'string') {
         // assume the slice format to be [<from_index>:<to_index>]
         // if from_index or to_index is missing then they are replaced
@@ -694,6 +696,7 @@ export default class NDArray {
           }
         }
         slice_recipe.push([from,to]);
+        nranges++;
       } else if(typeof slice === 'number') {
         slice_recipe.push(slice);
       } else {
@@ -708,8 +711,16 @@ export default class NDArray {
     // dimensions
     for(let i=slice_recipe.length; i<this.shape.length; i++) {
       slice_recipe.push([0,this.shape[i]]);
+      nranges++;
     }
     console.assert(slice_recipe.length === this.shape.length);
+
+    // If the slice recipe doesn't contain any ranges, then the
+    // result is a single element of the array
+    if(nranges === 0) {
+      let idx = <number[]>slice_recipe;
+      return this.get(...idx);
+    }
 
     // The number of dimensions of the resulting slice equals the
     // number of slice recipies that are ranges and not constant indices
@@ -737,12 +748,17 @@ export default class NDArray {
       let rangecount = 0;
       for(let i=slice_recipe.length-1; i>=0; i--) {
         if(Array.isArray(slice_recipe[i])) {
+          // Every element of the new index corresponds to a range element
+          // in the slice recipe. To map the new index to old index, we
+          // have to take the lower end of the range in slice recipe and
+          // add it to the element in new index
           let range = <number[]>slice_recipe[i];
           let low = range[0];
           let idxelem = newidx[newidx.length-1-rangecount];
           oldidx.unshift(idxelem+low);
           rangecount++;
         } else {
+          // Copy the constant recipe element as-is into index
           oldidx.unshift(<number>slice_recipe[i]);
         }
       }
