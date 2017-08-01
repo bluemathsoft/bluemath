@@ -552,8 +552,21 @@ export default function testNDArray() {
       QUnit.skip('3x3x3', assert => {
         let A = range(27);
         A.reshape([3,3,3]);
-        console.log(A.slice(0,0,':').toString());
         assert.ok(new NDArray([0,1,2]).isEqual(A.slice(0,0,':')));
+      });
+
+      QUnit.test('sliceX', assert => {
+        let A = range(27);
+        A.reshape([3,3,3]);
+
+        assert.ok(A.sliceX(0,':1',':').isEqual(new NDArray([
+          [0,1,2]
+        ])));
+
+        assert.ok(A.sliceX(0,':2',':').isEqual(new NDArray([
+          [0,1,2],
+          [3,4,5]
+        ])));
       });
     });
 

@@ -714,14 +714,42 @@ export default class NDArray {
     // The number of dimensions of the resulting slice equals the
     // number of slice recipies that are ranges and not constant indices
     let newshape = [];
+    let newsize = 1;
     for(let i=slice_recipe.length-1; i>=0; i--) {
       if(Array.isArray(slice_recipe[i])) {
         let recipe:number[] = <number[]>slice_recipe[i];
         let dim = recipe[1]-recipe[0];
-        newshape.push(dim);
+        newshape.unshift(dim); // Prepend
+        newsize *= dim;
       }
     }
 
+    let slicearr = new NDArray({shape:newshape, datatype:this.datatype});
+
+    for(let i=0; i<newsize; i++) {
+
+      // Convert each address of slice array to index
+      let newidx = slicearr._addressToIndex(i);
+
+      // Find index into the original array (oldidx) that corresponds
+      // to the newidx
+      let oldidx:number[] = [];
+      let rangecount = 0;
+      for(let i=slice_recipe.length-1; i>=0; i--) {
+        if(Array.isArray(slice_recipe[i])) {
+          let range = <number[]>slice_recipe[i];
+          let low = range[0];
+          let idxelem = newidx[newidx.length-1-rangecount];
+          oldidx.unshift(idxelem+low);
+          rangecount++;
+        } else {
+          oldidx.unshift(<number>slice_recipe[i]);
+        }
+      }
+      slicearr.set(...newidx, this.get(...oldidx));
+    }
+
+    return slicearr;
   }
 
   /**
