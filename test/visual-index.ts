@@ -27,44 +27,6 @@ import {CURVE_DATA} from './nurbs-data'
 
 let plots = [];
 
-function bmplot(name: string, spec) {
-
-  let pelem = document.createElement('div');
-  pelem.setAttribute('id', 'plot-' + name);
-  pelem.setAttribute('class', 'plot');
-
-  let data = [];
-
-  for(let trace of spec.traces) {
-    if(trace.x && trace.y) {
-      console.assert(Array.isArray(trace.x));
-      console.assert(Array.isArray(trace.y));
-      data.push({
-        x: trace.x,
-        y: trace.y,
-        type : 'scatter',
-        mode : trace.type === 'line' ? 'lines' : 'markers',
-        name : trace.name
-      });
-    } else if(trace.points2d) {
-      console.assert(trace.points2d.is2D() && trace.points2d.shape[1] >= 2);
-      data.push({
-        x: Array.from(trace.points2d.slice(':',0).data),
-        y: Array.from(trace.points2d.slice(':',1).data),
-        mode : trace.type === 'line' ? 'lines' : 'markers',
-        name : trace.name
-      });
-    } else {
-      throw new Error('Invalid Trace Spec');
-    }
-  }
-
-  Plotly.plot(pelem, data, {
-    margin: {  }
-  });
-  document.body.appendChild(pelem);
-};
-
 function generateBSplinePlotlyData3D(bcrv) {
   let traces = [];
   let Nip = bcrv.tessellateBasis(RESOLUTION);
@@ -85,7 +47,6 @@ function generateBSplinePlotlyData3D(bcrv) {
     name:'Curve'
   });
   traces.push({
-    points2d:bcrv.cpoints,
     x: Array.from(bcrv.cpoints.slice(':',0).data),
     y: Array.from(bcrv.cpoints.slice(':',1).data),
     z: Array.from(bcrv.cpoints.slice(':',2).data),
@@ -155,7 +116,6 @@ function generateBSplinePlotlyData2D(bcrv) {
     name:'1st Derivative'
   });
   traces.push({
-    points2d:bcrv.cpoints,
     x: Array.from(bcrv.cpoints.slice(':',0).data),
     y: Array.from(bcrv.cpoints.slice(':',1).data),
     xaxis : 'x1',
