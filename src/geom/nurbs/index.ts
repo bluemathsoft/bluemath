@@ -21,12 +21,14 @@
 */
 
 import {
-  BezierCurve,BSplineCurve,BSplineCurve2D,BSplineCurve3D
+  BezierCurve, BSplineCurve
 } from './bcurve'
+import {
+  BezierSurface
+} from './bsurf'
 
 export {
   BezierCurve,
   BSplineCurve,
-  BSplineCurve2D,
-  BSplineCurve3D
+  BezierSurface
 };
