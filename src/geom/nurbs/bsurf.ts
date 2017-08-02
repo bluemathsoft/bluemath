@@ -24,7 +24,7 @@ import {
   findSpan, getBasisFunction, getBasisFunctionDerivatives,
   bernstein                                                                                                     
 } from './helper'
-import {zeros,range} from '../..'
+import {zeros,add,mul} from '../..'
 
 class BezierSurface {
 
@@ -76,20 +76,16 @@ class BezierSurface {
     for(let i=0; i<this.u_degree+1; i++) {
       for(let j=0; j<this.v_degree+1; j++) {
         if(isRational) {
-          for(let z=0; z<dim; z++) {
-            tess.set(uidx,vidx,z,
-              <number>tess.get(uidx,vidx,z) +
-              Bu[i] * Bv[j] * <number>this.cpoints.get(i,j,z)
-                * <number>this.weights.get(i,j)
-            );
-          }
+          tess.set(uidx, vidx,
+            add(tess.slice(uidx,vidx),
+                mul(Bu[i], Bv[j],
+                    this.weights.get(i,j),
+                    this.cpoints.slice(i,j))))
         } else {
-          for(let z=0; z<dim; z++) {
-            tess.set(uidx,vidx,z,
-              <number>tess.get(uidx,vidx,z) +
-              Bu[i] * Bv[j] * <number>this.cpoints.get(i,j,z)
-            );
-          }
+          tess.set(uidx, vidx,
+            add(tess.slice(uidx,vidx),
+                mul(Bu[i], Bv[j],
+                    this.cpoints.slice(i,j))))
         }
       }
     }
@@ -168,17 +164,10 @@ class BSplineSurface {
       temp = zeros([dim]); 
       let v_ind = v_span - this.v_degree + l;
       for(let k=0; k<this.u_degree+1; k++) {
-        for(let z=0; z<dim; z++) {
-          temp.set(z,
-            <number>temp.get(z) +
-            Nu[k] * <number>this.cpoints.get(u_ind+k,v_ind, z)
-          );
-        }
+        temp = add(temp, mul(Nu[k],this.cpoints.get(u_ind+k,v_ind)));
       }
-      for(let z=0; z<dim; z++) {
-        tess.set(uidx,vidx,z,
-          <number>tess.get(uidx,vidx,z) + Nv[l] * <number>temp.get(z));
-      }
+      tess.set(uidx,vidx,
+        add(tess.get(uidx,vidx), mul(Nv[l], temp)));
     }
   }
 
