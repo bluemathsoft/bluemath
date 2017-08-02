@@ -430,7 +430,7 @@ function displayBezierSurface(bezsrfData) {
   let zdata = [];
   for(let i=0; i<ures; i++) {
     for(let j=0; j<vres; j++) {
-      let pt:NDArray = <NDArray>(tess.slice(i,j));
+      let pt:NDArray = <NDArray>(tess.get(i,j));
       xdata.push(<number>pt.get(0));
       ydata.push(<number>pt.get(1));
       zdata.push(<number>pt.get(2));
@@ -455,7 +455,7 @@ function displayBezierSurface(bezsrfData) {
   let czdata = [];
   for(let i=0; i<uncp; i++) {
     for(let j=0; j<vncp; j++) {
-      let cp:NDArray = <NDArray>(bezsrf.cpoints.slice(i,j));
+      let cp:NDArray = <NDArray>(bezsrf.cpoints.get(i,j));
       cxdata.push(<number>cp.get(0));
       cydata.push(<number>cp.get(1));
       czdata.push(<number>cp.get(2));
@@ -494,7 +494,7 @@ function displayBSplineSurface(bsrfData) {
   let zdata = [];
   for(let i=0; i<ures; i++) {
     for(let j=0; j<vres; j++) {
-      let pt:NDArray = <NDArray>(tess.slice(i,j));
+      let pt:NDArray = <NDArray>(tess.get(i,j));
       xdata.push(<number>pt.get(0));
       ydata.push(<number>pt.get(1));
       zdata.push(<number>pt.get(2));
@@ -519,7 +519,7 @@ function displayBSplineSurface(bsrfData) {
   let czdata = [];
   for(let i=0; i<uncp; i++) {
     for(let j=0; j<vncp; j++) {
-      let cp:NDArray = <NDArray>(bsrf.cpoints.slice(i,j));
+      let cp:NDArray = <NDArray>(bsrf.cpoints.get(i,j));
       cxdata.push(<number>cp.get(0));
       cydata.push(<number>cp.get(1));
       czdata.push(<number>cp.get(2));

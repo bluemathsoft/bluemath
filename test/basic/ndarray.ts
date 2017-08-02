@@ -429,9 +429,6 @@ export default function testNDArray() {
         A.reshape([2,3]);
 
         assert.equal(A.get(0,2),7);
-        assert.throws(() => {
-          A.get(2);
-        });
         assert.equal(A.size, 6);
       });
       QUnit.test('2x3 to 6', assert => {
@@ -440,17 +437,11 @@ export default function testNDArray() {
           [4,5,6]
         ]);
         assert.equal(A.get(0,2),7);
-        assert.throws(() => {
-          A.get(2);
-        });
         assert.equal(A.size, 6);
 
         A.reshape([6]);
 
         assert.equal(A.get(2),7);
-        assert.throws(() => {
-          A.get(0,2);
-        });
         assert.equal(A.size, 6);
       });
       QUnit.test('6 to 4x2', assert => {
@@ -524,88 +515,88 @@ export default function testNDArray() {
         ], {datatype:'f64'});
 
         // 1
-        assert.ok((<NDArray>A.slice(':1',':2')).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(':1',':2')).isEqual(new NDArray([
           [2,4],
         ])));
         // 2
-        assert.ok((<NDArray>A.slice(0,':2')).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(0,':2')).isEqual(new NDArray([
           2,4
         ])));
         // 3
-        assert.ok((<NDArray>A.slice(null)).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(null)).isEqual(new NDArray([
           [2,4,6],
           [1,0,9],
           [0,2,3]
         ])));
         // 4
-        assert.ok((<NDArray>A.slice(1,null)).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(1,null)).isEqual(new NDArray([
           1,0,9
         ])));
         // 5
-        assert.ok((<NDArray>A.slice(0)).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(0)).isEqual(new NDArray([
           2,4,6
         ])));
         // 6
-        assert.ok((<NDArray>A.slice(1)).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(1)).isEqual(new NDArray([
           1,0,9
         ])));
         // 7
-        assert.ok((<NDArray>A.slice('1:2')).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get('1:2')).isEqual(new NDArray([
           [1,0,9]
         ])));
         // 8
-        assert.ok((<NDArray>A.slice('1:2',2)).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get('1:2',2)).isEqual(new NDArray([
           9
         ])));
         // 9
-        assert.ok((<NDArray>A.slice(':1',':3')).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(':1',':3')).isEqual(new NDArray([
           [2,4,6],
         ])));
         // 10
-        assert.ok((<NDArray>A.slice(':1',':4')).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(':1',':4')).isEqual(new NDArray([
           [2,4,6],
         ])));
         // 11
-        assert.ok((<NDArray>A.slice(':1',':')).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(':1',':')).isEqual(new NDArray([
           [2,4,6],
         ])));
         // 12
-        assert.ok((<NDArray>A.slice(':1')).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(':1')).isEqual(new NDArray([
           [2,4,6],
         ])));
         // 13
-        assert.ok((<NDArray>A.slice(':',':1')).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(':',':1')).isEqual(new NDArray([
           [2],
           [1],
           [0]
         ])));
         // 14
-        assert.ok((<NDArray>A.slice(':',0)).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(':',0)).isEqual(new NDArray([
           2,1,0
         ])));
         // 15
-        assert.ok((<NDArray>A.slice(':',2)).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(':',2)).isEqual(new NDArray([
           6,9,3
         ])));
         // 16
-        assert.ok((<NDArray>A.slice(':2',':3')).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(':2',':3')).isEqual(new NDArray([
           [2,4,6],
           [1,0,9],
         ])));
         // 17
-        assert.ok((<NDArray>A.slice(':',':')).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(':',':')).isEqual(new NDArray([
           [2,4,6],
           [1,0,9],
           [0,2,3]
         ])));
         // 18
-        assert.ok((<NDArray>A.slice(':')).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(':')).isEqual(new NDArray([
           [2,4,6],
           [1,0,9],
           [0,2,3]
         ])));
         // 19
-        assert.ok((<NDArray>A.slice()).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get()).isEqual(new NDArray([
           [2,4,6],
           [1,0,9],
           [0,2,3]
@@ -616,37 +607,37 @@ export default function testNDArray() {
         let A = range(27);
         A.reshape([3,3,3]);
 
-        assert.equal(A.slice(0,0,0),0);
-        assert.equal(A.slice(0,1,0),3);
-        assert.equal(A.slice(1,1,0),12);
+        assert.equal(A.get(0,0,0),0);
+        assert.equal(A.get(0,1,0),3);
+        assert.equal(A.get(1,1,0),12);
 
-        assert.ok((<NDArray>A.slice(0,0,':')).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(0,0,':')).isEqual(new NDArray([
           0,1,2
         ])));
 
-        assert.ok((<NDArray>A.slice(0,':1',':')).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(0,':1',':')).isEqual(new NDArray([
           [0,1,2]
         ])));
 
-        assert.ok((<NDArray>A.slice(0,':2',':')).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(0,':2',':')).isEqual(new NDArray([
           [0,1,2],
           [3,4,5]
         ])));
 
-        assert.ok((<NDArray>A.slice(0)).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(0)).isEqual(new NDArray([
           [0,1,2],
           [3,4,5],
           [6,7,8]
         ])));
-        assert.ok((<NDArray>A.slice(0,null,2)).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(0,null,2)).isEqual(new NDArray([
           2,5,8
         ])));
 
-        assert.ok((<NDArray>A.slice(0,1)).isEqual(new NDArray([
+        assert.ok((<NDArray>A.get(0,1)).isEqual(new NDArray([
           3,4,5
         ])));
-        assert.ok((<NDArray>A.slice()).isEqual(A));
-        assert.ok((<NDArray>A.slice(null,null)).isEqual(A));
+        assert.ok((<NDArray>A.get()).isEqual(A));
+        assert.ok((<NDArray>A.get(null,null)).isEqual(A));
       });
     });
 

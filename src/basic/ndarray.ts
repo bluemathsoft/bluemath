@@ -406,18 +406,6 @@ export default class NDArray {
     this._data.fill(value);
   }
 
-  /**
-   * Access member at given index
-   */
-  get(...index:number[]) : number|Complex {
-    let addr = this._indexToAddress(...index);
-    if(this._idata[addr] === undefined) {
-      return this._data[addr];
-    } else {
-      return new Complex(this._data[addr], this._idata[addr]);
-    }
-  }
-
   private isSliceIndex(index:(number|Complex|string|undefined|null)[]) {
     if(index.length < this.shape.length) {
       return true;
@@ -701,7 +689,7 @@ export default class NDArray {
    * * Negative indices not supported yet
    * * No support for `<start>:<stop>:<step>` format yet
    */
-  slice(...slices:(string|number|undefined|null)[]):NDArray|number|Complex {
+  get(...slices:(string|number|undefined|null)[]):NDArray|number|Complex {
 
     let slice_recipe = this.createSliceRecipe(slices);
     console.assert(slice_recipe.length === this.shape.length);
@@ -716,7 +704,12 @@ export default class NDArray {
     // result is a single element of the array
     if(nranges === 0) {
       let idx = <number[]>slice_recipe;
-      return this.get(...idx);
+      let addr = this._indexToAddress(...idx);
+      if(this._idata[addr] === undefined) {
+        return this._data[addr];
+      } else {
+        return new Complex(this._data[addr], this._idata[addr]);
+      }
     }
 
     let {shape:sliceshape,size:slicesize} =
@@ -781,7 +774,7 @@ export default class NDArray {
           let maxindex = maxarr._addressToIndex(i);
           let sliceindex = maxindex.slice();
           sliceindex.splice(axis,0,':');
-          let slice = this.slice(...sliceindex);
+          let slice = this.get(...sliceindex);
           maxarr.set(...maxindex,<number>slice.max());
         }
         return maxarr;

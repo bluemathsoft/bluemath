@@ -550,7 +550,7 @@ class BSplineCurve {
 
     let bezlist = [];
     for(let i=0; i<Q.length; i++) {
-      bezlist.push(new BezierCurve(p, Q.slice(i).reshape([p+1,dim])));
+      bezlist.push(new BezierCurve(p, Q.get(i).reshape([p+1,dim])));
     }
     return bezlist;
   }

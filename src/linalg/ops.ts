@@ -732,9 +732,9 @@ export function qr(A:NDArray)
 
   let r = copyA.clone();
   r.swapOrder();
-  r = triu(r.slice(':',':'+minmn));
+  r = triu(r.get(':',':'+minmn));
 
-  let q = copyA.slice(':'+n);
+  let q = copyA.get(':'+n);
   lapack.orgqr(q.data,m,n,minmn,tau.data);
   q.swapOrder();
 
