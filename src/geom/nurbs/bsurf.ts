@@ -24,7 +24,7 @@ import {
   findSpan, getBasisFunction, getBasisFunctionDerivatives,
   bernstein                                                                                                     
 } from './helper'
-import {zeros,add,mul} from '../..'
+import {zeros,add,mul,count,empty} from '../..'
 
 class BezierSurface {
 
@@ -183,6 +183,96 @@ class BSplineSurface {
       }
     }
     return tess;
+  }
+
+  insertKnotU(un:number, r:number) {
+    let p = this.u_degree;
+    let q = this.v_degree;
+
+    // Knot will be inserted between [k, k+1)
+    let k = findSpan(p, this.u_knots.data, un);
+
+    // If un already exists in the knot vector, s is its multiplicity
+    let s = count(this.u_knots, un);
+
+    if(r+s <= p) {
+      throw new Error('Knot insertion exceeds knot multiplicity beyond degree');
+    }
+
+    let mU = this.u_knots.length-1;
+    let nU = mU-this.u_degree-1;
+    let mV = this.v_knots.length-1;
+    let nV = mV-this.v_degree-1;
+
+    let P = this.cpoints;
+    let Q = empty([nU+1+r,nV+1,this.dimension]);
+    let UP = this.u_knots;
+    let UQ = empty([UP.length+r]);
+    let VP = this.v_knots;
+    let VQ = empty([VP.length]);
+
+    // Load u-vector
+    for(let i=0; i<k+1; i++) {
+      UQ.set(i, UP.get(i));
+    }
+    for(let i=1; i<r+1; i++) {
+      UQ.set(k+i, un);
+    }
+    for(let i=k+1; i<mU+1; i++) {
+      UQ.set(i+r, UP.get(i));
+    }
+
+    // Copy v-vector
+    VQ.copyfrom(VP);
+
+    let alpha = empty([p+1,r+1]);
+    let R = empty([p+1,this.dimension]);
+
+    let L=0;
+
+    // Pre-calculate alphas
+    for(let j=1; j<r+1; j++) {
+      L = k-p+j;
+      for(let i=0; i<p-j-s+1; i++) {
+        alpha.set(i,j,
+          (un-<number>UP.get(L+i))/(<number>UP.get(i+k+1)-<number>UP.get(L+i)));
+      }
+    }
+
+    for(let row=0; row<=nV+1; row++) {
+      // Save unaltered control points
+      for(let i=0; i<k-p+1; i++) {
+        Q.set(i, row, P.get(i, row));
+      }
+      for(let i=k-s; i<nU+1; i++) {
+        Q.set(i+r, row, P.get(i, row));
+      }
+
+      // Load auxiliary control points
+      for(let i=0; i<p-s+1; i++) {
+        R.set(i, P.get(k-p+i, row));
+      }
+      for(let j=1; j<r+1; j++) {
+        L = k-p+j;
+        for(let i=0; i<p-j-s+1; i++) {
+          R.set(i,
+            add(
+              mul(alpha.get(i,j), R.get(i+1)),
+              mul(1.0-<number>alpha.get(i,j)),R.get(i)
+            )
+          );
+        }
+        Q.set(L,row, R.get(0));
+        Q.set(k+r-j-s,row, R.get(p-j-s));
+      }
+
+      // Load the remaining control points
+      for(let i=L+1; i<k-s; i++) { // TODO // Assuming L value is still good
+        Q.set(i,row, R.get(i-L));
+      }
+    }
+    this.cpoints = Q
+    this.v_knots = VQ
   }
 }
 
