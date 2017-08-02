@@ -21,7 +21,7 @@
 */
 
 import {
-  eye, zeros,
+  eye, zeros, empty,
   range,
   iszero, isequal,
   torad, todeg,
@@ -57,7 +57,7 @@ export {
   PermutationVector, BandMatrix,
 
   // Ops
-  eye, zeros,
+  eye, zeros, empty,
   range,
   iszero, isequal,
   torad, todeg,

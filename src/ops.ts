@@ -141,6 +141,20 @@ export function zeros(arg0:number|number[], datatype?:NumberType) {
 }
 
 /**
+ * Creates empty NDArray of given shape or of given length if argument is
+ * a number
+ */
+export function empty(arg0:number|number[], datatype?:NumberType) {
+  let A;
+  if(Array.isArray(arg0)) {
+    A = new NDArray({shape:arg0, datatype:datatype});
+  } else {
+    A = new NDArray({shape:[arg0], datatype:datatype})
+  }
+  return A;
+}
+
+/**
  * @hidden
  */
 function _add_numbers(a:number|Complex, b:number|Complex) {

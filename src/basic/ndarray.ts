@@ -166,18 +166,18 @@ export default class NDArray {
   /**
    * Array of array dimensions. First being the outermost dimension.
    */
-  shape : number[];
+  private _shape : number[];
 
   /**
    * Size of the data (i.e. number of real/complex numbers stored
    * in this array)
    */
-  size : number;
+  private _size : number;
 
   /**
    * Data type of each number, specified by a string code
    */
-  datatype : NumberType;
+  private datatype : NumberType;
 
   /**
    * Real part of number elements is stored in this array
@@ -199,25 +199,25 @@ export default class NDArray {
     arg0:TypedArray|Array<any>|NDArrayOptions,
     arg1?:NDArrayOptions)
   {
-    this.size = 0;
+    this._size = 0;
     this.datatype = 'f32';
     this._idata = [];
     if(Array.isArray(arg0)) {
-      this.shape = deduceShape(arg0);
+      this._shape = deduceShape(arg0);
       this._calcSize();
       if(arg1 && arg1.datatype) {
         this.datatype = arg1.datatype;
       }
-      this._alloc(this.size, arg0, this.datatype);
+      this._alloc(this._size, arg0, this.datatype);
       if(arg1 && arg1.idata) {
         this._idata = arg1.idata;
       }
     } else if(ArrayBuffer.isView(arg0)) {
       this._data = arg0;
       if(arg1 && arg1.shape) {
-        this.shape = arg1.shape;
+        this._shape = arg1.shape;
       } else {
-        this.shape = [arg0.length];
+        this._shape = [arg0.length];
       }
       // in this case options.datatype is ignored if supplied
       this.datatype = deduceNumberType(arg0);
@@ -231,9 +231,9 @@ export default class NDArray {
         this.datatype = options.datatype;
       }
       if(options.shape) {
-        this.shape = options.shape;
+        this._shape = options.shape;
         this._calcSize();
-        this._alloc(this.size, undefined, this.datatype);
+        this._alloc(this._size, undefined, this.datatype);
         if(options.fill) {
           this._data.fill(options.fill);
         }
@@ -244,19 +244,27 @@ export default class NDArray {
     }
   }
 
+  get shape() {
+    return this._shape;
+  }
+
+  get size() {
+    return this._size;
+  }
+
   is1D() : boolean {
-    return this.shape.length === 1;
+    return this._shape.length === 1;
   }
 
   is2D() : boolean {
-    return this.shape.length === 2;
+    return this._shape.length === 2;
   }
 
   /**
    * Number of elements in outermost (i.e. 0th) dimension
    */
   get length() {
-    return this.shape[0];
+    return this._shape[0];
   }
 
   get data() {
@@ -271,12 +279,12 @@ export default class NDArray {
    * @param shape New shape
    */
   reshape(shape:number[]) {
-    this.shape = shape;
-    let oldsize = this.size;
+    this._shape = shape;
+    let oldsize = this._size;
     this._calcSize();
-    if(this.size > oldsize) {
+    if(this._size > oldsize) {
       // Rellocate a buffer of bigger size, copy old data to it
-      this._alloc(this.size, this._data, this.datatype);
+      this._alloc(this._size, this._data, this.datatype);
       // Fill the excess elements in new buffer with 0
       this._data.fill(0,oldsize);
     }
@@ -289,11 +297,11 @@ export default class NDArray {
   clone() {
     let dataArrayType = getDataArrayType(this.datatype);
     let data = new dataArrayType(this._data);
-    return new NDArray(data,{shape:this.shape.slice(),idata:this._idata.slice()});
+    return new NDArray(data,{shape:this._shape.slice(),idata:this._idata.slice()});
   }
 
   private _calcSize() {
-    this.size = this.shape.reduce((prev,cur) => prev*cur, 1);
+    this._size = this._shape.reduce((prev,cur) => prev*cur, 1);
   }
 
   private _alloc(size:number, data?:TypedArray|Array<any>, datatype?:NumberType) {
@@ -307,24 +315,24 @@ export default class NDArray {
   }
 
   _indexToAddress(...indices:number[]) {
-    if(indices.length !== this.shape.length) {
+    if(indices.length !== this._shape.length) {
       throw new Error('Mismatched number of dimensions');
     }
     let addr = 0;
     let acc = 0;
-    for(let i=this.shape.length-1; i>=0; i--) {
-      if(i < this.shape.length-1) {
+    for(let i=this._shape.length-1; i>=0; i--) {
+      if(i < this._shape.length-1) {
         addr += acc * indices[i];
-        acc = acc * this.shape[i];
+        acc = acc * this._shape[i];
       } else {
         if(indices[i] < 0) {
           throw new Error('Invalid index '+indices[i]);
         }
-        if(indices[i] >= this.shape[i]) {
+        if(indices[i] >= this._shape[i]) {
           throw new Error('Index out of bounds '+indices[i]);
         }
         addr += indices[i];
-        acc = this.shape[i];
+        acc = this._shape[i];
       }
     }
     return addr;
@@ -347,33 +355,33 @@ export default class NDArray {
    * @hidden
    */
   _addressToIndex(addr:number) {
-    if(addr >= this.size) {
+    if(addr >= this._size) {
       throw new Error("Data index out of range");
     }
-    return NDArray.mapAddressToIndex(addr, this.shape);
+    return NDArray.mapAddressToIndex(addr, this._shape);
   }
 
   /**
    * Create nested array
    */
   toArray() {
-    if(this.shape.length <= 0) {
+    if(this._shape.length <= 0) {
       throw new Error('Zero shape');
     }
     let aarr = [];
     let step = 1;
 
     // iterate over dimensions from innermost to outermost
-    for(let i=this.shape.length-1; i>=0; i--) {
+    for(let i=this._shape.length-1; i>=0; i--) {
 
       // Step size in i'th dimension
-      let d = this.shape[i];
+      let d = this._shape[i];
       step = step * d;
 
       // number of elements in i'th dimension
-      let nelem = this.size/step;
+      let nelem = this._size/step;
 
-      if(i === this.shape.length-1) {
+      if(i === this._shape.length-1) {
         // innermost dimension, create array from all elements
         for(let j=0; j<nelem; j++) {
           let arr = new Array(step);
@@ -407,7 +415,7 @@ export default class NDArray {
   }
 
   private isSliceIndex(index:(number|Complex|string|undefined|null)[]) {
-    if(index.length < this.shape.length) {
+    if(index.length < this._shape.length) {
       return true;
     }
     for(let i=0; i<index.length; i++) {
@@ -446,7 +454,7 @@ export default class NDArray {
       let {shape:sliceshape,size:slicesize} =
         this.computeSliceShapeAndSize(slice_recipe);
 
-      if(!NDArray.areShapesEqual(sliceshape, valslice.shape)) {
+      if(!NDArray.areShapesEqual(sliceshape, valslice._shape)) {
         throw new Error("Input value has incompatible shape");
       }
 
@@ -492,14 +500,14 @@ export default class NDArray {
    * Swaps matrix rows (this must be a 2D array)
    */
   swaprows(i:number, j:number) : void {
-    if(this.shape.length !== 2) {
+    if(this._shape.length !== 2) {
       throw new Error('This NDArray is not a Matrix (2D)');
     }
     if(i === j) {
       return; // No need to swap
     }
-    let nrows = this.shape[0];
-    let ncols = this.shape[1];
+    let nrows = this._shape[0];
+    let ncols = this._shape[1];
     if(i >= nrows || j >= nrows) {
       throw new Error("Index out of range");
     }
@@ -536,7 +544,7 @@ export default class NDArray {
    * Iterate over each element, invoke a callback with each index and value
    */
   forEach(callback:(value:number|Complex,...index:number[])=>void) {
-    for(let i=0; i<this.size; i++) {
+    for(let i=0; i<this._size; i++) {
       let index = this._addressToIndex(i);
       if(this._idata[i] === undefined) {
         callback(this._data[i], ...index)
@@ -565,7 +573,7 @@ export default class NDArray {
    * Checks if the shape of this ndarray matches the shape of other
    */
   isShapeEqual(other:NDArray) : boolean {
-    return NDArray.areShapesEqual(this.shape, other.shape);
+    return NDArray.areShapesEqual(this._shape, other._shape);
   }
 
   /**
@@ -584,7 +592,7 @@ export default class NDArray {
    */
   flatten() {
     let copy = this.clone();
-    copy.reshape([this.size]);
+    copy.reshape([this._size]);
     return copy;
   }
 
@@ -592,15 +600,15 @@ export default class NDArray {
    * Change between Row-major and Column-major layout
    */
   swapOrder() {
-    if(this.shape.length !== 2) {
+    if(this._shape.length !== 2) {
       throw new Error(
         'swapOrder is not defined for ndarrays other than dim 2');
     }
 
     let clone = this.clone();
 
-    let I = this.shape[0];
-    let J = this.shape[1];
+    let I = this._shape[0];
+    let J = this._shape[1];
 
     this.reshape([J,I]);
 
@@ -612,14 +620,14 @@ export default class NDArray {
   }
 
   private createSliceRecipe(slices:(string|number|undefined|null)[]) {
-    if(slices.length > this.shape.length) {
+    if(slices.length > this._shape.length) {
       throw new Error('Excess number of dimensions specified');
     }
     let slice_recipe:Array<number|number[]> = [];
     // Each slice specifies the index-range in that dimension to return
     for(let i=0; i<slices.length; i++) {
       let slice = slices[i];
-      let max = this.shape[i];
+      let max = this._shape[i];
       if(slice === undefined || slice === null || slice === ':') {
         // gather all indices in this dimension
         slice_recipe.push([0,max]);
@@ -651,8 +659,8 @@ export default class NDArray {
     // then we assume that lower (i.e. inner) dimensions are missing and
     // we take that as wildcard and return all indices in those
     // dimensions
-    for(let i=slice_recipe.length; i<this.shape.length; i++) {
-      slice_recipe.push([0,this.shape[i]]);
+    for(let i=slice_recipe.length; i<this._shape.length; i++) {
+      slice_recipe.push([0,this._shape[i]]);
     }
 
     return slice_recipe;
@@ -692,7 +700,7 @@ export default class NDArray {
   get(...slices:(string|number|undefined|null)[]):NDArray|number|Complex {
 
     let slice_recipe = this.createSliceRecipe(slices);
-    console.assert(slice_recipe.length === this.shape.length);
+    console.assert(slice_recipe.length === this._shape.length);
 
     // Count elements of slice recipe that are ranges
     let nranges = 0;
@@ -763,10 +771,10 @@ export default class NDArray {
   max(axis?:number|number[]) : number|NDArray {
     if(axis !== undefined && axis !== null) {
       if(typeof axis === 'number') {
-        if(axis >= this.shape.length) {
+        if(axis >= this._shape.length) {
           throw new Error('axis is out of range');
         }
-        let maxshape = this.shape.slice();
+        let maxshape = this._shape.slice();
         maxshape.splice(axis,1);
         let maxsize = maxshape.reduce((a,b)=>a*b,1);
         let maxarr = new NDArray({datatype:this.datatype, shape:maxshape});
@@ -869,22 +877,22 @@ export default class NDArray {
       return s;
     }
 
-    if(this.shape.length <= 0) {
+    if(this._shape.length <= 0) {
       return '[]';
     }
     let sarr = [];
     let step = 1;
 
     // iterate over dimensions from innermost to outermost
-    for(let i=this.shape.length-1; i>=0; i--) {
+    for(let i=this._shape.length-1; i>=0; i--) {
 
       // Step size in i'th dimension
-      let d = this.shape[i];
+      let d = this._shape[i];
       step = step * d;
 
       // number of elements in i'th dimension
-      let nelem = this.size/step;
-      if(i === this.shape.length-1) {
+      let nelem = this._size/step;
+      if(i === this._shape.length-1) {
 
         // innermost dimension, create array from all elements
         for(let j=0; j<nelem; j++) {
@@ -928,25 +936,25 @@ export default class NDArray {
     }
     let tagnames = ['table','tr','td'];
 
-    if(this.shape.length <= 0) {
+    if(this._shape.length <= 0) {
       return '<table></table>';
     }
     let sarr = [];
     let step = 1;
 
     // iterate over dimensions from innermost to outermost
-    for(let i=this.shape.length-1; i>=0; i--) {
+    for(let i=this._shape.length-1; i>=0; i--) {
 
       // Step size in i'th dimension
-      let d = this.shape[i];
+      let d = this._shape[i];
       step = step * d;
 
       let tag = tagnames[(i+1)%3];
       let outertag = tagnames[(3+i)%3]; // adding 3 wraps around the mod range
 
       // number of elements in i'th dimension
-      let nelem = this.size/step;
-      if(i === this.shape.length-1) {
+      let nelem = this._size/step;
+      if(i === this._shape.length-1) {
 
         // innermost dimension, create array from all elements
         for(let j=0; j<nelem; j++) {

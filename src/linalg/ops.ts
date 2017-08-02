@@ -31,8 +31,8 @@ import {NDArray,Complex,eye,iszero} from '..'
  * as 1xn matrix
  */
 export function matmul(A:NDArray, B:NDArray) {
-  let shapeA = A.shape;
-  let shapeB = B.shape;
+  let shapeA = A._shape;
+  let shapeB = B._shape;
 
   if(shapeA.length > 2 || shapeB.length > 2) {
     throw new Error('Array shape is > 2D, not suitable for '+
@@ -54,26 +54,26 @@ export function matmul(A:NDArray, B:NDArray) {
 
   // If one of the matrices is flat n-item array clone them into 1xn NDArray
   let mA:NDArray, mB:NDArray;
-  if(A.shape.length === 1) {
+  if(A._shape.length === 1) {
     mA = A.clone();
-    mA.reshape([1,A.shape[0]]);
+    mA.reshape([1,A._shape[0]]);
   } else {
     mA = A;
   }
 
-  if(B.shape.length === 1) {
+  if(B._shape.length === 1) {
     mB = B.clone();
-    mB.reshape([1,B.shape[0]]);
+    mB.reshape([1,B._shape[0]]);
   } else {
     mB = B;
   }
 
-  let result = new NDArray({shape:[mA.shape[0],mB.shape[1]]});
+  let result = new NDArray({shape:[mA._shape[0],mB._shape[1]]});
 
-  for(let i=0; i<mA.shape[0]; i++) {
-    for(let j=0; j<mB.shape[1]; j++) {
+  for(let i=0; i<mA._shape[0]; i++) {
+    for(let j=0; j<mB._shape[1]; j++) {
       let value = 0.0;
-      for(let k=0; k<mA.shape[1]; k++) {
+      for(let k=0; k<mA._shape[1]; k++) {
         value += <number>A.get(i,k)*<number>B.get(k,j); // TODO:Complex
       }
       result.set(i,j,value);
@@ -103,7 +103,7 @@ export function matmul(A:NDArray, B:NDArray) {
  * 
  */
 export function norm(A:NDArray, p?:number|'fro') {
-  if(A.shape.length === 1) { // A is vector
+  if(A._shape.length === 1) { // A is vector
     if(p === undefined) {
       p = 2;
     }
@@ -112,19 +112,19 @@ export function norm(A:NDArray, p?:number|'fro') {
     }
     if(p === Infinity) {
       let max = -Infinity;
-      for(let i=0; i<A.shape[0]; i++) {
+      for(let i=0; i<A._shape[0]; i++) {
         max = Math.max(max, Math.abs(<number>A.get(i))); // TODO:Complex
       }
       return max;
     } else if(p === -Infinity) { // As defined in Matlab docs
       let min = Infinity;
-      for(let i=0; i<A.shape[0]; i++) {
+      for(let i=0; i<A._shape[0]; i++) {
         min = Math.min(min, Math.abs(<number>A.get(i))); // TODO:Complex
       }
       return min;
     } else if(p === 0) {
       let nonzerocount = 0;
-      for(let i=0; i<A.shape[0]; i++) {
+      for(let i=0; i<A._shape[0]; i++) {
         if(A.get(i) !== 0) {
           nonzerocount++;
         }
@@ -133,7 +133,7 @@ export function norm(A:NDArray, p?:number|'fro') {
     } else if(p >= 1) {
 
       let sum = 0;
-      for(let i=0; i<A.shape[0]; i++) {
+      for(let i=0; i<A._shape[0]; i++) {
         sum += Math.pow(Math.abs(<number>A.get(i)), p); // TODO:complex
       }
       return Math.pow(sum, 1/p);
@@ -141,11 +141,11 @@ export function norm(A:NDArray, p?:number|'fro') {
     } else {
       throw new Error('Vector '+p+'-norm is not defined');
     }
-  } else if(A.shape.length === 2) { // A is matrix
+  } else if(A._shape.length === 2) { // A is matrix
     if(p === 'fro') {
       let sum = 0;
-      for(let i=0; i<A.shape[0]; i++) {
-        for(let j=0; j<A.shape[1]; j++) {
+      for(let i=0; i<A._shape[0]; i++) {
+        for(let j=0; j<A._shape[1]; j++) {
           sum += <number>A.get(i,j)*<number>A.get(i,j); // TODO:Complex
         }
       }
@@ -169,14 +169,14 @@ export function lu_custom(A:NDArray) {
   // Outer product LU decomposition with partial pivoting
   // Ref: Algo 3.4.1 Golub and Van Loan
 
-  if(A.shape.length != 2) {
+  if(A._shape.length != 2) {
     throw new Error('Input is not a Matrix (2D)');
   }
-  if(A.shape[0] !== A.shape[1]) {
+  if(A._shape[0] !== A._shape[1]) {
     throw new Error('Input is not a Square Matrix');
   }
 
-  let n = A.shape[0];
+  let n = A._shape[0];
 
   let perm = new NDArray({shape:[n]});
   for(let i=0; i<n; i++) { perm.set(i,i); }
@@ -312,10 +312,10 @@ export function lu_custom(A:NDArray) {
  * @param B RHS (populated with solution x upon return)
  */
 export function solve(A:NDArray, B:NDArray) {
-  if(A.shape[0] !== A.shape[1]) {
+  if(A._shape[0] !== A._shape[1]) {
     throw new Error('A is not square');
   }
-  if(A.shape[1] !== B.shape[0]) {
+  if(A._shape[1] !== B._shape[0]) {
     throw new Error('x num rows not equal to A num colums');
   }
 
@@ -324,18 +324,18 @@ export function solve(A:NDArray, B:NDArray) {
 
   let nrhs;
   let xswapped = false;
-  if(B.shape.length > 1) {
-    nrhs = B.shape[1];
+  if(B._shape.length > 1) {
+    nrhs = B._shape[1];
     xswapped = true;
     B.swapOrder();
   } else {
     nrhs = 1;
   }
 
-  lapack.gesv(A.data, B.data, A.shape[0], nrhs);
+  lapack.gesv(A.data, B.data, A._shape[0], nrhs);
 
   A.swapOrder();
-  if(B.shape.length > 1) {
+  if(B._shape.length > 1) {
     B.swapOrder();
   }
 }
@@ -368,27 +368,27 @@ export function inner(A:NDArray, B:NDArray) {
  */
 export function outer(A:NDArray, B:NDArray) {
 
-  if(A.shape.length === 1) {
-    A.reshape([A.shape[0],1]);
-  } else if(A.shape.length === 2) {
-    if(A.shape[1] !== 1) {
+  if(A._shape.length === 1) {
+    A.reshape([A._shape[0],1]);
+  } else if(A._shape.length === 2) {
+    if(A._shape[1] !== 1) {
       throw new Error('A is not a column vector');
     }
   } else {
     throw new Error('A has invalid dimensions');
   }
 
-  if(B.shape.length === 1) {
-    B.reshape([1,B.shape[0]]);
-  } else if(B.shape.length === 2) {
-    if(B.shape[0] !== 1) {
+  if(B._shape.length === 1) {
+    B.reshape([1,B._shape[0]]);
+  } else if(B._shape.length === 2) {
+    if(B._shape[0] !== 1) {
       throw new Error('B is not a row vector');
     }
   } else {
     throw new Error('B has invalid dimensions');
   }
 
-  if(A.shape[0] !== B.shape[1]) {
+  if(A._shape[0] !== B._shape[1]) {
     throw new Error('Sizes of A and B are not compatible');
   }
 
@@ -399,15 +399,15 @@ export function outer(A:NDArray, B:NDArray) {
  * Perform Cholesky decomposition on given Matrix
  */
 export function cholesky(A:NDArray) {
-  if(A.shape.length !== 2) {
+  if(A._shape.length !== 2) {
     throw new Error('A is not a matrix');
   }
-  if(A.shape[0] !== A.shape[1]) {
+  if(A._shape[0] !== A._shape[1]) {
     throw new Error('Input is not square matrix');
   }
   let copyA = A.clone();
   copyA.swapOrder();
-  lapack.potrf(copyA.data,copyA.shape[0]);
+  lapack.potrf(copyA.data,copyA._shape[0]);
   copyA.swapOrder();
   return tril(copyA);
 }
@@ -424,11 +424,11 @@ export function cholesky(A:NDArray) {
  * @return [NDArray] [U,S,VT] if compute_uv = true, [S] otherwise
  */
 export function svd(A:NDArray, full_matrices=true, compute_uv=true) {
-  if(A.shape.length !== 2) {
+  if(A._shape.length !== 2) {
     throw new Error('A is not a matrix');
   }
   let job:'A'|'N'|'S';
-  let [m,n] = A.shape;
+  let [m,n] = A._shape;
   let minmn = Math.min(m,n);
   if(compute_uv) {
     if(full_matrices) {
@@ -542,15 +542,15 @@ export function lstsq(A:NDArray, B:NDArray, rcond=-1) : lstsq_return {
   let copyA = A.clone();
   let copyB = B.clone(); 
   let is_1d = false;
-  if(copyB.shape.length === 1) {
-    copyB.reshape([copyB.shape[0],1]);
+  if(copyB._shape.length === 1) {
+    copyB.reshape([copyB._shape[0],1]);
     is_1d = true;
   }
   let m:number;
   let n:number;
-  m = copyA.shape[0];
-  n = copyA.shape[1];
-  let nrhs = copyB.shape[1];
+  m = copyA._shape[0];
+  n = copyA._shape[1];
+  let nrhs = copyB._shape[1];
   copyA.swapOrder();
   copyB.swapOrder();
   let S = new NDArray({shape:[Math.min(m,n)]});
@@ -565,7 +565,7 @@ export function lstsq(A:NDArray, B:NDArray, rcond=-1) : lstsq_return {
       residuals = new NDArray({shape:[1]});
       let sum = 0;
       for(i=n; i<m; i++) {
-        let K = copyB.shape[1];
+        let K = copyB._shape[1];
         for(let j=0; j<K; j++) {
           // TODO:Complex
           sum += <number>copyB.get(i,j) * <number>copyB.get(i,j);
@@ -575,7 +575,7 @@ export function lstsq(A:NDArray, B:NDArray, rcond=-1) : lstsq_return {
     } else {
       residuals = new NDArray({shape:[m-<number>n]});
       for(i=n; i<m; i++) {
-        let K = copyB.shape[1];
+        let K = copyB._shape[1];
         let sum = 0;
         for(let j=0; j<K; j++) {
           // TODO:Complex
@@ -602,13 +602,13 @@ export function lstsq(A:NDArray, B:NDArray, rcond=-1) : lstsq_return {
  * @param A Square matrix to compute sign and log-determinant of
  */
 export function slogdet(A:NDArray) {
-  if(A.shape.length !== 2) {
+  if(A._shape.length !== 2) {
     throw new Error('Input is not matrix');
   }
-  if(A.shape[0] !== A.shape[1]) {
+  if(A._shape[0] !== A._shape[1]) {
     throw new Error('Input is not square matrix');
   }
-  let m = A.shape[0];
+  let m = A._shape[0];
   let copyA = A.clone();
   copyA.swapOrder();
   let ipiv = new NDArray({shape:[m],datatype:'i32'});
@@ -656,15 +656,15 @@ export function det(A:NDArray) {
  * @param A Square matrix whose inverse is to be found
  */
 export function inv(A:NDArray) {
-  if(A.shape.length !== 2) {
+  if(A._shape.length !== 2) {
     throw new Error('Input is not matrix');
   }
-  if(A.shape[0] !== A.shape[1]) {
+  if(A._shape[0] !== A._shape[1]) {
     throw new Error('Input is not square matrix');
   }
   let copyA = A.clone();
   copyA.swapOrder();
-  let n = A.shape[0];
+  let n = A._shape[0];
   let I = eye(n);
 
   lapack.gesv(copyA.data, I.data, n, n);
@@ -676,12 +676,12 @@ export function inv(A:NDArray) {
  * Create Lower triangular matrix from given matrix
  */
 export function tril(A:NDArray,k=0) {
-  if(A.shape.length !== 2) {
+  if(A._shape.length !== 2) {
     throw new Error('Input is not matrix');
   }
   let copyA = A.clone();
-  for(let i=0; i<copyA.shape[0]; i++) {
-    for(let j=0; j<copyA.shape[1]; j++) {
+  for(let i=0; i<copyA._shape[0]; i++) {
+    for(let j=0; j<copyA._shape[1]; j++) {
       if(i < j-k) {
         copyA.set(i,j,0);
       }
@@ -694,12 +694,12 @@ export function tril(A:NDArray,k=0) {
  * Return Upper triangular matrix from given matrix
  */
 export function triu(A:NDArray,k=0) {
-  if(A.shape.length !== 2) {
+  if(A._shape.length !== 2) {
     throw new Error('Input is not matrix');
   }
   let copyA = A.clone();
-  for(let i=0; i<copyA.shape[0]; i++) {
-    for(let j=0; j<copyA.shape[1]; j++) {
+  for(let i=0; i<copyA._shape[0]; i++) {
+    for(let j=0; j<copyA._shape[1]; j++) {
       if(i > j-k) {
         copyA.set(i,j,0);
       }
@@ -713,10 +713,10 @@ export function triu(A:NDArray,k=0) {
  */
 export function qr(A:NDArray)
 {
-  if(A.shape.length !== 2) {
+  if(A._shape.length !== 2) {
     throw new Error('Input is not matrix');
   }
-  let [m,n] = A.shape;
+  let [m,n] = A._shape;
   if(m === 0 || n === 0) {
     throw new Error('Empty matrix');
   }
@@ -745,13 +745,13 @@ export function qr(A:NDArray)
  * Compute Eigen values and left, right eigen vectors of given Matrix
  */
 export function eig(A:NDArray) {
-  if(A.shape.length !== 2) {
+  if(A._shape.length !== 2) {
     throw new Error('Input is not matrix');
   }
-  if(A.shape[0] !== A.shape[1]) {
+  if(A._shape[0] !== A._shape[1]) {
     throw new Error('Input is not square matrix');
   }
-  let n = A.shape[0];
+  let n = A._shape[0];
 
   let copyA = A.clone();
   copyA.swapOrder();

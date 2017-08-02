@@ -20,7 +20,7 @@
 */
 
 import {
-  NDArray,Complex,eye,zeros,add,sub,mul,div,range,count
+  NDArray,Complex,eye,zeros,add,sub,mul,div,range,count,empty
 } from '../src'
 
 export default function testOps() {
@@ -53,6 +53,17 @@ export default function testOps() {
         assert.equal(I.get(2,1), 0);
       });
     });
+
+    QUnit.module('empty', () => {
+      QUnit.test('_', assert => {
+        let E = empty(2);
+        assert.deepEqual(E.shape,[2]);
+        E = empty([4,5]);
+        assert.equal(E.size, 20);
+        assert.deepEqual(E.shape,[4,5]);
+      });
+    });
+
     QUnit.module('zeros', () => {
       QUnit.test('Rectangular 2x2', assert => {
         let Z = zeros(2);
