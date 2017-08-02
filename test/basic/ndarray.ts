@@ -20,7 +20,7 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {NDArray, Complex, range} from '../../src'
+import {NDArray, Complex, range, empty} from '../../src'
 
 /// <reference path="qunit/index.d.ts" />
 
@@ -503,6 +503,25 @@ export default function testNDArray() {
         let copyA = A.clone();
         assert.ok(new Complex(3,5).isEqual(<Complex>copyA.get(0)));
         assert.equal(32, copyA.get(1));
+      });
+    });
+
+    QUnit.module('copy', () => {
+      QUnit.test('from', assert => {
+        let A = range(9);
+        A.reshape([3,3]);
+        let B = empty([3,3]);
+        assert.ok(!B.isEqual(A));
+        B.copyfrom(A);
+        assert.ok(B.isEqual(A));
+      });
+      QUnit.test('to', assert => {
+        let A = range(9);
+        A.reshape([3,3]);
+        let B = empty([3,3]);
+        assert.ok(!B.isEqual(A));
+        A.copyto(B);
+        assert.ok(B.isEqual(A));
       });
     });
 

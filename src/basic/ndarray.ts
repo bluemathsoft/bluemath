@@ -842,6 +842,17 @@ export default class NDArray {
     throw new Error('TODO');
   }
 
+  copyfrom(other:NDArray) {
+    if(!this.isShapeEqual(other)) {
+      throw new Error('Shape mismatch');
+    }
+    this._data.set(other.data);
+  }
+
+  copyto(other:NDArray) {
+    other.copyfrom(this);
+  }
+
   /*
   toString(precision=4) {
     return JSON.stringify(this.toArray(), function (key, val) { 
