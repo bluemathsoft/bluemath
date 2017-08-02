@@ -63,7 +63,6 @@ class BezierSurface {
     let Bv = bernstein(this.v_degree, v);
     let denominator = 1;
     let isRational = this.isRational();
-    let dim = this.dimension;
     if(isRational) {
       denominator = 0;
       for(let i=0; i<this.u_degree+1; i++) {
@@ -77,15 +76,15 @@ class BezierSurface {
       for(let j=0; j<this.v_degree+1; j++) {
         if(isRational) {
           tess.set(uidx, vidx,
-            add(tess.slice(uidx,vidx),
+            add(tess.get(uidx,vidx),
                 mul(Bu[i], Bv[j],
                     this.weights.get(i,j),
-                    this.cpoints.slice(i,j))))
+                    this.cpoints.get(i,j))))
         } else {
           tess.set(uidx, vidx,
-            add(tess.slice(uidx,vidx),
+            add(tess.get(uidx,vidx),
                 mul(Bu[i], Bv[j],
-                    this.cpoints.slice(i,j))))
+                    this.cpoints.get(i,j))))
         }
       }
     }
