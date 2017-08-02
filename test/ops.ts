@@ -56,10 +56,9 @@ export default function testOps() {
     QUnit.module('zeros', () => {
       QUnit.test('Rectangular 2x2', assert => {
         let Z = zeros(2);
-        assert.equal(Z.get(0,0), 0);
-        assert.equal(Z.get(0,1), 0);
-        assert.equal(Z.get(1,0), 0);
-        assert.equal(Z.get(1,1), 0);
+        assert.equal(Z.length, 2);
+        assert.equal(Z.get(0), 0);
+        assert.equal(Z.get(1), 0);
       });
       QUnit.test('Rectangular 2x2 ui32', assert => {
         let Z = zeros([2,2], 'ui32');

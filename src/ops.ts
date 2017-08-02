@@ -124,9 +124,9 @@ export function count(arr:NDArray, item:number, tolerance=EPSILON) {
  * Creates NDArray filled with zeros
  * 
  * ```
- * zeros(2) // Creates 2x2 matrix of zeros  
+ * zeros(2) // Creates array of zeros of length 2
  * zeros([2,2,2]) // Create 2x2x2 matrix of zeros
- * zeros(2,'i16') // Creates 2x2 matrix of 16-bit integers filled with zeros
+ * zeros(2,'i16') // Creates array of 2 16-bit integers filled with zeros
  * ```
  */
 export function zeros(arg0:number|number[], datatype?:NumberType) {
@@ -134,7 +134,7 @@ export function zeros(arg0:number|number[], datatype?:NumberType) {
   if(Array.isArray(arg0)) {
     A = new NDArray({shape:arg0, datatype:datatype});
   } else {
-    A = new NDArray({shape:[arg0,arg0], datatype:datatype})
+    A = new NDArray({shape:[arg0], datatype:datatype})
   }
   A.fill(0);
   return A;
