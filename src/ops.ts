@@ -40,7 +40,9 @@ export function torad(angleInDegrees:number) : number {
  * Check if input equals zero within given tolerance
  */
 export function iszero(x:number, tolerance=EPSILON) : boolean {
-  return Math.abs(x) < tolerance;
+  // the 'less-than-equal' comparision is necessary for correct result
+  // when tolerance = 0
+  return Math.abs(x) <= tolerance;
 }
 
 /**
@@ -106,6 +108,16 @@ export function eye(arg0:number|number[], datatype?:NumberType) {
     A.set(i,i,1);
   }
   return A;
+}
+
+export function count(arr:NDArray, item:number, tolerance=EPSILON) {
+  let n = 0;
+  arr.forEach(function (val:number) {
+    if(isequal(item, val, tolerance)) {
+      n++;
+    }
+  });
+  return n;
 }
 
 /**

@@ -19,7 +19,9 @@
 
 */
 
-import {NDArray,Complex,eye,zeros,add,sub,mul,div,range} from '../src'
+import {
+  NDArray,Complex,eye,zeros,add,sub,mul,div,range,count
+} from '../src'
 
 export default function testOps() {
 
@@ -62,6 +64,22 @@ export default function testOps() {
       QUnit.test('Rectangular 2x2 ui32', assert => {
         let Z = zeros([2,2], 'ui32');
         assert.equal(Z.datatype, 'ui32');
+      });
+    });
+
+    QUnit.module('count', () => {
+      QUnit.test('exact', assert => {
+        assert.equal(count(new NDArray([
+          4,5,6,8,8,8,9
+        ]),8,0),3);
+        assert.equal(count(new NDArray([
+          [4,5,6],[8,8,8]
+        ]),8,0),3);
+      });
+      QUnit.test('approximate', assert => {
+        assert.equal(count(new NDArray([
+          3.4,5.7,9,0,8
+        ]),5.7),1);
       });
     });
 

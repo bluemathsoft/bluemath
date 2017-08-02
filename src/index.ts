@@ -26,6 +26,7 @@ import {
   iszero, isequal,
   torad, todeg,
   add, mul, sub, div,
+  count
 } from './ops'
 import * as linalg from './linalg'
 import * as geom from './geom'
@@ -60,6 +61,7 @@ export {
   range,
   iszero, isequal,
   torad, todeg,
-  add, mul, sub, div
+  add, mul, sub, div,
+  count
 }
 
