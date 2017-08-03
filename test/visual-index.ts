@@ -688,7 +688,8 @@ function displaySurfaceComparision(srfsrc, srftgt, titles) {
     z: zdata,
     type : 'scatter3d',
     mode : 'markers',
-    name:titles[0],
+    visible : 'legendonly',
+    name : titles[0]+' Surface',
     scene:'scene1'
   });
 
@@ -712,7 +713,7 @@ function displaySurfaceComparision(srfsrc, srftgt, titles) {
     z: czdata,
     type : 'scatter3d',
     mode : 'markers',
-    name:titles[0],
+    name : titles[0]+' Control Points',
     scene:'scene1'
   });
 
@@ -738,7 +739,8 @@ function displaySurfaceComparision(srfsrc, srftgt, titles) {
     z: zdata,
     type : 'scatter3d',
     mode : 'markers',
-    name:titles[1],
+    visible : 'legendonly',
+    name:titles[1]+' Surface',
     scene:'scene2'
   });
 
@@ -762,10 +764,9 @@ function displaySurfaceComparision(srfsrc, srftgt, titles) {
     z: czdata2,
     type : 'scatter3d',
     mode : 'markers',
-    name:titles[1],
-    scene:'scene2'
+    name : titles[1]+' Control Points',
+    scene : 'scene2'
   });
-
 
   Plotly.newPlot(pelem, traces, SURFACE_COMPARISION_LAYOUT);
 }
@@ -816,8 +817,17 @@ function performAction(actionData) {
     );
     let srfTarget = srfSource.clone();
 
-    srfTarget.insertKnotU(
-      actionData.u_knot_to_insert,actionData.num_insertions_u);
+    if(actionData.u_knot_to_insert !== undefined) {
+      srfTarget.insertKnotU(
+        actionData.u_knot_to_insert,actionData.num_insertions_u);
+    } else if(actionData.v_knot_to_insert !== undefined) {
+      srfTarget.insertKnotV(
+        actionData.v_knot_to_insert,actionData.num_insertions_v);
+    } else {
+      console.assert(false);
+    }
+
+    console.log(srfTarget.toString());
 
     displaySurfaceComparision(srfSource, srfTarget,
       ['Before knot insertion','After knot insertion']);

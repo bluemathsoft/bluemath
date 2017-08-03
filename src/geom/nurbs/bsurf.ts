@@ -192,7 +192,7 @@ class BSplineSurface {
     let k = findSpan(p, this.u_knots.data, un);
 
     // If un already exists in the knot vector, s is its multiplicity
-    let s = count(this.u_knots, un);
+    let s = count(this.u_knots, un, 0);
 
     if(r+s > p) {
       throw new Error('Knot insertion exceeds knot multiplicity beyond degree');
@@ -274,13 +274,102 @@ class BSplineSurface {
     this.v_knots = VQ
   }
 
+  insertKnotV(vn:number, r:number) {
+    let q = this.v_degree;
+
+    // Knot will be inserted between [k,k+1)
+    let k = findSpan(this.v_degree, this.v_knots.data, vn);
+
+    // If v already exists in knot vector, s is its multiplicity
+    let s = count(this.v_knots, vn, 0);
+
+    if(r+s > q) {
+      throw new Error('Knot insertion exceeds knot multiplicity beyond degree');
+    }
+
+    let mU = this.u_knots.length - 1;
+    let nU = mU - this.u_degree - 1;
+    let mV = this.v_knots.length - 1;
+    let nV = mV - this.v_degree - 1;
+
+    let P = this.cpoints;
+    let Q = empty([nU+1, nV+r+1, this.dimension]);
+    let UP = this.u_knots;
+    let UQ = empty([UP.length]);
+    let VP = this.v_knots;
+    let VQ = empty([VP.length+r]);
+
+    // Copy u knot vector
+    UQ.copyfrom(UP);
+
+    // Load v knot vector
+    for(let i=0; i<k+1; i++) {
+      VQ.set(i, VP.get(i));
+    }
+    for(let i=1; i<r+1; i++) {
+      VQ.set(k+i, vn);
+    }
+    for(let i=k+1; i<mV+1; i++) {
+      VQ.set(i+r, VP.get(i));
+    }
+
+    let alpha = empty([q+1,r+1]);
+    let R = empty([q+1, this.dimension]);
+
+    let L = 0;
+
+    // Pre-calculate alphas
+    for(let j=1; j<r+1; j++) {
+      L = k-q+j;
+      for(let i=0; i<q-j-s+1; i++) {
+        alpha.set(i,j,
+          (vn-<number>VP.get(L+i))/(<number>VP.get(i+k+1)-<number>VP.get(L+i))
+        );
+      }
+    }
+
+    for(let col=0; col<nU+1; col++) {
+
+      // Save unaltered control points
+      for(let i=0; i<k-q+1; i++) {
+        Q.set(col, i, P.get(col,i));
+      }
+      for(let i=k-s; i<nV+1; i++) {
+        Q.set(col, i+r, P.get(col,i));
+      }
+
+      // Load auxiliary control points
+      for(let i=0; i<q-s+1; i++) {
+        R.set(i, P.get(col, k-q+i));
+      }
+      for(let j=1; j<r+1; j++) {
+        L = k-q+j;
+        for(let i=0; i<q-j-s+1; i++) {
+          R.set(i, add(
+            mul(alpha.get(i,j), R.get(i+1)),
+            mul((1.0-<number>alpha.get(i,j)), R.get(i))
+          ));
+        }
+        Q.set(col,L, R.get(0));
+        Q.set(col,k+r-j-s, R.get(q-j+s));
+      }
+
+      // Load remaining control points
+      for(let i=L+1; i<k-s; i++) {
+        Q.set(col, i, R.get(i-L));
+      }
+    }
+    this.cpoints = Q;
+    this.v_knots = VQ;
+  }
+
   toString() {
     let s = `BSplineSurf [udeg ${this.u_degree} vdeg ${this.v_degree} \n`+
       `cpoints ${this.cpoints.toString()} \n`+
       `uknots ${this.u_knots.toString()} \n`+
       `vknots ${this.v_knots.toString()} \n`;
     if(this.isRational()) {
-      s += `weights ${this.weights.toString()}`;
+      s += `weights ${this.weights.toString()}\n`;
     }
     s += ']';
     return s;
