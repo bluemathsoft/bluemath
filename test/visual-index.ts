@@ -23,7 +23,7 @@ import {NDArray,geom,range} from '../src'
 let {BSplineCurve,BezierCurve,BezierSurface,BSplineSurface} = geom.nurbs;
 const RESOLUTION = 50;
 
-import {CURVE_DATA} from './nurbs-data'
+import {DATA} from './nurbs-data'
 
 let plots = [];
 
@@ -37,9 +37,9 @@ function generateBSplinePlotlyData3D(bcrv) {
   let tess = bcrv.tessellate(RESOLUTION);
 
   traces.push({
-    x: Array.from(tess.slice(':',0).data),
-    y: Array.from(tess.slice(':',1).data),
-    z: Array.from(tess.slice(':',2).data),
+    x: Array.from(tess.get(':',0).data),
+    y: Array.from(tess.get(':',1).data),
+    z: Array.from(tess.get(':',2).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter3d',
@@ -47,9 +47,9 @@ function generateBSplinePlotlyData3D(bcrv) {
     name:'Curve'
   });
   traces.push({
-    x: Array.from(bcrv.cpoints.slice(':',0).data),
-    y: Array.from(bcrv.cpoints.slice(':',1).data),
-    z: Array.from(bcrv.cpoints.slice(':',2).data),
+    x: Array.from(bcrv.cpoints.get(':',0).data),
+    y: Array.from(bcrv.cpoints.get(':',1).data),
+    z: Array.from(bcrv.cpoints.get(':',2).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter3d',
@@ -60,7 +60,7 @@ function generateBSplinePlotlyData3D(bcrv) {
   for(let i=0; i<Nip.shape[0]; i++) {
     traces.push({
       x : Array.from(u.data),
-      y : Array.from(Nip.slice(i,':').data),
+      y : Array.from(Nip.get(i,':').data),
       xaxis : 'x2',
       yaxis : 'y2',
       type:'scatter',
@@ -97,8 +97,8 @@ function generateBSplinePlotlyData2D(bcrv) {
   tessD.reshape([tdshape[0], tdshape[2]]);
 
   traces.push({
-    x: Array.from(tess.slice(':',0).data),
-    y: Array.from(tess.slice(':',1).data),
+    x: Array.from(tess.get(':',0).data),
+    y: Array.from(tess.get(':',1).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter',
@@ -106,8 +106,8 @@ function generateBSplinePlotlyData2D(bcrv) {
     name:'Curve'
   });
   traces.push({
-    x: Array.from(tessD.slice(':',0).data),
-    y: Array.from(tessD.slice(':',1).data),
+    x: Array.from(tessD.get(':',0).data),
+    y: Array.from(tessD.get(':',1).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter',
@@ -116,8 +116,8 @@ function generateBSplinePlotlyData2D(bcrv) {
     name:'1st Derivative'
   });
   traces.push({
-    x: Array.from(bcrv.cpoints.slice(':',0).data),
-    y: Array.from(bcrv.cpoints.slice(':',1).data),
+    x: Array.from(bcrv.cpoints.get(':',0).data),
+    y: Array.from(bcrv.cpoints.get(':',1).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter',
@@ -127,7 +127,7 @@ function generateBSplinePlotlyData2D(bcrv) {
   for(let i=0; i<Nip.shape[0]; i++) {
     traces.push({
       x : Array.from(u.data),
-      y : Array.from(Nip.slice(i,':').data),
+      y : Array.from(Nip.get(i,':').data),
       xaxis : 'x2',
       yaxis : 'y2',
       type:'scatter',
@@ -163,8 +163,8 @@ function generateBezierPlotlyData(bezcrv : BezierCurve) {
 
   if(bezcrv.dimension === 2) {
     traces.push({
-      x: Array.from(tess.slice(':',0).data),
-      y: Array.from(tess.slice(':',1).data),
+      x: Array.from(tess.get(':',0).data),
+      y: Array.from(tess.get(':',1).data),
       xaxis : 'x1',
       yaxis : 'y1',
       type : 'scatter',
@@ -172,8 +172,8 @@ function generateBezierPlotlyData(bezcrv : BezierCurve) {
       name:'Curve'
     });
     traces.push({
-      x: Array.from(bezcrv.cpoints.slice(':',0).data),
-      y: Array.from(bezcrv.cpoints.slice(':',1).data),
+      x: Array.from(bezcrv.cpoints.get(':',0).data),
+      y: Array.from(bezcrv.cpoints.get(':',1).data),
       xaxis : 'x1',
       yaxis : 'y1',
       type : 'scatter',
@@ -182,17 +182,17 @@ function generateBezierPlotlyData(bezcrv : BezierCurve) {
     });
   } else if(bezcrv.dimension === 3) {
     traces.push({
-      x: Array.from(tess.slice(':',0).data),
-      y: Array.from(tess.slice(':',1).data),
-      z: Array.from(tess.slice(':',2).data),
+      x: Array.from(tess.get(':',0).data),
+      y: Array.from(tess.get(':',1).data),
+      z: Array.from(tess.get(':',2).data),
       type : 'scatter3d',
       mode : 'lines',
       name:'Curve'
     });
     traces.push({
-      x: Array.from(bezcrv.cpoints.slice(':',0).data),
-      y: Array.from(bezcrv.cpoints.slice(':',1).data),
-      z: Array.from(bezcrv.cpoints.slice(':',2).data),
+      x: Array.from(bezcrv.cpoints.get(':',0).data),
+      y: Array.from(bezcrv.cpoints.get(':',1).data),
+      z: Array.from(bezcrv.cpoints.get(':',2).data),
       type : 'scatter3d',
       mode : 'markers',
       name:'Control Points'
@@ -233,6 +233,24 @@ const CURVE_COMPARISION_LAYOUT = {
   xaxis2: { anchor: 'y2' },
   yaxis2: { domain: [0, 0.5-GAP_FRACTION] },
   yaxis: { domain: [0.5+GAP_FRACTION, 1] },
+};
+
+const SURFACE_COMPARISION_LAYOUT = {
+  width : 600,
+  height : 1000,
+  margin : {t:0,b:0,l:10,r:10},
+  scene1 : {
+    domain : {
+      x : [0.0,1.0],
+      y : [0.0,0.5]
+    }
+  },
+  scene2 : {
+    domain : {
+      x : [0.0,1.0],
+      y : [0.5,1.0]
+    }
+  }
 };
 
 function displayBezierCurve(crvData) {
@@ -545,8 +563,8 @@ function displayCurveDecomposition(crvsrc, bezcrvs) {
 
   let tessSource = crvsrc.tessellate(RESOLUTION);
   traces.push({
-    x: Array.from(tessSource.slice(':',0).data),
-    y: Array.from(tessSource.slice(':',1).data),
+    x: Array.from(tessSource.get(':',0).data),
+    y: Array.from(tessSource.get(':',1).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter',
@@ -554,8 +572,8 @@ function displayCurveDecomposition(crvsrc, bezcrvs) {
     name:'Curve'
   });
   traces.push({
-    x: Array.from(crvsrc.cpoints.slice(':',0).data),
-    y: Array.from(crvsrc.cpoints.slice(':',1).data),
+    x: Array.from(crvsrc.cpoints.get(':',0).data),
+    y: Array.from(crvsrc.cpoints.get(':',1).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter',
@@ -566,8 +584,8 @@ function displayCurveDecomposition(crvsrc, bezcrvs) {
   for(let bezcrv of bezcrvs) {
     let tess = bezcrv.tessellate(RESOLUTION);
     traces.push({
-      x: Array.from(tess.slice(':',0).data),
-      y: Array.from(tess.slice(':',1).data),
+      x: Array.from(tess.get(':',0).data),
+      y: Array.from(tess.get(':',1).data),
       xaxis : 'x2',
       yaxis : 'y2',
       type : 'scatter',
@@ -575,8 +593,8 @@ function displayCurveDecomposition(crvsrc, bezcrvs) {
       name:'Curve'
     });
     traces.push({
-      x: Array.from(bezcrv.cpoints.slice(':',0).data),
-      y: Array.from(bezcrv.cpoints.slice(':',1).data),
+      x: Array.from(bezcrv.cpoints.get(':',0).data),
+      y: Array.from(bezcrv.cpoints.get(':',1).data),
       xaxis : 'x2',
       yaxis : 'y2',
       type : 'scatter',
@@ -595,8 +613,8 @@ function displayCurveComparision(crvsrc, crvtgt, titles) {
 
   let tessSource = crvsrc.tessellate(RESOLUTION);
   traces.push({
-    x: Array.from(tessSource.slice(':',0).data),
-    y: Array.from(tessSource.slice(':',1).data),
+    x: Array.from(tessSource.get(':',0).data),
+    y: Array.from(tessSource.get(':',1).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter',
@@ -604,8 +622,8 @@ function displayCurveComparision(crvsrc, crvtgt, titles) {
     name:'Curve'
   });
   traces.push({
-    x: Array.from(crvsrc.cpoints.slice(':',0).data),
-    y: Array.from(crvsrc.cpoints.slice(':',1).data),
+    x: Array.from(crvsrc.cpoints.get(':',0).data),
+    y: Array.from(crvsrc.cpoints.get(':',1).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter',
@@ -615,8 +633,8 @@ function displayCurveComparision(crvsrc, crvtgt, titles) {
 
   let tessTarget = crvtgt.tessellate(RESOLUTION);
   traces.push({
-    x: Array.from(tessTarget.slice(':',0).data),
-    y: Array.from(tessTarget.slice(':',1).data),
+    x: Array.from(tessTarget.get(':',0).data),
+    y: Array.from(tessTarget.get(':',1).data),
     xaxis : 'x2',
     yaxis : 'y2',
     type : 'scatter',
@@ -624,8 +642,8 @@ function displayCurveComparision(crvsrc, crvtgt, titles) {
     name:'Curve'
   });
   traces.push({
-    x: Array.from(crvtgt.cpoints.slice(':',0).data),
-    y: Array.from(crvtgt.cpoints.slice(':',1).data),
+    x: Array.from(crvtgt.cpoints.get(':',0).data),
+    y: Array.from(crvtgt.cpoints.get(':',1).data),
     xaxis : 'x2',
     yaxis : 'y2',
     type : 'scatter',
@@ -644,12 +662,120 @@ function displayCurveComparision(crvsrc, crvtgt, titles) {
   Plotly.newPlot(pelem, traces, CURVE_COMPARISION_LAYOUT);
 }
 
+function displaySurfaceComparision(srfsrc, srftgt, titles) {
+  let pelem = $('#action-viz #mainplot').get(0);
+  let traces = [];
+
+  let tess = srfsrc.tessellatePoints(10);
+
+  let ures = tess.shape[0];
+  let vres = tess.shape[1];
+  let xdata = [];
+  let ydata = [];
+  let zdata = [];
+  for(let i=0; i<ures; i++) {
+    for(let j=0; j<vres; j++) {
+      let pt:NDArray = <NDArray>(tess.get(i,j));
+      xdata.push(<number>pt.get(0));
+      ydata.push(<number>pt.get(1));
+      zdata.push(<number>pt.get(2));
+    }
+  }
+
+  traces.push({
+    x: xdata,
+    y: ydata,
+    z: zdata,
+    type : 'scatter3d',
+    mode : 'markers',
+    name:titles[0],
+    scene:'scene1'
+  });
+
+  let uncp = srfsrc.cpoints.shape[0];
+  let vncp = srfsrc.cpoints.shape[1];
+  let cxdata = [];
+  let cydata = [];
+  let czdata = [];
+  for(let i=0; i<uncp; i++) {
+    for(let j=0; j<vncp; j++) {
+      let cp:NDArray = <NDArray>(srfsrc.cpoints.get(i,j));
+      cxdata.push(<number>cp.get(0));
+      cydata.push(<number>cp.get(1));
+      czdata.push(<number>cp.get(2));
+    }
+  }
+
+  traces.push({
+    x: cxdata,
+    y: cydata,
+    z: czdata,
+    type : 'scatter3d',
+    mode : 'markers',
+    name:titles[0],
+    scene:'scene1'
+  });
+
+  tess = srftgt.tessellatePoints(10);
+
+  ures = tess.shape[0];
+  vres = tess.shape[1];
+  xdata = [];
+  ydata = [];
+  zdata = [];
+  for(let i=0; i<ures; i++) {
+    for(let j=0; j<vres; j++) {
+      let pt:NDArray = <NDArray>(tess.get(i,j));
+      xdata.push(<number>pt.get(0));
+      ydata.push(<number>pt.get(1));
+      zdata.push(<number>pt.get(2));
+    }
+  }
+
+  traces.push({
+    x: xdata,
+    y: ydata,
+    z: zdata,
+    type : 'scatter3d',
+    mode : 'markers',
+    name:titles[1],
+    scene:'scene2'
+  });
+
+  uncp = srftgt.cpoints.shape[0];
+  vncp = srftgt.cpoints.shape[1];
+  let cxdata2 = [];
+  let cydata2 = [];
+  let czdata2 = [];
+  for(let i=0; i<uncp; i++) {
+    for(let j=0; j<vncp; j++) {
+      let cp:NDArray = <NDArray>(srftgt.cpoints.get(i,j));
+      cxdata2.push(<number>cp.get(0));
+      cydata2.push(<number>cp.get(1));
+      czdata2.push(<number>cp.get(2));
+    }
+  }
+
+  traces.push({
+    x: cxdata2,
+    y: cydata2,
+    z: czdata2,
+    type : 'scatter3d',
+    mode : 'markers',
+    name:titles[1],
+    scene:'scene2'
+  });
+
+
+  Plotly.newPlot(pelem, traces, SURFACE_COMPARISION_LAYOUT);
+}
+
 function performAction(actionData) {
   $('#curve-viz').hide();
   $('#action-viz').show();
 
   if(actionData.actiontype === 'insert_knot_curve') {
-    let crvdef = CURVE_DATA_MAP[nameToKey(actionData.input)].object;
+    let crvdef = DATA_MAP[nameToKey(actionData.input)].object;
     let crvSource = new BSplineCurve(crvdef.degree,
         new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
         crvdef.weights ? new NDArray(crvdef.weights) : undefined);
@@ -662,7 +788,7 @@ function performAction(actionData) {
       ['Before Knot Insertion','After Knot Insertion']);
 
   } else if(actionData.actiontype === 'refine_knot_curve') {
-    let crvdef = CURVE_DATA_MAP[nameToKey(actionData.input)].object;
+    let crvdef = DATA_MAP[nameToKey(actionData.input)].object;
     let crvSource;
     crvSource = new BSplineCurve(crvdef.degree,
       new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
@@ -674,12 +800,24 @@ function performAction(actionData) {
       ['Before Knot Refinement','After Knot Refinement']);
 
   } else if(actionData.actiontype === 'decompose_curve') {
-    let crvdef = CURVE_DATA_MAP[nameToKey(actionData.input)].object;
+    let crvdef = DATA_MAP[nameToKey(actionData.input)].object;
     let crvSource = new BSplineCurve(crvdef.degree,
         new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
         crvdef.weights ? new NDArray(crvdef.weights) : undefined);
     let bezcrvs = crvSource.decompose();
     displayCurveDecomposition(crvSource, bezcrvs);
+  } else if(actionData.actiontype === 'insert_knot_surf') {
+    let srfdef = DATA_MAP[nameToKey(actionData.input)].object;
+    let srfSource = new BSplineSurface(
+      srfdef.u_degree, srfdef.v_degree,
+      new NDArray(srfdef.u_knots), new NDArray(srfdef.v_knots),
+      new NDArray(srfdef.cpoints),
+      srfdef.weights ? new NDArray(srfdef.weights) : undefined
+    );
+    let srfTarget = srfSource.clone();
+    // srfTarget.insertKnotU(srfdef.u_knot_to_insert,srfdef.num_insertions_u);
+    displaySurfaceComparision(srfSource, srfTarget,
+      ['Before knot insertion','After knot insertion']);
   }
 }
 
@@ -687,16 +825,16 @@ function nameToKey(name) {
   return name.replace(/[\(\)\s]+/g,'-').toLowerCase();
 }
 
-let CURVE_DATA_MAP = {};
+let DATA_MAP = {};
 
 window.onload = () => {
 
-  for(let i=0; i<CURVE_DATA.length; i++) {
-    let entry = CURVE_DATA[i];
+  for(let i=0; i<DATA.length; i++) {
+    let entry = DATA[i];
     let key = nameToKey(entry.name);
     $('#geom-selection').append(
       $('<option></option>').val(key).html(entry.name));
-    CURVE_DATA_MAP[key] = entry;
+    DATA_MAP[key] = entry;
   }
 
   $('#geom-selection').on('change', ev => {
@@ -716,7 +854,7 @@ window.onload = () => {
   } else {
     curChoice = $('#geom-selection option:selected').val();
   }
-  let data = CURVE_DATA_MAP[curChoice];
+  let data = DATA_MAP[curChoice];
   if(data.type === 'BezierCurve') {
     displayBezierCurve(data.object);
   } else if(data.type === 'BSplineCurve') {

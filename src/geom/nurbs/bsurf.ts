@@ -257,8 +257,8 @@ class BSplineSurface {
         for(let i=0; i<p-j-s+1; i++) {
           R.set(i,
             add(
-              mul(alpha.get(i,j), R.get(i+1)),
-              mul(1.0-<number>alpha.get(i,j)),R.get(i)
+              mul(alpha.get(i,j),R.get(i+1)),
+              mul(1.0-<number>alpha.get(i,j),R.get(i))
             )
           );
         }
@@ -273,6 +273,18 @@ class BSplineSurface {
     }
     this.cpoints = Q
     this.v_knots = VQ
+  }
+
+  toString() {
+    let s = `BSplineSurf [udeg ${this.u_degree} vdeg ${this.v_degree} \n`+
+      `cpoints ${this.cpoints.toString()} \n`+
+      `uknots ${this.u_knots.toString()} \n`+
+      `vknots ${this.v_knots.toString()} \n`;
+    if(this.isRational()) {
+      s += `weights ${this.weights.toString()}`;
+    }
+    s += ']';
+    return s;
   }
 }
 

@@ -19,7 +19,7 @@
 
 */
 
-export const CURVE_DATA = [
+export const DATA = [
   {
     "name": "Quadratic Bezier 0",
     "type": "BezierCurve",
@@ -492,6 +492,53 @@ export const CURVE_DATA = [
     "object" : {
       "actiontype" : "decompose_curve",
       "input" : "Simple BSpline 5"
+    }
+  },
+
+  {
+    "name" : "Insert u Knot in Simple BSurf 1",
+    "type" : "Action",
+    "object" : {
+      "actiontype" : "insert_knot_surf",
+      "input" : "Simple BSurf 1",
+      "u_knot_to_insert" : 0.5,
+      "num_insertions_u" : 1
+    }
+  },
+  {
+    "name" : "Insert v Knot in Simple BSurf 1",
+    "type" : "Action",
+    "object" : {
+      "actiontype" : "insert_knot_surf",
+      "input" : "Simple BSurf 1",
+      "v_knot_to_insert" : 0.5,
+      "num_insertions_v" : 1
+    }
+  },
+  {
+    "name" : "Refine u Knot in Simple BSurf 1",
+    "type" : "Action",
+    "object" : {
+      "actiontype" : "refine_knot_surf",
+      "input" : "Simple BSurf 1",
+      "u_knots_to_add" : [0.3,0.5,0.5]
+    }
+  },
+  {
+    "name" : "Refine v Knot in Simple BSurf 1",
+    "type" : "Action",
+    "object" : {
+      "actiontype" : "refine_knot_surf",
+      "input" : "Simple BSurf 1",
+      "v_knots_to_add" : [0.5,0.9,0.9]
+    }
+  },
+  {
+    "name" : "Decompose Simple BSurf 2",
+    "type" : "Action",
+    "object" : {
+      "actiontype" : "decompose_surf",
+      "input" : "Simple BSurf 2"
     }
   }
 ];
