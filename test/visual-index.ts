@@ -815,7 +815,10 @@ function performAction(actionData) {
       srfdef.weights ? new NDArray(srfdef.weights) : undefined
     );
     let srfTarget = srfSource.clone();
-    // srfTarget.insertKnotU(srfdef.u_knot_to_insert,srfdef.num_insertions_u);
+
+    srfTarget.insertKnotU(
+      actionData.u_knot_to_insert,actionData.num_insertions_u);
+
     displaySurfaceComparision(srfSource, srfTarget,
       ['Before knot insertion','After knot insertion']);
   }

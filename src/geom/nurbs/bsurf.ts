@@ -187,7 +187,6 @@ class BSplineSurface {
 
   insertKnotU(un:number, r:number) {
     let p = this.u_degree;
-    let q = this.v_degree;
 
     // Knot will be inserted between [k, k+1)
     let k = findSpan(p, this.u_knots.data, un);
@@ -195,7 +194,7 @@ class BSplineSurface {
     // If un already exists in the knot vector, s is its multiplicity
     let s = count(this.u_knots, un);
 
-    if(r+s <= p) {
+    if(r+s > p) {
       throw new Error('Knot insertion exceeds knot multiplicity beyond degree');
     }
 
@@ -239,7 +238,7 @@ class BSplineSurface {
       }
     }
 
-    for(let row=0; row<=nV+1; row++) {
+    for(let row=0; row<nV+1; row++) {
       // Save unaltered control points
       for(let i=0; i<k-p+1; i++) {
         Q.set(i, row, P.get(i, row));
