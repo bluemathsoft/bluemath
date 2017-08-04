@@ -827,10 +827,28 @@ function performAction(actionData) {
       console.assert(false);
     }
 
-    console.log(srfTarget.toString());
-
     displaySurfaceComparision(srfSource, srfTarget,
       ['Before knot insertion','After knot insertion']);
+  } else if(actionData.actiontype === 'refine_knot_surf') {
+    let srfdef = DATA_MAP[nameToKey(actionData.input)].object;
+    let srfSource = new BSplineSurface(
+      srfdef.u_degree, srfdef.v_degree,
+      new NDArray(srfdef.u_knots), new NDArray(srfdef.v_knots),
+      new NDArray(srfdef.cpoints),
+      srfdef.weights ? new NDArray(srfdef.weights) : undefined
+    );
+    let srfTarget = srfSource.clone();
+
+    if(actionData.u_knots_to_add !== undefined) {
+      srfTarget.refineKnotsU(actionData.u_knots_to_add);
+    } else if(actionData.v_knots_to_add !== undefined) {
+
+    } else {
+      console.assert(false);
+    }
+    displaySurfaceComparision(srfSource, srfTarget,
+      ['Before knot refinement','After knot refinement']);
+
   }
 }
 

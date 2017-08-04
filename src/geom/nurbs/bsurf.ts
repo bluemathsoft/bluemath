@@ -24,7 +24,7 @@ import {
   findSpan, getBasisFunction, getBasisFunctionDerivatives,
   bernstein                                                                                                     
 } from './helper'
-import {zeros,add,mul,count,empty} from '../..'
+import {zeros,add,mul,count,empty,iszero} from '../..'
 
 class BezierSurface {
 
@@ -361,6 +361,96 @@ class BSplineSurface {
     }
     this.cpoints = Q;
     this.v_knots = VQ;
+  }
+
+  insertKnotUV(un:number, vn:number, ur:number,vr:number) {
+    this.insertKnotU(un, ur);
+    this.insertKnotV(vn, vr);
+  }
+
+  refineKnotsU(uklist:number[]) {
+    let mU = this.u_knots.length-1;
+    let mV = this.v_knots.length-1;
+    let p = this.u_degree;
+    let q = this.v_degree;
+    let nU = mU-p-1;
+    let nV = mV-q-1;
+    let X = uklist;
+    let r = uklist.length-1;
+    let U = this.u_knots;
+    let V = this.v_knots;
+    let Ubar = empty(U.length+r+1);
+    let Vbar = empty(V.length);
+    let P = this.cpoints;
+    let Q = empty([nU+1+r+1, nV+1, this.dimension]);
+
+    let a = findSpan(p, U.data, X[0]);
+    let b = findSpan(p, U.data, X[r]);
+
+    b += 1;
+
+    // Initialize Ubar (for u<a and u>b)
+    for(let j=0; j<a+1; j++) {
+      Ubar.set(j, U.get(j));
+    }
+    for(let j=b+p; j<mU+1; j++) {
+      Ubar.set(j+r+1, U.get(j));
+    }
+
+    // Copy V into Vbar as is
+    Vbar.copyfrom(V);
+
+    // Copy unaltered control points (corresponding to u<a and u>b)
+    for(let row=0; row<nV+1; row++) {
+      for(let k=0; k<a-p+1; k++) {
+        Q.set(k,row, P.get(k,row));
+      }
+      for(let k=b-1; k<nU+1; k++) {
+        Q.set(k+r+1,row, P.get(k,row));
+      }
+    }
+
+    let i = b+p-1;
+    let k = b+p+r;
+
+    for(let j=r; j>=0; j--) {
+      while(X[j] <= U.get(i) && i > a) {
+        Ubar.set(k, U.get(i));
+        for(let row=0; row<nV+1; row++) {
+          Q.set(k-p-1,row,P.get(i-p-1,row));
+        }
+        k -= 1;
+        i -= 1;
+      }
+
+      for(let row=0; row<nV+1; row++) {
+        Q.set(k-p-1,row,Q.get(k-p,row));
+      }
+
+      for(let l=1; l<p+1; l++) {
+        let ind = k-p+l;
+        let alpha = <number>Ubar.get(k+l)-X[j];
+        if(iszero(alpha)) {
+          for(let row=0; row<nV+1; row++) {
+            Q.set(ind-1,row, Q.get(ind,row));
+          }
+        } else {
+          alpha = alpha/(<number>Ubar.get(k+l)-<number>U.get(i-p+l));
+          for(let row=0; row<nV+1; row++) {
+            Q.set(ind-1,row,
+              add(
+                mul(alpha, Q.get(ind-1,row)),
+                mul((1.0-alpha), Q.get(ind,row))
+              )
+            );
+          }
+        }
+      }
+      Ubar.set(k, X[j]);
+      k -= 1;
+    }
+    this.u_knots = Ubar;
+    this.cpoints = Q;
   }
 
   toString() {
