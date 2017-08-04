@@ -542,6 +542,181 @@ class BSplineSurface {
     this.refineKnotsV(vklist);
   }
 
+  decomposeU() {
+    let p = this.u_degree;
+    let q = this.v_degree;
+    let U = this.u_knots;
+    let V = this.v_knots;
+    let mU = U.length-1;
+    let mV = V.length-1;
+    let nV = mV-q-1;
+    let P = this.cpoints;
+    let alphas = empty(p);
+
+    let a = p;
+    let b = p+1;
+
+    let total_bezier = mU-2*p;
+    let Q = empty([total_bezier, p+1, nV+1, this.dimension]);
+    let nb = 0; // Counter of Bezier strips along u
+    for(let i=0; i<p+1; i++) {
+      for(let row=0; row<nV+1; row++) {
+        Q.set(nb,i,row, P.get(i,row));
+      }
+    }
+
+    while(b<mU) {
+      let i = b;
+      while(b<mU && U.get(b+1) === U.get(b)) {
+        b += 1;
+      }
+      let mult = b-i+1;
+      if(mult < p) {
+        let numerator = <number>U.get(b) - <number>U.get(a); // Numerator of alpha
+
+        // Compute and store alphas
+        for(let j=p; j>mult; j--) {
+          alphas.set(j-mult-1, numerator/(<number>U.get(a+j)-<number>U.get(a)));
+        }
+        let r = p-mult; // Insert knot r times
+        for(let j=1; j<r+1; j++) {
+          let save = r-j;
+          let s = mult+j;
+          for(let k=p; k>s-1; k--) {
+            let alpha = <number>alphas.get(k-s);
+            for(let row=0; row<nV+1; row++) {
+              Q.set(nb,k,row,
+                add(
+                  mul(alpha, Q.get(nb,k,row)),
+                  mul((1.0-alpha), Q.get(nb,k-1,row))
+                )
+              );
+            }
+          }
+          if(b<mU) {
+            for(let row=0; row<nV+1; row++) {
+              Q.set(nb+1, save, row, Q.get(nb,p,row));
+            }
+          }
+        }
+      }
+      nb += 1;
+      if(b<mU) { // Initialize for next segment
+        for(let i=p-mult; i<p+1; i++) {
+          for(let row=0; row<nV+1; row++) {
+            Q.set(nb,i,row, P.get(b-p+1,row));
+          }
+        }
+        a = b
+        b += 1
+      }
+    }
+    return Q;
+  }
+
+  decomposeV() {
+    let p = this.u_degree;
+    let q = this.v_degree;
+    let U = this.u_knots;
+    let V = this.v_knots;
+    let mU = U.length-1;
+    let mV = V.length-1;
+    let nU = mU-p-1;
+    let nV = mV-q-1;
+    let P = this.cpoints;
+    let alphas = empty(q);
+
+    let a = q;
+    let b = q+1;
+
+    let total_bezier = mV-2*q;
+    let Q = empty([total_bezier, nU+1, q+1, this.dimension]);
+    let nb = 0; // Counter of Bezier strips along v
+    for(let i=0; i<q+1; i++) {
+      for(let col=0; col<nU+1; col++) {
+        Q.set(nb,col,i, P.get(col,i));
+      }
+    }
+
+    while(b<mV) {
+      let i = b;
+      while(b<mV && V.get(b+1) === V.get(b)) {
+        b += 1;
+      }
+      let mult = b-i+1;
+      if(mult < q) {
+        let numerator = <number>V.get(b) - <number>V.get(a); // Numerator of alpha
+
+        // Compute and store alphas
+        for(let j=q; j>mult; j--) {
+          alphas.set(j-mult-1, numerator/(<number>V.get(a+j)-<number>V.get(a)));
+        }
+        let r = q-mult; // Insert knot r times
+        for(let j=1; j<r+1; j++) {
+          let save = r-j;
+          let s = mult+j;
+          for(let k=q; k>s-1; k--) {
+            let alpha = <number>alphas.get(k-s);
+            for(let col=0; col<nU+1; col++) {
+              Q.set(nb,col,k,
+                add(
+                  mul(alpha, Q.get(nb,col,k)),
+                  mul((1.0-alpha), Q.get(nb,col,k-1))
+                )
+              );
+            }
+          }
+          if(b<mV) {
+            for(let col=0; col<nU+1; col++) {
+              Q.set(nb+1,col,save, Q.get(nb,col,q));
+            }
+          }
+        }
+      }
+      nb += 1;
+      if(b<mV) { // Initialize next segment
+        for(let i=q-mult; i<q+1; i++) {
+          for(let col=0; col<nU+1; col++) {
+            Q.set(nb,col,i, P.get(col,b-p+i));
+          }
+        }
+        a = b;
+        b += 1;
+      }
+    }
+    return Q;
+  }
+
+  decompose() {
+    let Q = this.decomposeU();
+    // Using Q, create Bezier strip surfaces. These are individual BSurf objects
+    // Their u curve will be bezier, but will still be expressed as BSpline
+    // Their v curve will still be bspline
+    let L = 2*(this.u_degree+1);
+    let u_bez_knots = empty(L);
+    for(let i=0; i<this.u_degree+1; i++) {
+      u_bez_knots.set(i, 0);
+      u_bez_knots.set(L-i-1, 1);
+    }
+    let bezStrips = [];
+    for(let numUBez=0; numUBez<Q.length; numUBez++) {
+      let cpoints = <NDArray>Q.get(numUBez);
+      bezStrips.push(new BSplineSurface(
+        this.u_degree,this.v_degree,u_bez_knots,this.v_knots, cpoints));
+    }
+
+    let bezSurfs = [];
+    // Decompose each bezier strip along v
+    for(let bezStrip of bezStrips) {
+      let Q = bezStrip.decomposeV();
+      for(let numUBez=0; numUBez<Q.length; numUBez++) {
+        let cpoints = <NDArray>Q.get(numUBez);
+        bezSurfs.push(new BezierSurface(this.u_degree, this.v_degree, cpoints));
+      }
+    }
+    return bezSurfs;
+  }
+
   toString() {
     let s = `BSplineSurf [udeg ${this.u_degree} vdeg ${this.v_degree} \n`+
       `cpoints ${this.cpoints.toString()} \n`+
