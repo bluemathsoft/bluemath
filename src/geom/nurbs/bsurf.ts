@@ -351,7 +351,7 @@ class BSplineSurface {
           ));
         }
         Q.set(col,L, R.get(0));
-        Q.set(col,k+r-j-s, R.get(q-j+s));
+        Q.set(col,k+r-j-s, R.get(q-j-s));
       }
 
       // Load remaining control points
