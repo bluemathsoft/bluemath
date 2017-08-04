@@ -453,6 +453,95 @@ class BSplineSurface {
     this.cpoints = Q;
   }
 
+  refineKnotsV(vklist:number[]) {
+    let mU = this.u_knots.length-1;
+    let mV = this.v_knots.length-1;
+    let p = this.u_degree;
+    let q = this.v_degree;
+    let nU = mU-p-1;
+    let nV = mV-q-1;
+    let X = vklist;
+    let r = vklist.length-1;
+    let U = this.u_knots;
+    let V = this.v_knots;
+    let Ubar = empty(U.length);
+    let Vbar = empty(V.length+r+1);
+    let P = this.cpoints;
+    let Q = empty([nU+1, nU+1+r+1, this.dimension]);
+
+    let a = findSpan(q, V.data, X[0]);
+    let b = findSpan(q, V.data, X[r]);
+    b += 1;
+
+    // Initialize Vbar (for u<a and u>b)
+    for(let j=0; j<a+1; j++) {
+      Vbar.set(j, V.get(j));
+    }
+    for(let j=b+p; j<mV+1; j++) {
+      Vbar.set(j+r+1, V.get(j));
+    }
+
+    // Copy U into Ubar as-is
+    Ubar.copyfrom(U);
+
+    // Copy unaltered control points (corresponding to u<a and u>b)
+    for(let col=0; col<nU+1; col++) {
+      for(let k=0; k<a-p+1; k++) {
+        Q.set(col,k, P.get(col,k));
+      }
+      for(let k=b-1; k<nV+1; k++) {
+        Q.set(col,k+r+1, P.get(col,k));
+      }
+    }
+
+    let i = b+p-1;
+    let k = b+p+r;
+
+    for(let j=r; j>=0; j--) {
+      while(X[j] <= U.get(i) && i>a) {
+        Vbar.set(k, V.get(i));
+        for(let col=0; col<nU+1; col++) {
+          Q.set(col, k-p-1, P.get(col, i-p-1));
+        }
+        k -= 1;
+        i -= 1;
+      }
+
+      for(let col=0; col<nU+1; col++) {
+        Q.set(col, k-p-1, Q.get(col, k-p));
+      }
+
+      for(let l=1; l<p+1; l++) {
+        let ind = k-p+l;
+        let alpha = <number>Vbar.get(k+l)-X[j];
+        if(iszero(alpha)) {
+          for(let col=0; col<nU+1; col++) {
+            Q.set(col,ind-1, Q.get(col,ind));
+          }
+        } else {
+          alpha = alpha/(<number>Vbar.get(k+l)-<number>V.get(i-p+l));
+          for(let col=0; col<nU+1; col++) {
+            Q.set(col,ind-1,
+              add(
+                mul(alpha, Q.get(col,ind-1)),
+                mul((1.0-alpha), Q.get(col,ind))
+              )
+            );
+          }
+        }
+      }
+      Vbar.set(k,X[j]);
+      k -= 1;
+    }
+    this.v_knots = Vbar;
+    this.cpoints = Q;
+  }
+
+  refineKnotsUV(uklist:number[], vklist:number[]) {
+    this.refineKnotsU(uklist);
+    this.refineKnotsV(vklist);
+  }
+
   toString() {
     let s = `BSplineSurf [udeg ${this.u_degree} vdeg ${this.v_degree} \n`+
       `cpoints ${this.cpoints.toString()} \n`+

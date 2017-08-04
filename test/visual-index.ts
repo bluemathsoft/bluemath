@@ -826,7 +826,6 @@ function performAction(actionData) {
     } else {
       console.assert(false);
     }
-
     displaySurfaceComparision(srfSource, srfTarget,
       ['Before knot insertion','After knot insertion']);
   } else if(actionData.actiontype === 'refine_knot_surf') {
@@ -842,13 +841,12 @@ function performAction(actionData) {
     if(actionData.u_knots_to_add !== undefined) {
       srfTarget.refineKnotsU(actionData.u_knots_to_add);
     } else if(actionData.v_knots_to_add !== undefined) {
-
+      srfTarget.refineKnotsV(actionData.v_knots_to_add);
     } else {
       console.assert(false);
     }
     displaySurfaceComparision(srfSource, srfTarget,
       ['Before knot refinement','After knot refinement']);
-
   }
 }
 
