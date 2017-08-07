@@ -20,8 +20,8 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import {NDArray,range} from '@bluemath/common'
-import {geom} from '../src'
-let {BSplineCurve,BezierCurve,BezierSurface,BSplineSurface} = geom.nurbs;
+import {nurbs} from '../src'
+let {BSplineCurve,BezierCurve,BezierSurface,BSplineSurface} = nurbs;
 const RESOLUTION = 50;
 
 import {DATA} from './nurbs-data'

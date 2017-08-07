@@ -19,7 +19,7 @@
 
  */
 
-import {isequal, NDArray, TypedArray} from '../..'
+import {isequal, NDArray, TypedArray} from '@bluemath/common'
 
 /**
  * @hidden

@@ -1,7 +1,7 @@
 module.exports = {
     entry: "./test/visual-index.ts",
     output: {
-        filename: "./build/bluemath-visual.js",
+        filename: "./build/bluemath-geom-visual.js",
     },
 
     // Enable sourcemaps for debugging webpack's output.

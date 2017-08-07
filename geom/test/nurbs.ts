@@ -20,9 +20,9 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {NDArray, geom} from '../../src'
+import {NDArray} from '@bluemath/common'
 
-let {BSplineCurve} = geom.nurbs;
+import {BSplineCurve} from '../src/nurbs/bcurve'
 
 export default function testNURBS() {
   QUnit.module('NURBS', () => {
