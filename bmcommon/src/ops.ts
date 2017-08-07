@@ -20,7 +20,9 @@
 
 */
 import {EPSILON} from './constants'
-import {NDArray, Complex, NumberType, linalg} from './'
+import {NDArray} from './ndarray'
+import {Complex} from './complex'
+import {NumberType} from '.'
 
 /**
  * Convert angle to degrees
@@ -191,7 +193,7 @@ function _add_ndarrays(a:NDArray, b:NDArray) : NDArray {
   let answer = a.clone();
   a.forEach((value, ...index:number[]) => {
     let aval = value;
-    let bval = b.get(...index);
+    let bval = <number|Complex>b.get(...index);
     let ansval = _add_numbers(aval, bval);
     answer.set(...index, ansval);
   });
@@ -319,7 +321,7 @@ function _mul_two(a:NDArray|number|Complex, b:NDArray|number|Complex)
       });
       return answer;
     } else if(b instanceof NDArray) {
-      return linalg.matmul(a,b);
+      throw new Error("NDArray*NDarray is not supported. Consider linalg.matmul");
     }
   }
   throw new Error('Multiplication of incompatible types');

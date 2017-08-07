@@ -20,9 +20,10 @@
 
 */
 
-import {NumberType,TypedArray,isequal} from '..'
-import {EPSILON} from '../constants'
-import Complex from './complex'
+import {NumberType,TypedArray} from '.'
+import {isequal} from './ops'
+import {EPSILON} from './constants'
+import {Complex} from './complex'
 
 export interface NDArrayOptions {
   shape? : number[];
@@ -161,7 +162,7 @@ function getDataArrayType(typestr?:string) {
  * 
  * [[div]]
  */
-export default class NDArray {
+export class NDArray {
 
   /**
    * Array of array dimensions. First being the outermost dimension.
@@ -177,7 +178,7 @@ export default class NDArray {
   /**
    * Data type of each number, specified by a string code
    */
-  private datatype : NumberType;
+  private _datatype : NumberType;
 
   /**
    * Real part of number elements is stored in this array
@@ -200,15 +201,15 @@ export default class NDArray {
     arg1?:NDArrayOptions)
   {
     this._size = 0;
-    this.datatype = 'f32';
+    this._datatype = 'f32';
     this._idata = [];
     if(Array.isArray(arg0)) {
       this._shape = deduceShape(arg0);
       this._calcSize();
       if(arg1 && arg1.datatype) {
-        this.datatype = arg1.datatype;
+        this._datatype = arg1.datatype;
       }
-      this._alloc(this._size, arg0, this.datatype);
+      this._alloc(this._size, arg0, this._datatype);
       if(arg1 && arg1.idata) {
         this._idata = arg1.idata;
       }
@@ -220,7 +221,7 @@ export default class NDArray {
         this._shape = [arg0.length];
       }
       // in this case options.datatype is ignored if supplied
-      this.datatype = deduceNumberType(arg0);
+      this._datatype = deduceNumberType(arg0);
       this._calcSize();
       if(arg1 && arg1.idata) {
         this._idata = arg1.idata;
@@ -228,12 +229,12 @@ export default class NDArray {
     } else { // must be NDArrayOption
       let options = arg0;
       if(options.datatype) {
-        this.datatype = options.datatype;
+        this._datatype = options.datatype;
       }
       if(options.shape) {
         this._shape = options.shape;
         this._calcSize();
-        this._alloc(this._size, undefined, this.datatype);
+        this._alloc(this._size, undefined, this._datatype);
         if(options.fill) {
           this._data.fill(options.fill);
         }
@@ -271,6 +272,10 @@ export default class NDArray {
     return this._data;
   }
 
+  get datatype() {
+    return this._datatype;
+  }
+
   /**
    * Set new shape for the data stored in the array
    * The old data remains intact. If the total size with the new shape
@@ -284,7 +289,7 @@ export default class NDArray {
     this._calcSize();
     if(this._size > oldsize) {
       // Rellocate a buffer of bigger size, copy old data to it
-      this._alloc(this._size, this._data, this.datatype);
+      this._alloc(this._size, this._data, this._datatype);
       // Fill the excess elements in new buffer with 0
       this._data.fill(0,oldsize);
     }
@@ -295,7 +300,7 @@ export default class NDArray {
    * Create deep copy of the array
    */
   clone() {
-    let dataArrayType = getDataArrayType(this.datatype);
+    let dataArrayType = getDataArrayType(this._datatype);
     let data = new dataArrayType(this._data);
     return new NDArray(data,{shape:this._shape.slice(),idata:this._idata.slice()});
   }
@@ -723,7 +728,7 @@ export default class NDArray {
     let {shape:sliceshape,size:slicesize} =
       this.computeSliceShapeAndSize(slice_recipe);
 
-    let slicearr = new NDArray({shape:sliceshape, datatype:this.datatype});
+    let slicearr = new NDArray({shape:sliceshape, datatype:this._datatype});
 
     for(let i=0; i<slicesize; i++) {
 
@@ -777,12 +782,12 @@ export default class NDArray {
         let maxshape = this._shape.slice();
         maxshape.splice(axis,1);
         let maxsize = maxshape.reduce((a,b)=>a*b,1);
-        let maxarr = new NDArray({datatype:this.datatype, shape:maxshape});
+        let maxarr = new NDArray({datatype:this._datatype, shape:maxshape});
         for(let i=0; i<maxsize; i++) {
           let maxindex = maxarr._addressToIndex(i);
           let sliceindex = maxindex.slice();
           sliceindex.splice(axis,0,':');
-          let slice = this.get(...sliceindex);
+          let slice = <NDArray>this.get(...sliceindex);
           maxarr.set(...maxindex,<number>slice.max());
         }
         return maxarr;
@@ -878,7 +883,7 @@ export default class NDArray {
 
   toString(precision=4) {
 
-    if(['i8','ui8','i16','ui16','i32','ui32'].indexOf(this.datatype) >= 0) {
+    if(['i8','ui8','i16','ui16','i32','ui32'].indexOf(this._datatype) >= 0) {
       precision = 0;
     }
 
@@ -942,7 +947,7 @@ export default class NDArray {
 
   toHTML(precision=4) {
 
-    if(['i8','ui8','i16','ui16','i32','ui32'].indexOf(this.datatype) >= 0) {
+    if(['i8','ui8','i16','ui16','i32','ui32'].indexOf(this._datatype) >= 0) {
       precision = 0;
     }
     let tagnames = ['table','tr','td'];

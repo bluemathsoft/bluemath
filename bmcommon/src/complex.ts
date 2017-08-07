@@ -19,10 +19,10 @@
 
 */
 
-import {EPSILON} from '../constants'
-import {isequal} from '..'
+import {EPSILON} from './constants'
+import {isequal} from './ops'
 
-export default class Complex {
+export class Complex {
   real : number;
   imag : number;
 
