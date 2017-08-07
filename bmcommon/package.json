@@ -1,5 +1,5 @@
 {
-  "name": "bmcommon",
+  "name": "@bluemath/common",
   "version": "0.1.0",
   "description": "BlueMath Common library",
   "main": "lib/index.js",
