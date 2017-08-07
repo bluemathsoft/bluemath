@@ -33,7 +33,7 @@ import {
   EPSILON
 } from '@bluemath/common'
 
-import * as linalg from './linalg'
+import * as linalg from '@bluemath/linalg'
 import * as geom from '@bluemath/geom'
 
 export type NumberType = 'i8'|'ui8'|'i16'|'ui16'|'i32'|'ui32'|'f32'|'f64';

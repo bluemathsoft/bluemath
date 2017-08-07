@@ -20,7 +20,7 @@
 */
 
 import {TypedArray} from '@bluemath/common'
-import * as lapacklite from '../../../ext/lapacklite'
+import * as lapacklite from '../../ext/lapacklite'
 let em = lapacklite.Module;
 
 import {

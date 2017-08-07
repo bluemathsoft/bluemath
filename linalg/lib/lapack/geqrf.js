@@ -20,7 +20,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-var lapacklite = require("../../../ext/lapacklite");
+var lapacklite = require("../../ext/lapacklite");
 var em = lapacklite.Module;
 var common_1 = require("./common");
 /**
