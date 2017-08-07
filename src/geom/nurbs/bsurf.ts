@@ -19,12 +19,11 @@
 
 */
 
-import {NDArray} from '../../basic'
 import {                                                                                                                                                      
-  findSpan, getBasisFunction, getBasisFunctionDerivatives,
+  findSpan, getBasisFunction,
   bernstein                                                                                                     
 } from './helper'
-import {zeros,add,mul,count,empty,iszero} from '../..'
+import {NDArray,zeros,add,mul,count,empty,iszero} from '@bluemath/common'
 
 class BezierSurface {
 
@@ -62,8 +61,7 @@ class BezierSurface {
     let Bu = bernstein(this.u_degree, u);
     let Bv = bernstein(this.v_degree, v);
     let denominator = 1;
-    let isRational = this.isRational();
-    if(isRational) {
+    if(this.weights) { // isRational
       denominator = 0;
       for(let i=0; i<this.u_degree+1; i++) {
         for(let j=0; j<this.v_degree+1; j++) {
@@ -74,7 +72,7 @@ class BezierSurface {
 
     for(let i=0; i<this.u_degree+1; i++) {
       for(let j=0; j<this.v_degree+1; j++) {
-        if(isRational) {
+        if(this.weights) { // isRational
           tess.set(uidx, vidx,
             add(tess.get(uidx,vidx),
                 mul(Bu[i], Bv[j],
@@ -622,7 +620,6 @@ class BSplineSurface {
     let mU = U.length-1;
     let mV = V.length-1;
     let nU = mU-p-1;
-    let nV = mV-q-1;
     let P = this.cpoints;
     let alphas = empty(q);
 
@@ -722,7 +719,7 @@ class BSplineSurface {
       `cpoints ${this.cpoints.toString()} \n`+
       `uknots ${this.u_knots.toString()} \n`+
       `vknots ${this.v_knots.toString()} \n`;
-    if(this.isRational()) {
+    if(this.weights) { // isRational
       s += `weights ${this.weights.toString()}\n`;
     }
     s += ']';

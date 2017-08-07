@@ -24,8 +24,7 @@ import {
   findSpan, getBasisFunction, getBasisFunctionDerivatives,
   bernstein                                                                                                     
 } from './helper'
-import {NDArray} from '../../basic'
-import {zeros} from '../..'
+import {NDArray, zeros} from '@bluemath/common'
 
 class BezierCurve {
   degree : number;
@@ -56,10 +55,9 @@ class BezierCurve {
   evaluate(u:number, tess?:NDArray, tessidx?:number) {
     let B = bernstein(this.degree, u);
     let dim = this.dimension;
-    let isRational = this.isRational();
 
     let denominator;
-    if(isRational) {
+    if(this.weights) { // isRational
       denominator = 0;
       for(let i=0; i<this.degree+1; i++) {
         denominator += B[i] * <number>this.weights.get(i);
@@ -71,7 +69,7 @@ class BezierCurve {
     if(tess !== undefined && tessidx !== undefined) {
 
       for(let k=0; k<this.degree+1; k++) {
-        if(isRational) {
+        if(this.weights) { // isRational
           for(let z=0; z<dim; z++) {
             tess.set(tessidx,z,
               <number>tess.get(tessidx,z) +
@@ -108,7 +106,7 @@ class BezierCurve {
 
   toString() {
     let s = `Bezier(Deg ${this.degree} cpoints ${this.cpoints.toString()})`;
-    if(this.isRational()) {
+    if(this.weights) {
       s += ` weights ${this.weights.toString()}`;
     }
     return s;
@@ -281,7 +279,7 @@ class BSplineCurve {
     Rtmp = new NDArray({shape:[p+1,dim]});
 
     let Wp, Wq;
-    if(isRational) {
+    if(this.weights) { // isRational
       Wp = this.weights;
       Wq = new NDArray({shape:[Wp.shape[0] + r]});
       Wtmp = new NDArray({shape:[p+1]});
@@ -305,7 +303,7 @@ class BSplineCurve {
       for(let j=0; j<dim; j++) {
         Q.set(i,j, P.get(i,j));
       }
-      if(isRational) {
+      if(Wp && Wq) { // isRational
         Wq.set(i, Wp.get(i));
       }
     }
@@ -314,7 +312,7 @@ class BSplineCurve {
       for(let j=0; j<dim; j++) {
         Q.set(i+r,j, P.get(i,j));
       }
-      if(isRational) {
+      if(Wp && Wq) { // isRational
         Wq.set(i+r,Wp.get(i));
       }
     }
@@ -333,7 +331,7 @@ class BSplineCurve {
         for(let z=0; z<dim; z++) {
           Rtmp.set(i,z, alpha * <number>Rtmp.get(i+1,z) + (1-alpha) * <number>Rtmp.get(i,z));
         }
-        if(isRational) {
+        if(Wtmp) { // isRational
           Wtmp.set(i, alpha * <number>Wtmp.get(i+1) + (1-alpha) * <number>Wtmp.get(i));
         }
       }
@@ -341,7 +339,7 @@ class BSplineCurve {
         Q.set(L,z, Rtmp.get(0,z));
         Q.set(k+r-j-s,z, Rtmp.get(p-j-s,z));
       }
-      if(isRational) {
+      if(Wq && Wtmp) { // isRational
         Wq.set(L, Wtmp.get(0));
         Wq.set(k+r-j-s, Wtmp.get(p-j-s));
       }
@@ -351,7 +349,7 @@ class BSplineCurve {
       for(let z=0; z<dim; z++) {
         Q.set(i,z, Rtmp.get(i-L,z));
       }
-      if(isRational) {
+      if(Wq && Wtmp) { // isRational
         Wq.set(i, Wtmp.get(i-L));
       }
     }
@@ -377,10 +375,9 @@ class BSplineCurve {
     let Q = new NDArray({shape:[P.length+r+1, dim]});
     let U = this.knots;
     let Ubar = new NDArray({shape:[U.length+r+1]});
-    let isRational = this.isRational();
 
     let Wp,Wq;
-    if(isRational) {
+    if(this.weights) { // isRational
       Wq = new NDArray({shape:[P.length+r+1]});
       Wp = this.weights;
     }
@@ -394,7 +391,7 @@ class BSplineCurve {
       for(let k=0; k<dim; k++) {
         Q.set(j,k, P.get(j,k));
       }
-      if(isRational) {
+      if(Wp && Wq) { // isRational
         Wq.set(j, Wp.get(j));
       }
     }
@@ -402,7 +399,7 @@ class BSplineCurve {
       for(let k=0; k<dim; k++) {
         Q.set(j+r+1,k, P.get(j,k));
       }
-      if(isRational) {
+      if(Wp && Wq) { // isRational
         Wq.set(j+r+1, Wp.get(j));
       }
     }
@@ -424,7 +421,7 @@ class BSplineCurve {
         for(let z=0; z<dim; z++) {
           Q.set(k-p-1,z, P.get(i-p-1,z));
         }
-        if(isRational) {
+        if(Wp && Wq) { // isRational
           Wq.set(k-p-1, Wp.get(i-p-1));
         }
         Ubar.set(k,U.get(i));
@@ -434,7 +431,7 @@ class BSplineCurve {
       for(let z=0; z<dim; z++) {
         Q.set(k-p-1,z, Q.get(k-p,z));
       }
-      if(isRational) {
+      if(Wp && Wq) { // isRational
         Wq.set(k-p-1, Wq.get(k-p));
       }
 
@@ -445,7 +442,7 @@ class BSplineCurve {
           for(let z=0; z<dim; z++) {
             Q.set(ind-1,z, Q.get(ind,z));
           }
-          if(isRational) {
+          if(Wp && Wq) { // isRational
             Wq.set(ind-1, Wq.get(ind));
           }
         } else {
@@ -455,7 +452,7 @@ class BSplineCurve {
               alpha * <number>Q.get(ind-1,z) +
               (1.0-alpha) * <number>Q.get(ind,z));
           }
-          if(isRational) {
+          if(Wq) { // isRational
             Wq.set(ind-1,
               alpha*<number>Wq.get(ind-1) +
               (1.0-alpha)*<number>Wq.get(ind));
@@ -467,7 +464,7 @@ class BSplineCurve {
     }
     this.knots = Ubar;
     this.cpoints = Q;
-    if(isRational) {
+    if(this.weights) { // isRational
       this.weights = Wq;
     }
   }
@@ -550,7 +547,7 @@ class BSplineCurve {
 
     let bezlist = [];
     for(let i=0; i<Q.length; i++) {
-      bezlist.push(new BezierCurve(p, Q.get(i).reshape([p+1,dim])));
+      bezlist.push(new BezierCurve(p, (<NDArray>Q.get(i)).reshape([p+1,dim])));
     }
     return bezlist;
   }
@@ -667,7 +664,7 @@ class BSplineCurve {
   toString() {
     let s = `BSpline(Deg ${this.degree} cpoints ${this.cpoints.toString()})`;
     s += ` knots ${this.knots.toString}`;
-    if(this.isRational()) {
+    if(this.weights) { // isRational
       s += ` weights ${this.weights.toString()}`;
     }
     return s;

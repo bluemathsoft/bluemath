@@ -20,7 +20,7 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {Vector2, NDArray, geom} from '../../src'
+import {NDArray, geom} from '../../src'
 
 let {BSplineCurve} = geom.nurbs;
 
@@ -36,9 +36,10 @@ export default function testNURBS() {
         assert.equal(bcrv.knots.shape[0], 4);
       });
       QUnit.skip('evaluate at midpoint', assert => {
-        let bcrv = new BSplineCurve(1,
-          new NDArray([[0,0], [10,10]]), new NDArray([0,0,1,1]));
+        // let bcrv = new BSplineCurve(1,
+          // new NDArray([[0,0], [10,10]]), new NDArray([0,0,1,1]));
         // assert.ok(bcrv.evaluate(0.5).isEqual(new Vector2(5,5)));
+        assert.ok(false);
       });
     });
   });

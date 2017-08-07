@@ -19,7 +19,8 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import {NDArray,geom,range} from '../src'
+import {NDArray,range} from '@bluemath/common'
+import {geom} from '../src'
 let {BSplineCurve,BezierCurve,BezierSurface,BSplineSurface} = geom.nurbs;
 const RESOLUTION = 50;
 
