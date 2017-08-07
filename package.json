@@ -1,6 +1,6 @@
 {
   "name": "bluemath",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "description": "Math kernel in Javascript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -12,7 +12,7 @@
     "build-deploy-docs": "rm -rf docs/* ../bluemathsoft.github.io/docs/* && typedoc --excludeNotExported --excludePrivate --out ./docs --theme doctheme/ --mode file --readme src/index.md --gaID \"UA-99857402-1\" && cp -r docs/* ../bluemathsoft.github.io/docs/",
     "build-docs": "typedoc --excludeNotExported --excludePrivate --out ./docs --theme doctheme/ --mode file --readme src/index.md",
     "deploy-tests": "(cp build/bluemath-test.js ../bluemathsoft.github.io/tests/)",
-    "prepublish": "(cd src; tsc -p .)"
+    "prepare": "(cd src; tsc -p .)"
   },
   "keywords": [
     "Math",
@@ -23,21 +23,21 @@
   "author": "Jayesh Salvi",
   "license": "AGPL-3.0",
   "devDependencies": {
-    "@types/jquery": "^3.2.9",
+    "@types/jquery": "^3.2.11",
     "@types/qunit": "^2.0.31",
-    "awesome-typescript-loader": "^3.2.1",
-    "blueplot": "^0.1.0",
+    "awesome-typescript-loader": "^3.2.2",
+    "blueplot": "^0.1.1",
     "source-map-loader": "^0.2.1",
-    "typedoc": "^0.7.1",
-    "typescript": "^2.3.2",
-    "webpack": "^3.0.0"
+    "typedoc": "^0.8.0",
+    "typescript": "^2.4.2",
+    "webpack": "^3.4.1"
   },
   "dependencies": {
     "@bluemath/common": "^0.1.0",
     "@bluemath/geom": "^0.1.2",
-    "@bluemath/linalg": "^0.1.0",
+    "@bluemath/linalg": "^0.1.1",
     "set-blocking": "^2.0.0",
-    "string-width": "^2.1.0",
+    "string-width": "^2.1.1",
     "yargs-parser": "^7.0.0"
   }
 }
