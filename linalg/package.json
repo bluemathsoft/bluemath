@@ -1,0 +1,42 @@
+{
+  "name": "@bluemath/linalg",
+  "version": "0.1.0",
+  "description": "Bluemath Linear Algebra library",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build-test": "webpack --config webpack.test.config.js",
+    "watch-test": "webpack --watch --config webpack.test.config.js",
+
+    "prepublish": "(cd src; tsc -p .)"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bluemathsoft/bluemath.git"
+  },
+  "keywords": [
+    "Math",
+    "Linear Algebra",
+    "LAPACK",
+    "WebAssembly",
+    "Emscripten"
+  ],
+  "author": "Jayesh Salvi",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "@types/jquery": "^3.2.11",
+    "@types/qunit": "^2.0.31",
+    "awesome-typescript-loader": "^3.2.2",
+    "source-map-loader": "^0.2.1",
+    "typedoc": "^0.8.0",
+    "typescript": "^2.4.2",
+    "webpack": "^3.4.1"
+  },
+  "bugs": {
+    "url": "https://github.com/bluemathsoft/bluemath/issues"
+  },
+  "homepage": "https://github.com/bluemathsoft/bluemath#readme",
+  "dependencies": {
+    "@bluemath/common": "^0.1.0"
+  }
+}
