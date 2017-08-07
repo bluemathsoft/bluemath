@@ -20,7 +20,6 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import testGeom from './geom'
 import testLinalg from './linalg'
 
 import * as bluemath from '../src'
@@ -39,6 +38,5 @@ window.onload = () => {
   qunitFixtureDiv.setAttribute('id', 'qunit-fixture');
   document.body.appendChild(qunitFixtureDiv);
 
-  testGeom();
   testLinalg();
 }

@@ -7,10 +7,8 @@
   "scripts": {
     "build-test": "webpack --config webpack.test.config.js",
     "watch-test": "webpack --watch --config webpack.test.config.js",
-
     "build-perf": "webpack --config webpack.perf.config.js",
     "watch-perf": "webpack --watch --config webpack.perf.config.js",
-
     "build-deploy-docs": "rm -rf docs/* ../bluemathsoft.github.io/docs/* && typedoc --excludeNotExported --excludePrivate --out ./docs --theme doctheme/ --mode file --readme src/index.md --gaID \"UA-99857402-1\" && cp -r docs/* ../bluemathsoft.github.io/docs/",
     "build-docs": "typedoc --excludeNotExported --excludePrivate --out ./docs --theme doctheme/ --mode file --readme src/index.md",
     "deploy-tests": "(cp build/bluemath-test.js ../bluemathsoft.github.io/tests/)",
@@ -36,6 +34,7 @@
   },
   "dependencies": {
     "@bluemath/common": "^0.1.0",
+    "@bluemath/geom": "^0.1.2",
     "set-blocking": "^2.0.0",
     "string-width": "^2.1.0",
     "yargs-parser": "^7.0.0"
