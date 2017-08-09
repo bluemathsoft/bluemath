@@ -4,11 +4,12 @@ export type TypedArray = Int8Array | Uint8Array | Int16Array |
     Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array;
 
 import {
-  eye, zeros, empty,
+  eye, zeros, empty, arr,
   range,
   iszero, isequal,
   torad, todeg,
   add, mul, sub, div,
+  dot, length,
   count
 } from './ops'
 import {EPSILON} from './constants'
@@ -25,10 +26,11 @@ export {
   Complex,
 
   // Ops
-  eye, zeros, empty,
+  eye, zeros, empty, arr,
   range,
   iszero, isequal,
   torad, todeg,
   add, mul, sub, div,
+  dot, length,
   count
 }
