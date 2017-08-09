@@ -58,6 +58,20 @@ export declare function zeros(arg0: number | number[], datatype?: NumberType): N
  */
 export declare function empty(arg0: number | number[], datatype?: NumberType): NDArray;
 /**
+ * Shorthand method to create new NDArray object from Javascript Array
+ */
+export declare function arr(arg: any[]): NDArray;
+/**
+ * Compute dot product of A and B, where both of them are 1D vectors of
+ * same length
+ */
+export declare function dot(A: NDArray, B: NDArray): number;
+/**
+ * Computes length or magnitude of A, where A is a 1D vector
+ * @param A C
+ */
+export declare function length(A: NDArray): number;
+/**
  * Add all arguments in accordance to their types
  * The arguments could be NDArray or numbers (real/complex).
  * If some of them are NDArray's, then their shapes have to match,

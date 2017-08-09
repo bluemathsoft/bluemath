@@ -221,3 +221,9 @@ export declare class NDArray {
     toString(precision?: number): any;
     toHTML(precision?: number): any;
 }
+export declare class Vec2 extends NDArray {
+    constructor(x: number, y: number);
+}
+export declare class Vec3 extends NDArray {
+    constructor(x: number, y: number, z: number);
+}

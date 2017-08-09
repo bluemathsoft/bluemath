@@ -19,6 +19,16 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 var ops_1 = require("./ops");
 var constants_1 = require("./constants");
@@ -953,3 +963,19 @@ var NDArray = (function () {
     return NDArray;
 }());
 exports.NDArray = NDArray;
+var Vec2 = (function (_super) {
+    __extends(Vec2, _super);
+    function Vec2(x, y) {
+        return _super.call(this, [x, y]) || this;
+    }
+    return Vec2;
+}(NDArray));
+exports.Vec2 = Vec2;
+var Vec3 = (function (_super) {
+    __extends(Vec3, _super);
+    function Vec3(x, y, z) {
+        return _super.call(this, [x, y, z]) || this;
+    }
+    return Vec3;
+}(NDArray));
+exports.Vec3 = Vec3;

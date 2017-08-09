@@ -163,6 +163,45 @@ function empty(arg0, datatype) {
 }
 exports.empty = empty;
 /**
+ * Shorthand method to create new NDArray object from Javascript Array
+ */
+function arr(arg) {
+    return new ndarray_1.NDArray(arg);
+}
+exports.arr = arr;
+/**
+ * Compute dot product of A and B, where both of them are 1D vectors of
+ * same length
+ */
+function dot(A, B) {
+    if (A.shape.length !== 1) {
+        throw new Error('A is not a 1D array');
+    }
+    if (B.shape.length !== 1) {
+        throw new Error('B is not a 1D array');
+    }
+    if (A.data.length !== B.data.length) {
+        throw new Error("A and B are of different length");
+    }
+    var dot = 0.0;
+    for (var i = 0; i < A.data.length; i++) {
+        dot += A.data[i] * B.data[i];
+    }
+    return dot;
+}
+exports.dot = dot;
+/**
+ * Computes length or magnitude of A, where A is a 1D vector
+ * @param A C
+ */
+function length(A) {
+    if (A.shape.length !== 1) {
+        throw new Error('A is not a 1D array');
+    }
+    return Math.sqrt(dot(A, A));
+}
+exports.length = length;
+/**
  * @hidden
  */
 function _add_numbers(a, b) {
