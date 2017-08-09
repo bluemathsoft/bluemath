@@ -349,6 +349,12 @@ export function solve(A:NDArray, B:NDArray) {
  * @param B 1D Vector
  */
 export function inner(A:NDArray, B:NDArray) {
+  if(A.shape.length !== 1) {
+    throw new Error('A is not a 1D array');
+  }
+  if(B.shape.length !== 1) {
+    throw new Error('B is not a 1D array');
+  }
   if(A.data.length > B.data.length) {
     throw new Error("A.data.length should be <= B.data.length");
   }
