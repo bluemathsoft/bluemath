@@ -20,7 +20,7 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {NDArray} from '../src/ndarray'
+import {NDArray,Vec2,Vec3} from '../src/ndarray'
 import {Complex} from '../src/complex'
 import {range,empty} from '../src/ops'
 
@@ -662,5 +662,17 @@ export default function testNDArray() {
       });
     });
 
+  });
+  QUnit.module('Vec2', () => {
+    QUnit.test('_', assert => {
+      let va = new Vec2(3,3);
+      assert.deepEqual(va.shape, [2]);
+    });
+  });
+  QUnit.module('Vec3', () => {
+    QUnit.test('_', assert => {
+      let va = new Vec3(3,3,7);
+      assert.deepEqual(va.shape, [3]);
+    });
   });
 }

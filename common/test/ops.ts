@@ -21,7 +21,9 @@
 
 import {NDArray} from '../src/ndarray'
 import {Complex} from '../src/complex'
-import {eye,zeros,add,sub,mul,div,range,count,empty} from '../src/ops'
+import {
+  arr,eye,zeros,add,sub,mul,div,range,count,empty,dot,length,isequal
+} from '../src/ops'
 
 export default function testOps() {
 
@@ -61,6 +63,26 @@ export default function testOps() {
         E = empty([4,5]);
         assert.equal(E.size, 20);
         assert.deepEqual(E.shape,[4,5]);
+      });
+    });
+
+    QUnit.module('arr', () => {
+      QUnit.test('_', assert => {
+        let A = arr([[4,5],[8,9]]);
+        assert.deepEqual(A.shape,[2,2]);
+      });
+    });
+    QUnit.module('dot', () => {
+      QUnit.test('_', assert => {
+        let A = arr([4,5,6]);
+        let B = arr([2,2,2]);
+        assert.equal(dot(A,B), 30);
+      });
+    });
+    QUnit.module('length', () => {
+      QUnit.test('_', assert => {
+        let B = arr([2,2,2]);
+        assert.ok(isequal(length(B),Math.sqrt(12)));
       });
     });
 

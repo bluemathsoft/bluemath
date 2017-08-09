@@ -157,6 +157,45 @@ export function empty(arg0:number|number[], datatype?:NumberType) {
 }
 
 /**
+ * Shorthand method to create new NDArray object from Javascript Array
+ */
+export function arr(arg:any[]) : NDArray {
+  return new NDArray(arg);
+}
+
+/**
+ * Compute dot product of A and B, where both of them are 1D vectors of
+ * same length
+ */
+export function dot(A:NDArray, B:NDArray) : number {
+  if(A.shape.length !== 1) {
+    throw new Error('A is not a 1D array');
+  }
+  if(B.shape.length !== 1) {
+    throw new Error('B is not a 1D array');
+  }
+  if(A.data.length !== B.data.length) {
+    throw new Error("A and B are of different length");
+  }
+  let dot = 0.0;
+  for(let i=0; i<A.data.length; i++) {
+    dot += A.data[i] * B.data[i];
+  }
+  return dot;
+}
+
+/**
+ * Computes length or magnitude of A, where A is a 1D vector
+ * @param A C
+ */
+export function length(A:NDArray) {
+  if(A.shape.length !== 1) {
+    throw new Error('A is not a 1D array');
+  }
+  return Math.sqrt(dot(A,A));
+}
+
+/**
  * @hidden
  */
 function _add_numbers(a:number|Complex, b:number|Complex) {

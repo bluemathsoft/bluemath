@@ -1006,3 +1006,15 @@ export class NDArray {
     //return '<table>'+sarr[0]+'</table>';
   }
 }
+
+export class Vec2 extends NDArray {
+  constructor(x:number, y:number) {
+    super([x,y]);
+  }
+}
+
+export class Vec3 extends NDArray {
+  constructor(x:number, y:number, z:number) {
+    super([x,y,z]);
+  }
+}
