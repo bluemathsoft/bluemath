@@ -19,7 +19,7 @@
 
 */
 
-import {NDArray} from '@bluemath/common'
+import {NDArray,div,arr,length} from '@bluemath/common'
 import {Vertex} from './vertex'
 import {Face} from './face'
 import {HalfEdge} from './halfedge'
@@ -114,9 +114,9 @@ export class Topology {
         dcx = 0.8 * WIDTH;
         dcy = HEIGHT - 0.8 * HEIGHT;
       }
-      let vec = [dcx-ocx,dcy-ocy];
-      let veclen = Math.sqrt(vec[0]*vec[0]+vec[1]*vec[1]);
-      let dir = [vec[0]/veclen,vec[1]/veclen];
+      let vec = arr([dcx-ocx,dcy-ocy]);
+      let veclen = length(vec);
+      let dir = (<NDArray>div(vec,veclen)).data;
       let ortho = [-dir[1],dir[0]];
       ocx += ortho[0] * HE_OFFSET_LAT + dir[0] * HE_OFFSET_LON;
       ocy += ortho[1] * HE_OFFSET_LAT + dir[1] * HE_OFFSET_LON;
