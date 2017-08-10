@@ -632,25 +632,34 @@ function displayCurveComparision(crvsrc, crvtgt, titles) {
     name:'Control Points'
   });
 
-  let tessTarget = crvtgt.tessellate(RESOLUTION);
-  traces.push({
-    x: Array.from(tessTarget.get(':',0).data),
-    y: Array.from(tessTarget.get(':',1).data),
-    xaxis : 'x2',
-    yaxis : 'y2',
-    type : 'scatter',
-    mode : 'lines',
-    name:'Curve'
-  });
-  traces.push({
-    x: Array.from(crvtgt.cpoints.get(':',0).data),
-    y: Array.from(crvtgt.cpoints.get(':',1).data),
-    xaxis : 'x2',
-    yaxis : 'y2',
-    type : 'scatter',
-    mode : 'markers',
-    name:'Control Points'
-  });
+  let tgt;
+  if(Array.isArray(crvtgt)) {
+    tgt = crvtgt;
+  } else {
+    tgt = [crvtgt];
+  }
+
+  for(let crv of tgt) {
+    let tessTarget = crv.tessellate(RESOLUTION);
+    traces.push({
+      x: Array.from(tessTarget.get(':',0).data),
+      y: Array.from(tessTarget.get(':',1).data),
+      xaxis : 'x2',
+      yaxis : 'y2',
+      type : 'scatter',
+      mode : 'lines',
+      name:'Curve'
+    });
+    traces.push({
+      x: Array.from(crv.cpoints.get(':',0).data),
+      y: Array.from(crv.cpoints.get(':',1).data),
+      xaxis : 'x2',
+      yaxis : 'y2',
+      type : 'scatter',
+      mode : 'markers',
+      name:'Control Points'
+    });
+  }
 
   if(titles) {
     CURVE_COMPARISION_LAYOUT.yaxis.title = titles[0];
@@ -776,7 +785,20 @@ function performAction(actionData) {
   $('#curve-viz').hide();
   $('#action-viz').show();
 
-  if(actionData.actiontype === 'insert_knot_curve') {
+  if(actionData.actiontype === 'split_bezier') {
+    let crvdef = DATA_MAP[nameToKey(actionData.input)].object;
+    let crvSource = new BezierCurve(crvdef.degree,
+      new NDArray(crvdef.cpoints),
+      crvdef.weights ? new NDArray(crvdef.weights):undefined);
+    let splitCurves = [];
+    for(let interval of actionData.split_intervals) {
+      let crv = crvSource.clone();
+      crv.reparam(interval[0], interval[1]);
+      splitCurves.push(crv);
+    }
+    displayCurveComparision(crvSource, splitCurves,
+      ['Original Bezier','Split Bezier curves']);
+  } else if(actionData.actiontype === 'insert_knot_curve') {
     let crvdef = DATA_MAP[nameToKey(actionData.input)].object;
     let crvSource = new BSplineCurve(crvdef.degree,
         new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),

@@ -458,6 +458,24 @@ export const DATA = [
   },
 
   {
+    "name" : "Split Bezier 0",
+    "type" : "Action",
+    "object" : {
+      "actiontype" : "split_bezier",
+      "input" : "Cubic Bezier 0",
+      "split_intervals" : [[0,0.4],[0.4,1]]
+    }
+  },
+  {
+    "name" : "Split Bezier 1",
+    "type" : "Action",
+    "object" : {
+      "actiontype" : "split_bezier",
+      "input" : "Cubic Bezier 1",
+      "split_intervals" : [[0,0.4],[0.4,1]]
+    }
+  },
+  {
     "name" : "Insert Knot in Simple BSpline 5",
     "type" : "Action",
     "object" : {

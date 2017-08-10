@@ -22,9 +22,9 @@
 
 import {                                                                                                                                                      
   findSpan, getBasisFunction, getBasisFunctionDerivatives,
-  bernstein                                                                                                     
+  bernstein, blossom
 } from './helper'
-import {NDArray, zeros} from '@bluemath/common'
+import {NDArray, zeros, AABB} from '@bluemath/common'
 
 class BezierCurve {
   degree : number;
@@ -33,7 +33,9 @@ class BezierCurve {
 
   constructor(degree:number, cpoints:NDArray, weights?:NDArray) {
     this.degree = degree;
-    console.assert(cpoints.is2D());
+    if(!cpoints.is2D()) {
+      throw new Error("cpoints is not an array of points");
+    }
     this.cpoints = cpoints;
     if(weights) {
       console.assert(weights.length === degree+1);
@@ -102,6 +104,44 @@ class BezierCurve {
       this.evaluate(i/resolution, tess, i);
     }
     return tess;
+  }
+
+  reparam(ua:number, ub:number) {
+    let n = this.degree;
+    let b = new NDArray({shape:this.cpoints.shape});
+    for(let i=0; i<n+1; i++) {
+      let ts = [];
+      for(let k=0; k<n-i; k++) {
+        ts.push(ua);
+      }
+      for(let k=0; k<i; k++) {
+        ts.push(ub);
+      }
+      b.set(i, blossom(this.cpoints, n, ts));
+    }
+    this.cpoints = b;
+  }
+
+  aabb() : AABB {
+    let min = new NDArray({shape:[this.dimension]});
+    let max = new NDArray({shape:[this.dimension]});
+    for(let i=0; i<this.cpoints.length; i++) {
+      let cpoint = <NDArray>this.cpoints.get(i);
+      for(let j=0; j<this.dimension; j++) {
+        let v = <number>cpoint.get(j);
+        min.set(j, Math.min(<number>min.get(j), v));
+        max.set(j, Math.max(<number>max.get(j), v));
+      }
+    }
+    return { min, max };
+  }
+
+  clone() {
+    return new BezierCurve(
+      this.degree,
+      this.cpoints.clone(),
+      this.weights ? this.weights.clone() : undefined
+    );
   }
 
   toString() {
@@ -659,6 +699,20 @@ class BSplineCurve {
       this.cpoints.clone(),
       this.knots.clone(),
       this.weights ? this.weights.clone() : undefined);
+  }
+
+  aabb() : AABB {
+    let min = new NDArray({shape:[this.dimension]});
+    let max = new NDArray({shape:[this.dimension]});
+    for(let i=0; i<this.cpoints.length; i++) {
+      let cpoint = <NDArray>this.cpoints.get(i);
+      for(let j=0; j<this.dimension; j++) {
+        let v = <number>cpoint.get(j);
+        min.set(j, Math.min(<number>min.get(j), v));
+        max.set(j, Math.max(<number>max.get(j), v));
+      }
+    }
+    return { min, max };
   }
 
   toString() {

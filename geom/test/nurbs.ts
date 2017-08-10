@@ -20,12 +20,20 @@ You should have received a copy of the GNU Affero General Public License
 along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
-import {NDArray} from '@bluemath/common'
+import {NDArray,arr} from '@bluemath/common'
 
-import {BSplineCurve} from '../src/nurbs/bcurve'
+import {BSplineCurve, BezierCurve} from '../src/nurbs/bcurve'
 
 export default function testNURBS() {
   QUnit.module('NURBS', () => {
+    QUnit.module('Bezier2D', () => {
+      QUnit.test('construction', assert => {
+        let bezcrv = new BezierCurve(3,arr([
+          [0,0],[1,3],[2,-3],[3,1]
+        ]));
+        assert.ok(!!bezcrv);
+      });
+    });
     QUnit.module('BSplineCurve2D', () => {
       QUnit.test('construction', assert => {
         let bcrv = new BSplineCurve(1,

@@ -19,7 +19,7 @@
 
  */
 
-import {isequal, NDArray, TypedArray} from '@bluemath/common'
+import {isequal, NDArray, TypedArray, add, mul} from '@bluemath/common'
 
 /**
  * @hidden
@@ -203,9 +203,27 @@ function getBasisFunctionDerivatives(
   return new NDArray(ders);
 }
 
+function blossom(cpoints:NDArray, n:number, ts:number[]) : NDArray {
+  let b = cpoints.clone();
+  if(ts.length !== n) {
+    throw new Error("Number of parameters not equal to degee");
+  }
+  for(let r=1; r<n+1; r++) {
+    let t = ts[r-1];
+    for(let i=0; i<n+1-r; i++) {
+      b.set(i, add(
+        mul((1-t), b.get(i)),
+        mul(t, b.get(i+1))
+      ));
+    }
+  }
+  return <NDArray>b.get(0);
+}
+
 export {
   bernstein,
   findSpan,
   getBasisFunction,
-  getBasisFunctionDerivatives
+  getBasisFunctionDerivatives,
+  blossom
 }
