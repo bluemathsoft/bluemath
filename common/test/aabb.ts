@@ -26,6 +26,15 @@ import {AABB} from '../src/aabb'
 
 export default function testAABB() {
   QUnit.module('AABB', () => {
+    QUnit.test('construction default', assert => {
+      let aabb = new AABB(2);
+      let aabb1 = new AABB([0,0],[10,10]);
+      aabb.merge(aabb1);
+      assert.equal(aabb.min.get(0), 0);
+      assert.equal(aabb.min.get(1), 0);
+      assert.equal(aabb.max.get(0), 10);
+      assert.equal(aabb.max.get(1), 10);
+    });
     QUnit.test('construction', assert => {
       let aabb = new AABB([0,0],[10,10]);
       assert.equal(aabb.min.get(0), 0);

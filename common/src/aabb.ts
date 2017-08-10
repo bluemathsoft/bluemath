@@ -25,9 +25,21 @@ export class AABB {
   private _min : NDArray;
   private _max : NDArray;
 
-  constructor(minarr:number[], maxarr:number[]) {
-    this._min = new NDArray(minarr);
-    this._max = new NDArray(maxarr);
+  constructor(arg0:number|number[], arg1?:number[]) {
+    let dim = 0;
+    if(Array.isArray(arg0)) {
+      this._min = new NDArray(arg0);
+    } else {
+      dim = arg0;
+      this._min = new NDArray({shape:[dim]});
+      this._min.fill(Infinity);
+    }
+    if(arg1 && Array.isArray(arg1)) {
+      this._max = new NDArray(arg1);
+    } else {
+      this._max = new NDArray({shape:[dim]});
+      this._max.fill(-Infinity);
+    }
   }
 
   get min() {
