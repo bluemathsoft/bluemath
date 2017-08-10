@@ -33,6 +33,28 @@ export default function testNURBS() {
         ]));
         assert.ok(!!bezcrv);
       });
+      QUnit.test('isFlat', assert => {
+        let bezcrv = new BezierCurve(3,arr([
+          [0,0],[1,3],[2,-3],[3,1]
+        ]));
+        assert.ok(!bezcrv.isLine());
+
+        bezcrv = new BezierCurve(3,arr([
+          [0,0],[1,1],[2,2],[5,5]
+        ]));
+        assert.ok(bezcrv.isLine());
+
+        bezcrv = new BezierCurve(1,arr([
+          [0,0],[5,5]
+        ]));
+        assert.ok(bezcrv.isLine());
+
+        bezcrv = new BezierCurve(2,arr([
+          [0,0],[5,1e-3],[10,0]
+        ]));
+        assert.ok(!bezcrv.isLine());
+        assert.ok(bezcrv.isLine(1e-2));
+      });
     });
     QUnit.module('BSplineCurve2D', () => {
       QUnit.test('construction', assert => {
@@ -42,12 +64,6 @@ export default function testNURBS() {
         assert.equal(bcrv.degree, 1);
         assert.equal(bcrv.cpoints.shape[0], 2);
         assert.equal(bcrv.knots.shape[0], 4);
-      });
-      QUnit.skip('evaluate at midpoint', assert => {
-        // let bcrv = new BSplineCurve(1,
-          // new NDArray([[0,0], [10,10]]), new NDArray([0,0,1,1]));
-        // assert.ok(bcrv.evaluate(0.5).isEqual(new Vector2(5,5)));
-        assert.ok(false);
       });
     });
   });

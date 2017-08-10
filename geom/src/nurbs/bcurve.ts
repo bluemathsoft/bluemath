@@ -24,7 +24,7 @@ import {
   findSpan, getBasisFunction, getBasisFunctionDerivatives,
   bernstein, blossom
 } from './helper'
-import {NDArray, zeros, AABB} from '@bluemath/common'
+import {NDArray,iszero, zeros, AABB} from '@bluemath/common'
 
 class BezierCurve {
   degree : number;
@@ -104,6 +104,41 @@ class BezierCurve {
       this.evaluate(i/resolution, tess, i);
     }
     return tess;
+  }
+
+  /**
+   * Checks if this Bezier curve is approximately a straight line within
+   * given tolerance.
+   * The check works by constructing a line between first and last control
+   * point and then finding the distance of other control points from this
+   * line. Instead of actually calculating the distance from the line, we
+   * do the check if the point lies on the line or not. This is done by 
+   * substituting the [x,y] coordinates of control point, into the equation
+   * of the line. If the result is zero within the tolerance value, then
+   * the control point lies on the line. If all control points lie on the line
+   * then the curve can be considered a straight line.
+   */
+  isLine(tolerance=1e-6) {
+    if(this.dimension !== 2) {
+      throw new Error("isFlat check only supported for 2D Bezier curves");
+    }
+    if(this.degree === 1) {
+      return true;
+    }
+    let [x0,y0] = (<NDArray>this.cpoints.get(0)).data;
+    let [xn,yn] = (<NDArray>this.cpoints.get(this.cpoints.length-1)).data;
+    let A = yn-y0;
+    let B = xn-x0;
+    for(let i=1; i<this.cpoints.length-1; i++) {
+      let [x,y] = (<NDArray>this.cpoints.get(i)).data;
+      // From the equation of the line of the form
+      // y-mx-c = 0
+      let value = y - (A/B)*x - (y0-(A/B)*x0);
+      if(!iszero(value,tolerance)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   reparam(ua:number, ub:number) {
