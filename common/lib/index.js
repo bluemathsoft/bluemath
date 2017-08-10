@@ -23,3 +23,5 @@ var ndarray_1 = require("./ndarray");
 exports.NDArray = ndarray_1.NDArray;
 var complex_1 = require("./complex");
 exports.Complex = complex_1.Complex;
+var aabb_1 = require("./aabb");
+exports.AABB = aabb_1.AABB;

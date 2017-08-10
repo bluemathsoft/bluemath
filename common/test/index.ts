@@ -22,6 +22,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 import testNDArray from './ndarray'
 import testOps from './ops'
+import testAABB from './aabb'
 
 
 window.onload = () => {
@@ -37,5 +38,6 @@ window.onload = () => {
 
   testNDArray();
   testOps();
+  testAABB();
 
 }

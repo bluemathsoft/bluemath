@@ -15,11 +15,7 @@ import {
 import {EPSILON} from './constants'
 import {NDArray} from './ndarray'
 import {Complex} from './complex'
-
-export interface AABB {
-  min : NDArray;
-  max : NDArray;
-}
+import {AABB} from './aabb'
 
 export {
 
@@ -29,6 +25,7 @@ export {
   // Classes
   NDArray,
   Complex,
+  AABB,
 
   // Ops
   eye, zeros, empty, arr,

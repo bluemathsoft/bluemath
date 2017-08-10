@@ -78,7 +78,7 @@ export declare function length(A: NDArray): number;
  * otherwise exception is thrown
  * The order of addition starts from left to right
  */
-export declare function add(...args: (NDArray | number | Complex)[]): number | NDArray | Complex;
+export declare function add(...args: (NDArray | number | Complex)[]): number | Complex | NDArray;
 /**
  * Multiply all arguments in accordance with their data types
  * Each argument can be a number (real or complex) or NDArray.
@@ -87,7 +87,7 @@ export declare function add(...args: (NDArray | number | Complex)[]): number | N
  * otherwise an exception is thrown
  * The order of multiplication starts from left to right
  */
-export declare function mul(...args: (NDArray | number | Complex)[]): number | NDArray | Complex;
+export declare function mul(...args: (NDArray | number | Complex)[]): number | Complex | NDArray;
 /**
  * Subtract second argument from first
  * The arguments could be a number (real or complex) or NDArray.
@@ -95,10 +95,10 @@ export declare function mul(...args: (NDArray | number | Complex)[]): number | N
  * be compatible with the other operand of subtraction operation,
  * otherwise an exception is thrown
  */
-export declare function sub(a: number | Complex | NDArray, b: number | Complex | NDArray): number | NDArray | Complex;
+export declare function sub(a: number | Complex | NDArray, b: number | Complex | NDArray): number | Complex | NDArray;
 /**
  * Divide first argument by second
  * The first argument can be a number (real or complex) or NDArray.
  * The second argument can be a number (real or complex)
  */
-export declare function div(a: number | Complex | NDArray, b: number | Complex): number | NDArray | Complex;
+export declare function div(a: number | Complex | NDArray, b: number | Complex): number | Complex | NDArray;
