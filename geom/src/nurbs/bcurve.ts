@@ -141,6 +141,21 @@ class BezierCurve {
     return true;
   }
 
+  // Experimental. WIP
+  computeZeroCurvatureLocations() {
+    if(this.degree !== 3) {
+      throw new Error("This mathod only supports only cubic bezier curves");
+    }
+    let [x0,y0] = (<NDArray>this.cpoints.get(0)).data;
+    let [x1,y1] = (<NDArray>this.cpoints.get(1)).data;
+    let [x2,y2] = (<NDArray>this.cpoints.get(2)).data;
+    let [x3,y3] = (<NDArray>this.cpoints.get(3)).data;
+    return [
+      (2/3) * (x0-3*x1+0.5*x2)/(x0-3*x1+3*x2-x3),
+      (2/3) * (y0-3*y1+0.5*y2)/(y0-3*y1+3*y2-y3),
+    ]
+  }
+
   reparam(ua:number, ub:number) {
     let n = this.degree;
     let b = new NDArray({shape:this.cpoints.shape});

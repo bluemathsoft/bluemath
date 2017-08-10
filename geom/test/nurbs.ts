@@ -55,6 +55,15 @@ export default function testNURBS() {
         assert.ok(!bezcrv.isLine());
         assert.ok(bezcrv.isLine(1e-2));
       });
+      
+      QUnit.skip('computeZeroCurvatureLocations', assert => {
+        let bezcrv = new BezierCurve(3, arr([
+          [0,0],[3,3],[6,3],[9,0]
+        ]));
+        console.log(bezcrv.computeZeroCurvatureLocations());
+        assert.ok(true);
+      });
+
     });
     QUnit.module('BSplineCurve2D', () => {
       QUnit.test('construction', assert => {
