@@ -24,6 +24,15 @@ import {Vertex} from './vertex'
 import {Face} from './face'
 import {HalfEdge} from './halfedge'
 
+interface Trapezoid {
+  top : HalfEdge;
+  bottom : HalfEdge;
+  leftp : Vertex;
+  rightp : Vertex;
+  adjascent : Trapezoid[];
+}
+
+
 export class Topology {
 
   vertices : Vertex[];
@@ -76,6 +85,25 @@ export class Topology {
 
     let face = new Face(this.halfedges[0]);
     this.faces.push(face);
+
+  }
+
+  createNewVertex(coord:number[]) {
+    let v = new Vertex(arr(coord));
+    this.vertices.push(v);
+  }
+
+  findVertexAt(coord:number[]):Vertex|null {
+    let icoord = arr(coord);
+    for(let v of this.vertices) {
+      if(v.coord.isEqual(icoord)) {
+        return v;
+      }
+    }
+    return null;
+  }
+
+  generateTrapezoidMap() {
 
   }
 
