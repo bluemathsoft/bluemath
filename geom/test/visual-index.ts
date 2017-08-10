@@ -19,7 +19,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import {NDArray,range} from '@bluemath/common'
+import {NDArray,range,AABB} from '@bluemath/common'
 import {nurbs} from '../src'
 let {BSplineCurve,BezierCurve,BezierSurface,BSplineSurface} = nurbs;
 const RESOLUTION = 50;
@@ -229,11 +229,11 @@ const CURVE_CONSTRUCTION_LAYOUT = {
 const CURVE_COMPARISION_LAYOUT = {
   width : 500,
   height : 500,
-  margin : {t:0,b:0},
-  xaxis: { anchor: 'y1' },
-  xaxis2: { anchor: 'y2' },
-  yaxis2: { domain: [0, 0.5-GAP_FRACTION] },
-  yaxis: { domain: [0.5+GAP_FRACTION, 1] },
+  margin : {t:0,b:20},
+  xaxis: { anchor: 'y1', range:[-5,+5] },
+  xaxis2: { anchor: 'y2', range:[-5,+5] },
+  yaxis2: { domain: [0, 0.5-GAP_FRACTION], range:[-5,+5] },
+  yaxis: { domain: [0.5+GAP_FRACTION, 1], range:[-5,+5] },
 };
 
 const SURFACE_COMPARISION_LAYOUT = {
@@ -632,12 +632,16 @@ function displayCurveComparision(crvsrc, crvtgt, titles) {
     name:'Control Points'
   });
 
+  let aabbTotal = crvsrc.aabb();
+
   let tgt;
   if(Array.isArray(crvtgt)) {
     tgt = crvtgt;
   } else {
     tgt = [crvtgt];
   }
+
+  let aabbTarget = new AABB(2);
 
   for(let crv of tgt) {
     let tessTarget = crv.tessellate(RESOLUTION);
@@ -659,7 +663,21 @@ function displayCurveComparision(crvsrc, crvtgt, titles) {
       mode : 'markers',
       name:'Control Points'
     });
+    aabbTarget.merge(crv.aabb());
   }
+
+  aabbTotal.merge(aabbTarget);
+
+  let xmin = aabbTotal.min.get(0);
+  let ymin = aabbTotal.min.get(1);
+  let xmax = aabbTotal.max.get(0);
+  let ymax = aabbTotal.max.get(1);
+  let plotXRange = [xmin-0.1*Math.abs(xmin), xmax+0.1*Math.abs(xmax)];
+  let plotYRange = [ymin-0.1*Math.abs(ymin), ymax+0.1*Math.abs(ymax)];
+  CURVE_COMPARISION_LAYOUT.xaxis.range = plotXRange;
+  CURVE_COMPARISION_LAYOUT.xaxis2.range = plotXRange;
+  CURVE_COMPARISION_LAYOUT.yaxis.range = plotYRange;
+  CURVE_COMPARISION_LAYOUT.yaxis2.range = plotYRange;
 
   if(titles) {
     CURVE_COMPARISION_LAYOUT.yaxis.title = titles[0];
