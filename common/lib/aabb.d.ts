@@ -3,7 +3,7 @@ import { TypedArray } from '../src';
 export declare class AABB {
     private _min;
     private _max;
-    constructor(arg0: number | number[] | TypedArray, arg1?: number[]);
+    constructor(arg0: number | number[] | TypedArray, arg1?: number[] | TypedArray);
     readonly min: NDArray;
     readonly max: NDArray;
     /**

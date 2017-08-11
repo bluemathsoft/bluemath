@@ -32,7 +32,7 @@ var AABB = (function () {
             this._min = new ndarray_1.NDArray({ shape: [dim] });
             this._min.fill(Infinity);
         }
-        if (arg1 && Array.isArray(arg1)) {
+        if (arg1 && (Array.isArray(arg1) || ArrayBuffer.isView(arg1))) {
             this._max = new ndarray_1.NDArray(arg1);
         }
         else {
