@@ -688,6 +688,27 @@ export class NDArray {
   }
 
   /**
+   * Shorthand for get(...) method to avoid casting to <number>
+   */
+  getN(...slices:(string|number|undefined|null)[]):number {
+    return <number>this.get(...slices);
+  }
+
+  /**
+   * Shorthand for get(...) method to avoid casting to <NDArray>
+   */
+  getA(...slices:(string|number|undefined|null)[]):NDArray {
+    return <NDArray>this.get(...slices);
+  }
+
+  /**
+   * Shorthand for get(...) method to avoid casting to <Complex>
+   */
+  getC(...slices:(string|number|undefined|null)[]):Complex {
+    return <Complex>this.get(...slices);
+  }
+
+  /**
    * Returns a specific element or a new NDArray that's a subset of
    * this array as defined by the slicing recipe.
    * Each element of the slicing recipe (i.e. any argument) can be

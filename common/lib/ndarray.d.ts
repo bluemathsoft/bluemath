@@ -169,6 +169,18 @@ export declare class NDArray {
     private createSliceRecipe(slices);
     private computeSliceShapeAndSize(slice_recipe);
     /**
+     * Shorthand for get(...) method to avoid casting to <number>
+     */
+    getN(...slices: (string | number | undefined | null)[]): number;
+    /**
+     * Shorthand for get(...) method to avoid casting to <NDArray>
+     */
+    getA(...slices: (string | number | undefined | null)[]): NDArray;
+    /**
+     * Shorthand for get(...) method to avoid casting to <Complex>
+     */
+    getC(...slices: (string | number | undefined | null)[]): Complex;
+    /**
      * Returns a specific element or a new NDArray that's a subset of
      * this array as defined by the slicing recipe.
      * Each element of the slicing recipe (i.e. any argument) can be

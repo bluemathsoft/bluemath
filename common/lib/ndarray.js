@@ -659,6 +659,36 @@ var NDArray = (function () {
         return { shape: shape, size: size };
     };
     /**
+     * Shorthand for get(...) method to avoid casting to <number>
+     */
+    NDArray.prototype.getN = function () {
+        var slices = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            slices[_i] = arguments[_i];
+        }
+        return this.get.apply(this, slices);
+    };
+    /**
+     * Shorthand for get(...) method to avoid casting to <NDArray>
+     */
+    NDArray.prototype.getA = function () {
+        var slices = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            slices[_i] = arguments[_i];
+        }
+        return this.get.apply(this, slices);
+    };
+    /**
+     * Shorthand for get(...) method to avoid casting to <Complex>
+     */
+    NDArray.prototype.getC = function () {
+        var slices = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            slices[_i] = arguments[_i];
+        }
+        return this.get.apply(this, slices);
+    };
+    /**
      * Returns a specific element or a new NDArray that's a subset of
      * this array as defined by the slicing recipe.
      * Each element of the slicing recipe (i.e. any argument) can be
