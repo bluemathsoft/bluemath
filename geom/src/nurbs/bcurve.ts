@@ -24,7 +24,7 @@ import {
   findSpan, getBasisFunction, getBasisFunctionDerivatives,
   bernstein, blossom
 } from './helper'
-import {NDArray,iszero, zeros, AABB} from '@bluemath/common'
+import {NDArray,iszero, zeros, AABB, add, mul} from '@bluemath/common'
 
 class BezierCurve {
   degree : number;
@@ -125,12 +125,15 @@ class BezierCurve {
     if(this.degree === 1) {
       return true;
     }
-    let [x0,y0] = (<NDArray>this.cpoints.get(0)).data;
-    let [xn,yn] = (<NDArray>this.cpoints.get(this.cpoints.length-1)).data;
+    let x0 = this.cpoints.getN(0,0);
+    let y0 = this.cpoints.getN(0,1);
+    let xn = this.cpoints.getN(this.cpoints.length-1,0);
+    let yn = this.cpoints.getN(this.cpoints.length-1,1);
     let A = yn-y0;
     let B = xn-x0;
     for(let i=1; i<this.cpoints.length-1; i++) {
-      let [x,y] = (<NDArray>this.cpoints.get(i)).data;
+      let x = this.cpoints.getN(i,0);
+      let y = this.cpoints.getN(i,1);
       // From the equation of the line of the form
       // y-mx-c = 0
       let value = y - (A/B)*x - (y0-(A/B)*x0);
@@ -146,14 +149,14 @@ class BezierCurve {
     if(this.degree !== 3) {
       throw new Error("This mathod only supports only cubic bezier curves");
     }
-    let [x0,y0] = (<NDArray>this.cpoints.get(0)).data;
-    let [x1,y1] = (<NDArray>this.cpoints.get(1)).data;
-    let [x2,y2] = (<NDArray>this.cpoints.get(2)).data;
-    let [x3,y3] = (<NDArray>this.cpoints.get(3)).data;
-    return [
-      (2/3) * (x0-3*x1+0.5*x2)/(x0-3*x1+3*x2-x3),
-      (2/3) * (y0-3*y1+0.5*y2)/(y0-3*y1+3*y2-y3),
-    ]
+    // let [x0,y0] = (<NDArray>this.cpoints.get(0)).data;
+    // let [x1,y1] = (<NDArray>this.cpoints.get(1)).data;
+    // let [x2,y2] = (<NDArray>this.cpoints.get(2)).data;
+    // let [x3,y3] = (<NDArray>this.cpoints.get(3)).data;
+    // return [
+    //   (2/3) * (x0-3*x1+0.5*x2)/(x0-3*x1+3*x2-x3),
+    //   (2/3) * (y0-3*y1+0.5*y2)/(y0-3*y1+3*y2-y3),
+    // ]
   }
 
   reparam(ua:number, ub:number) {
@@ -686,33 +689,21 @@ class BSplineCurve {
     let span = this.findSpan(t);
     let Nders = this.evaluateBasisDerivatives(span, du, t);
     for(let k=0; k<du+1; k++) {
-      ders.set(k,0, 0);
-      ders.set(k,1, 0);
+      ders.set(k,zeros(2));
       for(let j=0; j<p+1; j++) {
-        for(let i=0; i<2; i++) {
-          ders.set(k,i,
-            <number>ders.get(k,i)+
-            <number>Nders.get(k,j)*<number>P.get(span-p+j,i));
-        }
+        ders.set(k, add(
+          ders.getA(k),
+          mul(Nders.getN(k,j), P.getA(span-p+j))
+        ));
       }
     }
     if(tess && tessidx !== undefined) {
       for(let i=0; i<du+1; i++) {
-        for(let j=0; j<2; j++) {
-          tess.set(tessidx,i,j, ders.get(i,j));
-        }
+        tess.set(tessidx,i, ders.getA(i));
       }
       return null;
     } else {
       throw new Error('Not implemented');
-      /*
-      let varr = [];
-      for(let i=0; i<du+1; i++) {
-        varr.push(new Vector2(
-          <number>ders.get(i,0), <number>ders.get(i,1)));
-      }
-      return varr;
-      */
     }
   }
 

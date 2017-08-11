@@ -92,8 +92,9 @@ function generateBSplinePlotlyData2D(bcrv:BSplineCurve) {
     u.set(i, i/RESOLUTION);
   }
   let tess = bcrv.tessellate(RESOLUTION);
-  let tessD = bcrv.tessellateDerivatives(RESOLUTION, 1);
+  let tessD = bcrv.tessellateDerivatives(10, 2);
   let tdshape = tessD.shape;
+  tessD = tessD.getA(':',1);
   tessD.reshape([tdshape[0], tdshape[2]]);
 
   traces.push({
@@ -111,7 +112,7 @@ function generateBSplinePlotlyData2D(bcrv:BSplineCurve) {
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter',
-    mode : 'lines',
+    mode : 'markers',
     visible : 'legendonly',
     name:'1st Derivative'
   });

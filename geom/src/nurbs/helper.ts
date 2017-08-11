@@ -19,7 +19,9 @@
 
  */
 
-import {isequal, NDArray, TypedArray, add, mul} from '@bluemath/common'
+import {
+  isequal, empty, NDArray, TypedArray, add, mul
+} from '@bluemath/common'
 
 /**
  * @hidden
@@ -104,6 +106,7 @@ function getBasisFunction(
 
 /**
  * @hidden
+ * The NURBS book Algo A2.3
  * Compute non-zero basis functions and their derivatives, upto and including
  * n'th derivative (n <= p). Output is 2-dimensional array `ders`
  * @param {number} p Degree
@@ -120,13 +123,12 @@ function getBasisFunctionDerivatives(
 {
   let U = knots.data;
 
-  let ders = new Array(n+1);
-  for(let i=0; i<n+1; i++) { ders[i] = new Array(p+1); }
-  let ndu = new Array(p+1);
-  for(let i=0; i<p+1; i++) { ndu[i] = new Array(p+1); }
-  ndu[0][0] = 1.0;
-  let a = new Array(2);
-  for(let i=0; i<2; i++) { a[i] = new Array(p+1); }
+  let ndu = empty([p+1,p+1]);
+  let ders = empty([n+1,p+1]);
+
+  ndu.set(0,0, 1.0);
+  let a = empty([2,p+1]);
+
   let left = [];
   let right = [];
 
@@ -136,17 +138,17 @@ function getBasisFunctionDerivatives(
     let saved = 0.0;
     for(let r=0; r<j; r++) {
       // Lower triangle
-      ndu[j][r] = right[r+1]+left[j-r];
-      let temp = ndu[r][j-1]/ndu[j][r];
+      ndu.set(j,r, right[r+1]+left[j-r]);
+      let temp = ndu.getN(r,j-1)/ndu.getN(j,r);
       // Upper triangle
-      ndu[r][j] = saved + right[r+1]*temp;
+      ndu.set(r,j, saved + right[r+1]*temp);
       saved = left[j-r]*temp;
     }
-    ndu[j][j] = saved;
+    ndu.set(j,j, saved);
   }
   
   for(let j=0; j<=p; j++) { // Load the basis functions
-    ders[0][j] = ndu[j][p];
+    ders.set(0,j, ndu.get(j,p));
   }
   
   // This section computes the derivatives (eq 2.9)
@@ -154,14 +156,14 @@ function getBasisFunctionDerivatives(
     let s1=0;
     let s2=1;
     // Alternate rows in array a
-    a[0][0] = 1.0;
+    a.set(0,0, 1.0);
     for(let k=1; k<=n; k++) {
       let d = 0.0;
       let rk = r-k;
       let pk = p-k;
       if(r >= k) {
-        a[s2][0] = a[s1][0]/ndu[pk+1][rk];
-        d = a[s2][0] * ndu[rk][pk];
+        a.set(s2,0, a.getN(s1,0)/ndu.getN(pk+1,rk));
+        d = a.getN(s2,0) * ndu.getN(rk,pk);
       }
       let j1, j2;
       if(rk >= -1) {
@@ -175,14 +177,14 @@ function getBasisFunctionDerivatives(
         j2 = p-r;
       }
       for(let j=j1; j<=j2; j++) {
-        a[s2][j] = (a[s1][j]-a[s1][j-1]) / ndu[pk+1][rk+j];
-        d += a[s2][j] * ndu[rk+j][pk];
+        a.set(s2,j, (a.getN(s1,j)-a.getN(s1,j-1)) / ndu.getN(pk+1,rk+j));
+        d += a.getN(s2,j) * ndu.getN(rk+j,pk);
       }
       if(r <= pk) {
-        a[s2][k] = -a[s1][k-1]/ndu[pk+1][r];
-        d += a[s2][k]*ndu[r][pk];
+        a.set(s2,k, -a.get(s1,k-1)/ndu.getN(pk+1,r));
+        d += a.getN(s2,k)*ndu.getN(r,pk);
       }
-      ders[k][r] = d;
+      ders.set(k,r,d);
 
       // Switch rows
       let temp = s1;
@@ -195,12 +197,12 @@ function getBasisFunctionDerivatives(
   let r = p;
   for(let k=1; k<=n; k++) {
     for(let j=0; j<=p; j++) {
-      ders[k][j] *= r;
+      ders.set(k,j, mul(ders.get(k,j), r));
     }
     r *= p-k;
   }
 
-  return new NDArray(ders);
+  return ders;
 }
 
 function blossom(cpoints:NDArray, n:number, ts:number[]) : NDArray {
