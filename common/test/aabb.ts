@@ -42,6 +42,32 @@ export default function testAABB() {
       assert.equal(aabb.max.get(0), 10);
       assert.equal(aabb.max.get(1), 10);
     });
+    QUnit.test('update', assert => {
+      let aabb = new AABB(2);
+      aabb.update([3,4]);
+      assert.equal(aabb.min.get(0), 3);
+      assert.equal(aabb.min.get(1), 4);
+      assert.equal(aabb.max.get(0), 3);
+      assert.equal(aabb.max.get(1), 4);
+
+      aabb.update([7,8]);
+      assert.equal(aabb.min.get(0), 3);
+      assert.equal(aabb.min.get(1), 4);
+      assert.equal(aabb.max.get(0), 7);
+      assert.equal(aabb.max.get(1), 8);
+
+      aabb.update([-7,8]);
+      assert.equal(aabb.min.get(0), -7);
+      assert.equal(aabb.min.get(1), 4);
+      assert.equal(aabb.max.get(0), 7);
+      assert.equal(aabb.max.get(1), 8);
+
+      aabb.update([1,0]);
+      assert.equal(aabb.min.get(0), -7);
+      assert.equal(aabb.min.get(1), 0);
+      assert.equal(aabb.max.get(0), 7);
+      assert.equal(aabb.max.get(1), 8);
+    });
     QUnit.test('merge', assert => {
       let aabb1 = new AABB([0,0],[10,10]);
       let aabb2 = new AABB([5,5],[15,15]);

@@ -20,14 +20,15 @@
 */
 
 import {NDArray} from './ndarray'
+import {TypedArray} from '../src'
 
 export class AABB {
   private _min : NDArray;
   private _max : NDArray;
 
-  constructor(arg0:number|number[], arg1?:number[]) {
+  constructor(arg0:number|number[]|TypedArray, arg1?:number[]) {
     let dim = 0;
-    if(Array.isArray(arg0)) {
+    if(Array.isArray(arg0) || ArrayBuffer.isView(arg0)) {
       this._min = new NDArray(arg0);
     } else {
       dim = arg0;
@@ -48,6 +49,31 @@ export class AABB {
 
   get max() {
     return this._max;
+  }
+
+  /**
+   * Update this AABB to include given coordinate
+   */
+  update(coord:number[]|NDArray) {
+    if(coord instanceof NDArray) {
+      for(let i=0; i<this._min.length; i++) {
+        this._min.set(i,
+          Math.min(<number>this._min.get(i), <number>coord.get(i)));
+      }
+      for(let i=0; i<this._max.length; i++) {
+        this._max.set(i,
+          Math.max(<number>this._max.get(i), <number>coord.get(i)));
+      }
+    } else {
+      for(let i=0; i<this._min.length; i++) {
+        this._min.set(i,
+          Math.min(<number>this._min.get(i), coord[i]));
+      }
+      for(let i=0; i<this._max.length; i++) {
+        this._max.set(i,
+          Math.max(<number>this._max.get(i), coord[i]));
+      }
+    }
   }
 
   merge(other:AABB) {
