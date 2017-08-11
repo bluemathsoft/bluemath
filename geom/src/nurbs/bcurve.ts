@@ -24,7 +24,7 @@ import {
   findSpan, getBasisFunction, getBasisFunctionDerivatives,
   bernstein, blossom
 } from './helper'
-import {NDArray,iszero, zeros, AABB, add, mul} from '@bluemath/common'
+import {EPSILON, NDArray,iszero, zeros, AABB, add, mul} from '@bluemath/common'
 
 class BezierCurve {
   degree : number;
@@ -104,6 +104,38 @@ class BezierCurve {
       this.evaluate(i/resolution, tess, i);
     }
     return tess;
+  }
+  
+  private static processBez (bezcrv:BezierCurve, tolerance:number) : number[] {
+    if(bezcrv.isLine(tolerance)) {
+      return [
+        bezcrv.cpoints.getA(0).toArray(),
+        bezcrv.cpoints.getA(bezcrv.cpoints.length-1).toArray()
+      ];
+    } else {
+      let left = bezcrv.clone();
+      left.reparam(0,0.5);
+      let right = bezcrv.clone();
+      right.reparam(0.5,1);
+      let tessLeft = BezierCurve.processBez(left, tolerance);
+      let tessRight = BezierCurve.processBez(right, tolerance);
+      // last point of tessLeft must be same as first point of tessRight
+      tessLeft.pop();
+      return tessLeft.concat(tessRight);
+    }
+  }
+
+  /**
+   * Compute adaptive tessellation of the curve
+   * 
+   * The curve is subdivided into two curves at the mipoint of parameter
+   * range. This is done recursively until the curve becomes a straight line
+   * within given tolerance.
+   * The subdivision involves reparameterizing the curve, which is done using
+   * blossoming or deCasteljau formula.
+   */
+  tessellateAdaptive(tolerance=EPSILON) : NDArray {
+    return new NDArray(BezierCurve.processBez(this, tolerance));
   }
 
   /**

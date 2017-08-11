@@ -160,7 +160,8 @@ function generateBSplinePlotlyData(bcrv : BSplineCurve) {
 
 function generateBezierPlotlyData(bezcrv : BezierCurve) {
   let traces = [];  
-  let tess = bezcrv.tessellate(RESOLUTION);
+  // let tess = bezcrv.tessellate(RESOLUTION);
+  let tess = bezcrv.tessellateAdaptive(0.01);
 
   if(bezcrv.dimension === 2) {
     traces.push({
