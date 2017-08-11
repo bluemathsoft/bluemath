@@ -19,18 +19,17 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import {NDArray,range,AABB} from '@bluemath/common'
-import {nurbs} from '../src'
-let {BSplineCurve,BezierCurve,BezierSurface,BSplineSurface} = nurbs;
+import {NDArray,AABB} from '@bluemath/common'
+import {
+  BSplineCurve,BezierCurve,BezierSurface,BSplineSurface
+} from '../src/nurbs'
 const RESOLUTION = 50;
 
 import {DATA} from './nurbs-data'
 
-let plots = [];
-
-function generateBSplinePlotlyData3D(bcrv) {
+function generateBSplinePlotlyData3D(bcrv:BSplineCurve) {
   let traces = [];
-  let Nip = bcrv.tessellateBasis(RESOLUTION);
+  //let Nip = bcrv.tessellateBasis(RESOLUTION);
   let u = new NDArray({shape:[RESOLUTION+1]});
   for(let i=0; i<RESOLUTION+1; i++) {
     u.set(i, i/RESOLUTION);
@@ -38,9 +37,9 @@ function generateBSplinePlotlyData3D(bcrv) {
   let tess = bcrv.tessellate(RESOLUTION);
 
   traces.push({
-    x: Array.from(tess.get(':',0).data),
-    y: Array.from(tess.get(':',1).data),
-    z: Array.from(tess.get(':',2).data),
+    x: Array.from(tess.getA(':',0).data),
+    y: Array.from(tess.getA(':',1).data),
+    z: Array.from(tess.getA(':',2).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter3d',
@@ -48,9 +47,9 @@ function generateBSplinePlotlyData3D(bcrv) {
     name:'Curve'
   });
   traces.push({
-    x: Array.from(bcrv.cpoints.get(':',0).data),
-    y: Array.from(bcrv.cpoints.get(':',1).data),
-    z: Array.from(bcrv.cpoints.get(':',2).data),
+    x: Array.from(bcrv.cpoints.getA(':',0).data),
+    y: Array.from(bcrv.cpoints.getA(':',1).data),
+    z: Array.from(bcrv.cpoints.getA(':',2).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter3d',
@@ -84,7 +83,7 @@ function generateBSplinePlotlyData3D(bcrv) {
   return traces;
 }
 
-function generateBSplinePlotlyData2D(bcrv) {
+function generateBSplinePlotlyData2D(bcrv:BSplineCurve) {
 
   let traces = [];
   let Nip = bcrv.tessellateBasis(RESOLUTION);
@@ -98,8 +97,8 @@ function generateBSplinePlotlyData2D(bcrv) {
   tessD.reshape([tdshape[0], tdshape[2]]);
 
   traces.push({
-    x: Array.from(tess.get(':',0).data),
-    y: Array.from(tess.get(':',1).data),
+    x: Array.from(tess.getA(':',0).data),
+    y: Array.from(tess.getA(':',1).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter',
@@ -107,8 +106,8 @@ function generateBSplinePlotlyData2D(bcrv) {
     name:'Curve'
   });
   traces.push({
-    x: Array.from(tessD.get(':',0).data),
-    y: Array.from(tessD.get(':',1).data),
+    x: Array.from(tessD.getA(':',0).data),
+    y: Array.from(tessD.getA(':',1).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter',
@@ -117,8 +116,8 @@ function generateBSplinePlotlyData2D(bcrv) {
     name:'1st Derivative'
   });
   traces.push({
-    x: Array.from(bcrv.cpoints.get(':',0).data),
-    y: Array.from(bcrv.cpoints.get(':',1).data),
+    x: Array.from(bcrv.cpoints.getA(':',0).data),
+    y: Array.from(bcrv.cpoints.getA(':',1).data),
     xaxis : 'x1',
     yaxis : 'y1',
     type : 'scatter',
@@ -128,7 +127,7 @@ function generateBSplinePlotlyData2D(bcrv) {
   for(let i=0; i<Nip.shape[0]; i++) {
     traces.push({
       x : Array.from(u.data),
-      y : Array.from(Nip.get(i,':').data),
+      y : Array.from(Nip.getA(i,':').data),
       xaxis : 'x2',
       yaxis : 'y2',
       type:'scatter',
@@ -164,8 +163,8 @@ function generateBezierPlotlyData(bezcrv : BezierCurve) {
 
   if(bezcrv.dimension === 2) {
     traces.push({
-      x: Array.from(tess.get(':',0).data),
-      y: Array.from(tess.get(':',1).data),
+      x: Array.from(tess.getA(':',0).data),
+      y: Array.from(tess.getA(':',1).data),
       xaxis : 'x1',
       yaxis : 'y1',
       type : 'scatter',
@@ -173,8 +172,8 @@ function generateBezierPlotlyData(bezcrv : BezierCurve) {
       name:'Curve'
     });
     traces.push({
-      x: Array.from(bezcrv.cpoints.get(':',0).data),
-      y: Array.from(bezcrv.cpoints.get(':',1).data),
+      x: Array.from(bezcrv.cpoints.getA(':',0).data),
+      y: Array.from(bezcrv.cpoints.getA(':',1).data),
       xaxis : 'x1',
       yaxis : 'y1',
       type : 'scatter',
@@ -183,17 +182,17 @@ function generateBezierPlotlyData(bezcrv : BezierCurve) {
     });
   } else if(bezcrv.dimension === 3) {
     traces.push({
-      x: Array.from(tess.get(':',0).data),
-      y: Array.from(tess.get(':',1).data),
-      z: Array.from(tess.get(':',2).data),
+      x: Array.from(tess.getA(':',0).data),
+      y: Array.from(tess.getA(':',1).data),
+      z: Array.from(tess.getA(':',2).data),
       type : 'scatter3d',
       mode : 'lines',
       name:'Curve'
     });
     traces.push({
-      x: Array.from(bezcrv.cpoints.get(':',0).data),
-      y: Array.from(bezcrv.cpoints.get(':',1).data),
-      z: Array.from(bezcrv.cpoints.get(':',2).data),
+      x: Array.from(bezcrv.cpoints.getA(':',0).data),
+      y: Array.from(bezcrv.cpoints.getA(':',1).data),
+      z: Array.from(bezcrv.cpoints.getA(':',2).data),
       type : 'scatter3d',
       mode : 'markers',
       name:'Control Points'
@@ -324,6 +323,7 @@ function displayBSplineCurve(crvData) {
       );
     }
     $('#weights').append(weightsEq);
+    
 
     $("#weights > #eq > span").each(function () {
       // read initial values from markup and remove that

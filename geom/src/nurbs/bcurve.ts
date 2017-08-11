@@ -173,19 +173,12 @@ class BezierCurve {
   }
 
   aabb() : AABB {
-    let min = new Array(this.dimension);
-    min.fill(Infinity);
-    let max = new Array(this.dimension);
-    max.fill(-Infinity);
+    let aabb = new AABB(this.dimension);
     for(let i=0; i<this.cpoints.length; i++) {
       let cpoint = <NDArray>this.cpoints.get(i);
-      for(let j=0; j<this.dimension; j++) {
-        let v = <number>cpoint.get(j);
-        min[j] = Math.min(min[j], v);
-        max[j] = Math.max(max[j], v);
-      }
+      aabb.update(cpoint);
     }
-    return new AABB(min,max);
+    return aabb;
   }
 
   clone() {
@@ -754,19 +747,12 @@ class BSplineCurve {
   }
 
   aabb() : AABB {
-    let min = new Array(this.dimension);
-    min.fill(Infinity);
-    let max = new Array(this.dimension);
-    max.fill(-Infinity);
+    let aabb = new AABB(this.dimension);
     for(let i=0; i<this.cpoints.length; i++) {
       let cpoint = <NDArray>this.cpoints.get(i);
-      for(let j=0; j<this.dimension; j++) {
-        let v = <number>cpoint.get(j);
-        min[j] = Math.min(min[j], v);
-        max[j] = Math.max(max[j], v);
-      }
+      aabb.update(cpoint);
     }
-    return new AABB(min,max);
+    return aabb;
   }
 
   toString() {

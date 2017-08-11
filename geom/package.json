@@ -40,6 +40,6 @@
   },
   "homepage": "https://github.com/bluemathsoft/bluemath#readme",
   "dependencies": {
-    "@bluemath/common": "^0.1.6"
+    "@bluemath/common": "^0.1.10"
   }
 }
