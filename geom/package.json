@@ -9,6 +9,8 @@
     "watch-test": "webpack --watch --config webpack.test.config.js",
     "build-visual": "webpack --config webpack.visual.config.js",
     "watch-visual": "webpack --watch --config webpack.visual.config.js",
+    "build-glvisual": "webpack --config webpack.glvisual.config.js",
+    "watch-glvisual": "webpack --watch --config webpack.glvisual.config.js",
     "prepare": "(cd src; tsc -p .)"
   },
   "repository": {
@@ -29,8 +31,11 @@
   "devDependencies": {
     "@types/jquery": "^3.2.11",
     "@types/qunit": "^2.0.31",
+    "@types/three": "^0.84.19",
     "awesome-typescript-loader": "^3.2.2",
     "source-map-loader": "^0.2.1",
+    "three": "^0.86.0",
+    "three-orbitcontrols-ts": "^0.1.2",
     "typedoc": "^0.8.0",
     "typescript": "^2.4.2",
     "webpack": "^3.5.3"
