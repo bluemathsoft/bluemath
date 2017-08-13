@@ -19,31 +19,8 @@
 
 */
 
-import {NDArray} from '@bluemath/common'
-import {Topology} from '../src/topo'
-import {Triangulation} from '../src/delaunay'
+import {Triangulation} from './triangulation'
 
-function testTopology() {
-  let tp = new Topology();
-  tp.fromPolygon(new NDArray([
-    [50,50],
-    [200,100],
-    [350,50],
-    [350,350],
-    [200,400],
-    [50,350]
-  ]));
-  document.body.innerHTML = tp.toSVG();
+export {
+  Triangulation
 }
-
-function testTriangulation() {
-  let tri = Triangulation.fromTriangulation(
-    [20,20, 60,300, 220,300, 180,80, 400,120, 30,200],
-    [0,1,3, 1,2,3, 3,2,4]
-  );
-  document.body.innerHTML = tri.toSVG();
-}
-
-window.onload = () => {
-  testTriangulation();
-};
