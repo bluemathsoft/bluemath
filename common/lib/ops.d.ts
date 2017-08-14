@@ -72,6 +72,10 @@ export declare function dot(A: NDArray, B: NDArray): number;
  */
 export declare function length(A: NDArray): number;
 /**
+ * Computes direction vector of A, where A is a 1D vector
+ */
+export declare function dir(A: NDArray): NDArray;
+/**
  * Add all arguments in accordance to their types
  * The arguments could be NDArray or numbers (real/complex).
  * If some of them are NDArray's, then their shapes have to match,

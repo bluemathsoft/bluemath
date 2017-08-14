@@ -196,6 +196,16 @@ export function length(A:NDArray) {
 }
 
 /**
+ * Computes direction vector of A, where A is a 1D vector
+ */
+export function dir(A:NDArray) : NDArray {
+  if(A.shape.length !== 1) {
+    throw new Error('A is not a 1D array');
+  }
+  return <NDArray>div(A, length(A));
+}
+
+/**
  * @hidden
  */
 function _add_numbers(a:number|Complex, b:number|Complex) {

@@ -22,7 +22,7 @@
 import {NDArray} from '../src/ndarray'
 import {Complex} from '../src/complex'
 import {
-  arr,eye,zeros,add,sub,mul,div,range,count,empty,dot,length,isequal
+  arr,eye,zeros,add,sub,mul,div,range,count,empty,dot,length,isequal,dir
 } from '../src/ops'
 
 export default function testOps() {
@@ -83,6 +83,12 @@ export default function testOps() {
       QUnit.test('_', assert => {
         let B = arr([2,2,2]);
         assert.ok(isequal(length(B),Math.sqrt(12)));
+      });
+    });
+    QUnit.module('dir', () => {
+      QUnit.test('_', assert => {
+        let B = arr([2,0,0]);
+        assert.ok(dir(B).isEqual(arr([1,0,0])));
       });
     });
 

@@ -202,6 +202,16 @@ function length(A) {
 }
 exports.length = length;
 /**
+ * Computes direction vector of A, where A is a 1D vector
+ */
+function dir(A) {
+    if (A.shape.length !== 1) {
+        throw new Error('A is not a 1D array');
+    }
+    return div(A, length(A));
+}
+exports.dir = dir;
+/**
  * @hidden
  */
 function _add_numbers(a, b) {

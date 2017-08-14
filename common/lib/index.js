@@ -16,6 +16,7 @@ exports.sub = ops_1.sub;
 exports.div = ops_1.div;
 exports.dot = ops_1.dot;
 exports.length = ops_1.length;
+exports.dir = ops_1.dir;
 exports.count = ops_1.count;
 var constants_1 = require("./constants");
 exports.EPSILON = constants_1.EPSILON;
