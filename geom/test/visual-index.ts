@@ -19,7 +19,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import {NDArray,AABB} from '@bluemath/common'
+import {NDArray,AABB,length,dir,add,mul} from '@bluemath/common'
 import {
   BSplineCurve,BezierCurve,BezierSurface,BSplineSurface
 } from '../src/nurbs'
@@ -80,10 +80,19 @@ function generateBSplinePlotlyData3D(bcrv:BSplineCurve) {
     name : 'Knot Vector'
   });
   */
-  return traces;
+  return {traces};
 }
 
 function generateBSplinePlotlyData2D(bcrv:BSplineCurve) {
+
+  let D1_RESOLUTION = 10;
+
+  let aabb = bcrv.aabb();
+  let maxspan = Math.max(
+    Math.abs(aabb.max.getN(0) - aabb.min.getN(0)),
+    Math.abs(aabb.max.getN(1) - aabb.min.getN(1))
+  );
+  let darrowlength = maxspan * 0.1;
 
   let traces = [];
   let Nip = bcrv.tessellateBasis(RESOLUTION);
@@ -92,10 +101,28 @@ function generateBSplinePlotlyData2D(bcrv:BSplineCurve) {
     u.set(i, i/RESOLUTION);
   }
   let tess = bcrv.tessellate(RESOLUTION);
-  let tessD = bcrv.tessellateDerivatives(10, 2);
+  let tessD = bcrv.tessellateDerivatives(D1_RESOLUTION, 3);
   let tdshape = tessD.shape;
   tessD = tessD.getA(':',1);
   tessD.reshape([tdshape[0], tdshape[2]]);
+
+  let arrowShapes = [];
+  for(let i=0; i<D1_RESOLUTION+1; i++) {
+    let point = bcrv.evaluate(i/D1_RESOLUTION);
+    let d1dir = dir(tessD.getA(i));
+    let arrowHead = <NDArray>add(point, mul(d1dir,darrowlength));
+    arrowShapes.push({
+      type : 'line',
+      x0 : point.getN(0),
+      y0 : point.getN(1),
+      x1 : arrowHead.getN(0),
+      y1 : arrowHead.getN(1),
+      line : {
+        color : '#800',
+        width : 2
+      }
+    });
+  }
 
   traces.push({
     x: Array.from(tess.getA(':',0).data),
@@ -106,6 +133,7 @@ function generateBSplinePlotlyData2D(bcrv:BSplineCurve) {
     mode : 'lines',
     name:'Curve'
   });
+  /*
   traces.push({
     x: Array.from(tessD.getA(':',0).data),
     y: Array.from(tessD.getA(':',1).data),
@@ -116,6 +144,7 @@ function generateBSplinePlotlyData2D(bcrv:BSplineCurve) {
     visible : 'legendonly',
     name:'1st Derivative'
   });
+  */
   traces.push({
     x: Array.from(bcrv.cpoints.getA(':',0).data),
     y: Array.from(bcrv.cpoints.getA(':',1).data),
@@ -147,7 +176,7 @@ function generateBSplinePlotlyData2D(bcrv:BSplineCurve) {
     mode : 'markers',
     name : 'Knot Vector'
   });
-  return traces;
+  return {traces,shapes:arrowShapes};
 }
 
 function generateBSplinePlotlyData(bcrv : BSplineCurve) {
@@ -294,7 +323,10 @@ function displayBSplineCurve(crvData) {
       new NDArray(cpoints), new NDArray(knots),
       crvData.weights ? new NDArray(crvData.weights) : undefined);
 
-  let traces = generateBSplinePlotlyData(bcrv);
+  let {traces,shapes} = generateBSplinePlotlyData(bcrv);
+  if(shapes) {
+    CURVE_CONSTRUCTION_LAYOUT.shapes = shapes;
+  }
 
   Plotly.newPlot(pelem, traces, CURVE_CONSTRUCTION_LAYOUT);
 
