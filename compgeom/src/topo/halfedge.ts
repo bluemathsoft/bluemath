@@ -20,20 +20,26 @@
 */
 
 import {Vertex} from './vertex'
-import {Face} from './face'
+import {Loop} from './loop'
+import {Edge} from './edge'
 
 export class HalfEdge {
 
-  origin : Vertex;
-  pair? : HalfEdge;
+  vertex? : Vertex;
+  prev? : HalfEdge;
   next? : HalfEdge;
-  face? : Face;
+  edge? : Edge;
+  loop? : Loop;
 
-  constructor(origin:Vertex, pair?:HalfEdge, next?:HalfEdge, face?:Face) {
-    this.origin = origin;
-    this.pair = pair;
+  constructor(origin?:Vertex, pair?:HalfEdge, next?:HalfEdge, loop?:Loop) {
+    this.vertex = origin;
+    this.prev = pair;
     this.next = next;
-    this.face = face;
+    this.loop = loop;
+  }
+
+  unlink() {
+
   }
 
 }

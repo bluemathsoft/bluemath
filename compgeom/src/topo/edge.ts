@@ -19,6 +19,30 @@
 
 */
 
+import {HalfEdge} from './halfedge'
+import {Vertex} from './vertex'
+
 export class Edge {
+
+  hePlus? : HalfEdge;
+  heMinus? : HalfEdge;
+
+  curve : any; // TODO
+
+  constructor() {
+
+  }
+
+  startVertex() : Vertex {
+
+  }
+
+  endVertex() : Vertex {
+
+  }
+
+  unlink() {
+
+  }
 
 }

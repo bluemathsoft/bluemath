@@ -24,11 +24,14 @@ import {Vertex} from './vertex'
 import {Edge} from './edge'
 import {Face} from './face'
 import {HalfEdge} from './halfedge'
+import {EulerOps} from './eulerops'
 
 export {
   Topology,
   Vertex,
   Edge,
   Face,
-  HalfEdge
+  HalfEdge,
+
+  EulerOps
 }

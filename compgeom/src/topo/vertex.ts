@@ -22,13 +22,26 @@
 import {NDArray} from '@bluemath/common'
 import {HalfEdge} from './halfedge'
 
+export type walkHandler = (he:HalfEdge, count:number) => {};
+
 export class Vertex {
 
-  coord : NDArray;
+  coord? : NDArray;
   halfedge? : HalfEdge;
 
-  constructor(coord:NDArray, halfedge?:HalfEdge) {
+  constructor(coord?:NDArray, halfedge?:HalfEdge) {
     this.coord = coord;
     this.halfedge = halfedge;
+  }
+
+  walk(heStart:HalfEdge, callback:walkHandler) {
+
+  }
+
+  degree() : number {
+
+  }
+  unlink() {
+
   }
 }

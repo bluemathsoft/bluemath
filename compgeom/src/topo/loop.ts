@@ -19,6 +19,16 @@
 
 */
 
+import {HalfEdge} from './halfedge'
+import {Face} from './face'
+
 export class Loop {
+
+  face : Face;
+  halfedge? : HalfEdge;
+
+  constructor(face:Face) {
+    this.face = face;
+  }
 
 }

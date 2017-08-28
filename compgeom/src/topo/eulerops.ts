@@ -19,21 +19,40 @@
 
 */
 
-import {NDArray} from '@bluemath/common'
-import {Topology} from '../src/topo'
+import {Vertex} from './vertex'
+import {Face} from './face'
+import {Body} from './body'
+import {Loop} from './loop'
 
-import testEulerOps from './topo/eulerops'
+export type MVFS_result = {
+  vertex : Vertex;
+  body : Body;
+  face : Face;
+}
 
-window.onload = () => {
+export class EulerOps {
 
+  static MVFS() : MVFS_result {
+    let body = new Body();
 
-  let qunitDiv = document.createElement('div');
-  qunitDiv.setAttribute('id', 'qunit');
-  document.body.appendChild(qunitDiv);
+    let vertex = body.newVertex();
+    let face = body.newFace();
+    let loop = new Loop(face);
+    face.addLoop(loop);
 
-  let qunitFixtureDiv = document.createElement('div');
-  qunitFixtureDiv.setAttribute('id', 'qunit-fixture');
-  document.body.appendChild(qunitFixtureDiv);
+    let he = body.newHalfEdge();
+    he.next = he;
+    he.prev = he;
+    he.loop = loop;
+    he.vertex = vertex;
 
-  testEulerOps();
+    loop.halfedge = he;
+    vertex.halfedge = he;
+
+    return {body,vertex,face};
+  }
+
+  static KVFS(body:Body) {
+    body.unlink();
+  }
 }

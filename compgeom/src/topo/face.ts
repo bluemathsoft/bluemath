@@ -20,16 +20,25 @@
 */
 
 import {Loop} from './loop'
-import {HalfEdge} from './halfedge'
+import {Body} from './body'
 
 export class Face {
 
   oloop? : Loop;
   iloops : Loop[];
-  halfedge : HalfEdge;
+  body : Body;
+  surface : any;
 
-  constructor(halfedge:HalfEdge) {
-    this.halfedge = halfedge;
+  constructor(body:Body) {
+    this.body = body;
     this.iloops = [];
+  }
+
+  addLoop(loop:Loop) {
+    this.iloops.push(loop);
+  }
+
+  unlink() {
+
   }
 }

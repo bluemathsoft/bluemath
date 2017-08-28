@@ -19,21 +19,19 @@
 
 */
 
-import {NDArray} from '@bluemath/common'
-import {Topology} from '../src/topo'
+import * as topo from '../../src/topo'
 
-import testEulerOps from './topo/eulerops'
-
-window.onload = () => {
-
-
-  let qunitDiv = document.createElement('div');
-  qunitDiv.setAttribute('id', 'qunit');
-  document.body.appendChild(qunitDiv);
-
-  let qunitFixtureDiv = document.createElement('div');
-  qunitFixtureDiv.setAttribute('id', 'qunit-fixture');
-  document.body.appendChild(qunitFixtureDiv);
-
-  testEulerOps();
+export default function testEulerOps() {
+  QUnit.module('Euler Ops', () => {
+    QUnit.test('MVFS-KVFS', assert => {
+      let result = topo.EulerOps.MVFS();
+      assert.ok(result.body !== null);
+      assert.equal(result.body.faces.length, 1);
+      assert.equal(result.body.faces[0].iloops.length, 1);
+      assert.equal(result.body.vertices.length, 1);
+      assert.equal(result.body.halfedges.length, 1);
+      assert.equal(result.body.edges.length, 0);
+      topo.EulerOps.KVFS(result.body);
+    });
+  });
 }

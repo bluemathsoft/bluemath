@@ -70,8 +70,8 @@ export class Topology {
       curVtx.halfedge = heForward;
       if(prevHE) {
         prevHE.next = heForward;
-        prevHE.pair = heBackward;
-        heBackward.pair = prevHE;
+        prevHE.prev = heBackward;
+        heBackward.prev = prevHE;
       }
       this.vertices.push(curVtx);
       this.halfedges.push(heForward);
@@ -80,8 +80,8 @@ export class Topology {
     }
     // Add last HalfEdge pair that closes the polygon face
     curVtx!.halfedge!.next = firstHEForward;
-    firstHEBackward!.pair = curVtx!.halfedge;
-    prevHE!.pair = firstHEBackward;
+    firstHEBackward!.prev = curVtx!.halfedge;
+    prevHE!.prev = firstHEBackward;
 
     let face = new Face(this.halfedges[0]);
     this.faces.push(face);
@@ -119,25 +119,26 @@ export class Topology {
     const HE_ORIGIN_STYLE = 'fill:#f44';
 
     let vtxmarkup = this.vertices.map(vtx => {
-      let cx = vtx.coord.get(0);
-      let cy = HEIGHT-<number>vtx.coord.get(1);
-      let title = vtx.coord.toString();
+      let cx = vtx.coord!.get(0);
+      let cy = HEIGHT-<number>vtx.coord!.get(1);
+      let title = vtx.coord!.toString();
       return `<circle cx=${cx} cy=${cy} r=${VERTEX_RADIUS} `+
         `style="${VTX_STYLE}"><title>${title}</title></circle>`;
     }).join('\n');
 
     let hemarkup = this.halfedges.map(he => {
       let ocx,ocy,dcx,dcy;
-      if(he.origin) {
-        ocx = <number>he.origin.coord.get(0);
-        ocy = HEIGHT - <number>he.origin.coord.get(1);
+      if(he.vertex) {
+        ocx = <number>he.vertex.coord!.get(0);
+        ocy = HEIGHT - <number>he.vertex.coord!.get(1);
       } else {
         ocx = 0.2 * WIDTH;
         ocy = HEIGHT - 0.2 * HEIGHT;
       }
-      if(he.pair && he.pair.origin) {
-        dcx = <number>he.pair.origin.coord.get(0);
-        dcy = HEIGHT - <number>he.pair.origin.coord.get(1);
+      // TODO : prev needs to change
+      if(he.prev && he.prev.vertex) {
+        dcx = <number>he.prev.vertex.coord!.get(0);
+        dcy = HEIGHT - <number>he.prev.vertex.coord!.get(1);
       } else {
         dcx = 0.8 * WIDTH;
         dcy = HEIGHT - 0.8 * HEIGHT;
