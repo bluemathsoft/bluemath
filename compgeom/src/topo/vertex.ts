@@ -22,7 +22,7 @@
 import {NDArray} from '@bluemath/common'
 import {HalfEdge} from './halfedge'
 
-export type walkHandler = (he:HalfEdge, count:number) => {};
+export type walkHandler = (he:HalfEdge, count:number) => void;
 
 export class Vertex {
 

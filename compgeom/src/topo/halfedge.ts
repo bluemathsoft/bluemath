@@ -23,6 +23,8 @@ import {Vertex} from './vertex'
 import {Loop} from './loop'
 import {Edge} from './edge'
 
+export type heWalkHandler = (he:HalfEdge, count:number) => void;
+
 export class HalfEdge {
 
   vertex? : Vertex;
@@ -62,6 +64,17 @@ export class HalfEdge {
       cursor = cursor!.next;
     }
     return cursor;
+  }
+
+  static walk(heStart:HalfEdge, callback:heWalkHandler) {
+    let cursor = heStart;
+    let count = 0;
+    do {
+      callback(cursor, count);
+      console.assert(cursor.next);
+      cursor = cursor.next!;
+      count++;
+    } while(cursor !== heStart);
   }
 
 }

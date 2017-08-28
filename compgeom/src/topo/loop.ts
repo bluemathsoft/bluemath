@@ -39,4 +39,23 @@ export class Loop {
     next!.prev = heNew;
   }
 
+  removeHalfEdge(he:HalfEdge) {
+    // Note:
+    // We are not going to make any checks if the input halfedge actually
+    // belongs to this loop or not
+    console.assert(he.prev);
+    console.assert(he.next);
+    he.prev!.next = he.next;
+    he.next!.prev = he.prev;
+
+    he.next = undefined;
+    he.prev = undefined;
+  }
+
+  get length() {
+    let n = 0;
+    HalfEdge.walk(this.halfedge!, () => {n++});
+    return n;
+  }
+
 }

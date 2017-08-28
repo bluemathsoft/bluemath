@@ -64,6 +64,24 @@ export class Body {
     return e;
   }
 
+  removeEdge(edge:Edge) {
+    let idx = this.edges.indexOf(edge);
+    console.assert(idx >= 0);
+    this.edges.splice(idx,1);
+  }
+
+  removeVertex(vertex:Vertex) {
+    let idx = this.vertices.indexOf(vertex);
+    console.assert(idx >= 0);
+    this.vertices.splice(idx,1);
+  }
+
+  removeHalfEdge(halfEdge:HalfEdge) {
+    let idx = this.halfedges.indexOf(halfEdge);
+    console.assert(idx >= 0);
+    this.halfedges.splice(idx,1);
+  }
+
   unlink() {
     this.faces.forEach(f => f.unlink());
     this.vertices.forEach(v => v.unlink());

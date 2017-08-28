@@ -38,5 +38,20 @@ export default function testEulerOps() {
 
       topo.EulerOps.KVFS(result.body);
     });
+
+    QUnit.module('MEV-KEV', () => {
+      QUnit.test('Simple', assert => {
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS();
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0);
+
+        assert.equal(v0.degree(), 1);
+        assert.equal(v1.degree(), 1);
+        assert.equal(f0.iloops[0].length, 2);
+
+        topo.EulerOps.KEV(e0,v1);
+        topo.EulerOps.KVFS(body);
+      });
+
+    });
   });
 }

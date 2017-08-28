@@ -34,11 +34,15 @@ export class Edge {
   }
 
   startVertex() : Vertex {
-
+    console.assert(this.hePlus);
+    console.assert(this.hePlus!.vertex);
+    return this.hePlus!.vertex!;
   }
 
   endVertex() : Vertex {
-
+    console.assert(this.heMinus);
+    console.assert(this.heMinus!.vertex);
+    return this.heMinus!.vertex!;
   }
 
   unlink() {

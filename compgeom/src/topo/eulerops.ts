@@ -105,4 +105,68 @@ export class EulerOps {
     console.assert(he1);
     return EulerOps.LMEV(he0!, he1!);
   }
+
+  static KEV(edge:Edge, vertex:Vertex) {
+    console.assert(edge.hePlus);
+    let loop = edge.hePlus!.loop;
+    console.assert(loop);
+    let face = loop!.face;
+    console.assert(face);
+    let body = face!.body;
+    console.assert(edge.hePlus);
+    console.assert(edge.heMinus);
+
+    if(edge.hePlus!.next === edge.heMinus) {
+      // KEV should remove only the MINUS halfedge
+      // The PLUS halfedge will remain behind as solitary
+
+      // - Remove MINUS halfedge
+      let heToRemove = edge.heMinus!;
+      let heToSurvive = edge.hePlus!;
+      heToRemove.next = undefined; // TODO - can this be done in unlink of HE?
+      heToRemove.prev = undefined;
+      heToRemove.edge = undefined;
+      heToRemove.loop = undefined;
+      heToRemove.vertex = undefined;
+
+      // - Make PLUS solitary halfedge
+      edge.hePlus!.next = edge.hePlus;
+      edge.hePlus!.prev = edge.hePlus;
+      edge.hePlus!.edge = undefined;
+
+      if(loop!.halfedge === heToRemove) {
+        loop!.halfedge = heToSurvive;
+      }
+
+      edge.unlink();
+      body.removeEdge(edge);
+
+      vertex.unlink();
+      body.removeVertex(vertex);
+
+      body.removeHalfEdge(heToRemove);
+    } else {
+      // KEV should remove both of its halfedges
+      if(loop!.halfedge === edge.hePlus) {
+        loop!.halfedge = edge.hePlus!.next;
+      }
+      loop!.removeHalfEdge(edge.hePlus!);
+      if(loop!.halfedge === edge.heMinus) {
+        loop!.halfedge = edge.heMinus!.next;
+      }
+      loop!.removeHalfEdge(edge.heMinus!);
+
+      edge.hePlus!.unlink();
+      edge.heMinus!.unlink();
+
+      body.removeHalfEdge(edge.heMinus!);
+      body.removeHalfEdge(edge.hePlus!);
+
+      edge.unlink();
+      vertex.unlink();
+
+      body.removeEdge(edge);
+      body.removeVertex(vertex);
+    }
+  }
 }
