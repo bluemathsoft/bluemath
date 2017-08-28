@@ -31,4 +31,12 @@ export class Loop {
     this.face = face;
   }
 
+  insertHalfEdgeAfter(heNew:HalfEdge, heExisting:HalfEdge) {
+    let next = heExisting.next;
+    heExisting.next = heNew;
+    heNew.prev = heExisting;
+    heNew.next = next;
+    next!.prev = heNew;
+  }
+
 }

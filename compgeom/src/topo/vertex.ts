@@ -39,9 +39,20 @@ export class Vertex {
   }
 
   degree() : number {
-
+    let he = this.halfedge;
+    console.assert(he);
+    if(he!.isSolitary()) {
+      return 0;
+    }
+    let i=0;
+    do {
+      i++;
+      he = he!.mate().next;
+    } while(he !== this.halfedge);
+    return i;
   }
-  unlink() {
 
+  unlink() {
+    this.halfedge = undefined;
   }
 }

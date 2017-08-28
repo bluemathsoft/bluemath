@@ -25,12 +25,17 @@ export default function testEulerOps() {
   QUnit.module('Euler Ops', () => {
     QUnit.test('MVFS-KVFS', assert => {
       let result = topo.EulerOps.MVFS();
+
       assert.ok(result.body !== null);
       assert.equal(result.body.faces.length, 1);
-      assert.equal(result.body.faces[0].iloops.length, 1);
       assert.equal(result.body.vertices.length, 1);
       assert.equal(result.body.halfedges.length, 1);
       assert.equal(result.body.edges.length, 0);
+
+      assert.equal(result.vertex.degree(), 0);
+
+      assert.equal(result.face.iloops.length, 1);
+
       topo.EulerOps.KVFS(result.body);
     });
   });

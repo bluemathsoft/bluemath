@@ -21,6 +21,8 @@
 
 import {Loop} from './loop'
 import {Body} from './body'
+import {Vertex} from './vertex'
+import {HalfEdge} from './halfedge'
 
 export class Face {
 
@@ -40,5 +42,28 @@ export class Face {
 
   unlink() {
 
+  }
+
+
+  findHalfEdge(vtxFrom:Vertex, vtxTo?:Vertex) : HalfEdge|undefined {
+    for(let i=0; i<this.iloops.length; i++) {
+      let loop = this.iloops[i];
+      let he = loop.halfedge;
+      console.assert(he);
+      do {
+        if(he!.vertex === vtxFrom) {
+          if(vtxTo) {
+            console.assert(he!.next);
+            if(he!.next!.vertex === vtxTo) {
+              return he;
+            }
+          } else {
+            return he;
+          }
+        }
+        he = he!.next;
+      } while(he !== loop.halfedge);
+    }
+    return undefined;
   }
 }

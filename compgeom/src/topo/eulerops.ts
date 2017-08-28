@@ -21,6 +21,8 @@
 
 import {Vertex} from './vertex'
 import {Face} from './face'
+import {Edge} from './edge'
+import {HalfEdge} from './halfedge'
 import {Body} from './body'
 import {Loop} from './loop'
 
@@ -28,6 +30,11 @@ export type MVFS_result = {
   vertex : Vertex;
   body : Body;
   face : Face;
+}
+
+export type MEV_result = {
+  edge : Edge;
+  vertex : Vertex;
 }
 
 export class EulerOps {
@@ -54,5 +61,48 @@ export class EulerOps {
 
   static KVFS(body:Body) {
     body.unlink();
+  }
+
+  private static LMEV(he0:HalfEdge, he1:HalfEdge) {
+    console.assert(he0.loop);
+    let body = he0.loop!.face.body;
+
+    let vertex = body.newVertex();
+    let edge = body.newEdge();
+
+    if(he0 === he1) {
+      let he2 = body.newHalfEdge();
+      he2.loop = he0.loop;
+      he2.vertex = vertex;
+      he0.loop!.insertHalfEdgeAfter(he2,he0);
+      vertex.halfedge = he2;
+      edge.hePlus = he0;
+      edge.heMinus = he2;
+      he0.edge = edge;
+      he2.edge = edge;
+    } else {
+      let he2 = body.newHalfEdge();
+      let he3 = body.newHalfEdge();
+      he2.loop = he0.loop;
+      he3.loop = he0.loop;
+      he2.vertex = he0.vertex;
+      he3.vertex = vertex;
+      he0.loop!.insertHalfEdgeAfter(he2,he1);
+      he0.loop!.insertHalfEdgeAfter(he3,he2);
+      vertex.halfedge = he3;
+      edge.hePlus = he3;
+      edge.heMinus = he2;
+      he3.edge = edge;
+      he2.edge = edge;
+    }
+    return {vertex, edge};
+  }
+
+  static MEV(face:Face, vertex:Vertex) {
+    let he0 = face.findHalfEdge(vertex);
+    console.assert(he0);
+    let he1 = he0!.isSolitary() ? he0 : he0!.prevInLoop();
+    console.assert(he1);
+    return EulerOps.LMEV(he0!, he1!);
   }
 }

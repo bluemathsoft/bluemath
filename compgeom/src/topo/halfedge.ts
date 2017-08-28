@@ -38,8 +38,30 @@ export class HalfEdge {
     this.loop = loop;
   }
 
+  mate() : HalfEdge {
+    console.assert(this.edge);
+    if(this.edge!.hePlus === this) {
+      return this.edge!.heMinus!;
+    } else {
+      return this.edge!.hePlus!;
+    }
+  }
+
   unlink() {
 
+  }
+
+  isSolitary() {
+    return !this.edge;
+  }
+
+  prevInLoop() {
+    let cursor = this.next;
+    console.assert(cursor);
+    while(cursor!.next !== this) {
+      cursor = cursor!.next;
+    }
+    return cursor;
   }
 
 }

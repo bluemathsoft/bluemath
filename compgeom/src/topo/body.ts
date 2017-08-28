@@ -58,6 +58,12 @@ export class Body {
     return he;
   }
 
+  newEdge() : Edge {
+    let e = new Edge();
+    this.edges.push(e);
+    return e;
+  }
+
   unlink() {
     this.faces.forEach(f => f.unlink());
     this.vertices.forEach(v => v.unlink());
