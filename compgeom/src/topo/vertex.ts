@@ -21,6 +21,7 @@
 
 import {NDArray} from '@bluemath/common'
 import {HalfEdge} from './halfedge'
+import {IDManager} from './idman'
 
 export type walkHandler = (he:HalfEdge, count:number) => void;
 
@@ -28,10 +29,12 @@ export class Vertex {
 
   coord? : NDArray;
   halfedge? : HalfEdge;
+  id : string;
 
   constructor(coord?:NDArray, halfedge?:HalfEdge) {
     this.coord = coord;
     this.halfedge = halfedge;
+    this.id = 'V'+IDManager.genId('V');
   }
 
   walk(heStart:HalfEdge, callback:walkHandler) {

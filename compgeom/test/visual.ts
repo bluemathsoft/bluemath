@@ -23,6 +23,10 @@ import {NDArray} from '@bluemath/common'
 import {Topology} from '../src/topo'
 import {Triangulation} from '../src/delaunay'
 
+import * as topo from '../src/topo'
+
+let Viz = require('viz.js');
+
 function testTopology() {
   let tp = new Topology();
   tp.fromPolygon(new NDArray([
@@ -44,6 +48,17 @@ function testTriangulation() {
   document.body.innerHTML = tri.toSVG();
 }
 
+function testEulerOpsBodyViz() {
+  topo.IDManager.init(['B','V','E','F','L','HE']);
+  let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS();
+  let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0);
+
+  // console.log(body.toDOT());
+  // console.log(Viz);
+  let img = Viz(body.toDOT(), {format:"png-image-element"});
+  document.body.appendChild(img);
+}
+
 window.onload = () => {
-  testTriangulation();
+  testEulerOpsBodyViz();
 };

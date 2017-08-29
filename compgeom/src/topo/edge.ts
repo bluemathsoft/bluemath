@@ -21,6 +21,7 @@
 
 import {HalfEdge} from './halfedge'
 import {Vertex} from './vertex'
+import {IDManager} from './idman'
 
 export class Edge {
 
@@ -28,9 +29,10 @@ export class Edge {
   heMinus? : HalfEdge;
 
   curve : any; // TODO
+  id : string;
 
   constructor() {
-
+    this.id = 'E'+IDManager.genId('E');
   }
 
   startVertex() : Vertex {

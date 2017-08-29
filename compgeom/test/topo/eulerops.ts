@@ -22,6 +22,8 @@
 import * as topo from '../../src/topo'
 
 export default function testEulerOps() {
+
+  topo.IDManager.init(['B','V','E','F','L','HE']);
   QUnit.module('Euler Ops', () => {
     QUnit.test('MVFS-KVFS', assert => {
       let result = topo.EulerOps.MVFS();

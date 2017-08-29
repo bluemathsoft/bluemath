@@ -22,6 +22,7 @@
 import {Vertex} from './vertex'
 import {Loop} from './loop'
 import {Edge} from './edge'
+import {IDManager} from './idman'
 
 export type heWalkHandler = (he:HalfEdge, count:number) => void;
 
@@ -32,12 +33,14 @@ export class HalfEdge {
   next? : HalfEdge;
   edge? : Edge;
   loop? : Loop;
+  id : string;
 
   constructor(origin?:Vertex, pair?:HalfEdge, next?:HalfEdge, loop?:Loop) {
     this.vertex = origin;
     this.prev = pair;
     this.next = next;
     this.loop = loop;
+    this.id = 'HE'+IDManager.genId('HE');
   }
 
   mate() : HalfEdge {

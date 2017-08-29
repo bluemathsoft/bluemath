@@ -23,6 +23,7 @@ import {Loop} from './loop'
 import {Body} from './body'
 import {Vertex} from './vertex'
 import {HalfEdge} from './halfedge'
+import {IDManager} from './idman'
 
 export class Face {
 
@@ -30,10 +31,12 @@ export class Face {
   iloops : Loop[];
   body : Body;
   surface : any;
+  id : string;
 
   constructor(body:Body) {
     this.body = body;
     this.iloops = [];
+    this.id = 'F'+IDManager.genId('F');
   }
 
   addLoop(loop:Loop) {

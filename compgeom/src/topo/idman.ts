@@ -19,21 +19,21 @@
 
 */
 
-import {Topology} from './topology'
-import {Vertex} from './vertex'
-import {Edge} from './edge'
-import {Face} from './face'
-import {HalfEdge} from './halfedge'
-import {EulerOps} from './eulerops'
-import {IDManager} from './idman'
 
-export {
-  Topology,
-  Vertex,
-  Edge,
-  Face,
-  HalfEdge,
+export class IDManager {
 
-  EulerOps,
-  IDManager
+  static idmap : any;
+
+  static init(labels:string[]) {
+    IDManager.idmap = {};
+    for(let label of labels) {
+      IDManager.idmap[label] = 0;
+    }
+  }
+
+  static genId(label:string) : number {
+    console.assert(IDManager.idmap[label] !== undefined);
+    IDManager.idmap[label] += 1;
+    return IDManager.idmap[label];
+  }
 }

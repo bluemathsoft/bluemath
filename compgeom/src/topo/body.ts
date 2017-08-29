@@ -25,6 +25,7 @@ import {Vertex} from './vertex'
 import {Edge} from './edge'
 import {HalfEdge} from './halfedge'
 import {Face} from './face'
+import {IDManager} from './idman'
 
 export class Body {
 
@@ -32,12 +33,14 @@ export class Body {
   halfedges : HalfEdge[];
   edges : Edge[];
   faces : Face[];
+  id : string;
 
   constructor() {
     this.vertices = [];
     this.halfedges = [];
     this.edges = [];
     this.faces = [];
+    this.id = 'B'+IDManager.genId('B');
   }
 
   newFace() : Face{
@@ -92,5 +95,40 @@ export class Body {
     this.vertices.splice(0);
     this.edges.splice(0);
     this.halfedges.splice(0);
+  }
+
+  toDOT() {
+    let s = '';
+    s += 'digraph Body {\n';
+    s += '  ranksep=.5;ratio=compress;\n';
+    s += '  {\n';
+    s += '    node[shape=plaintext];\n';
+    s += '    Faces->Loops->Vertices->Edges->HalfEdges;\n';
+    s += '  }\n';
+
+    s += '  {\n';
+    s += '    rank=same; Vertices;';
+    for(let vertex of this.vertices) {
+      s += vertex.id+';';
+    }
+    s += '  }\n';
+
+    s += '  {\n';
+    s += '    rank=same; Edges;';
+    for(let edge of this.edges) {
+      s += edge.id+';';
+    }
+    s += '  }\n';
+
+    s += '  {\n';
+    s += '    rank=same; Faces;';
+    for(let face of this.faces) {
+      s += face.id+';';
+    }
+    s += '\n';
+    s += '  }\n';
+
+    s += '}';
+    return s;
   }
 }

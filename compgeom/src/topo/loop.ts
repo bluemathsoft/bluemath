@@ -21,11 +21,13 @@
 
 import {HalfEdge} from './halfedge'
 import {Face} from './face'
+import {IDManager} from './idman'
 
 export class Loop {
 
   face : Face;
   halfedge? : HalfEdge;
+  id : string;
 
   constructor(face:Face) {
     this.face = face;
@@ -37,6 +39,7 @@ export class Loop {
     heNew.prev = heExisting;
     heNew.next = next;
     next!.prev = heNew;
+    this.id = 'L'+IDManager.genId('L');
   }
 
   removeHalfEdge(he:HalfEdge) {
