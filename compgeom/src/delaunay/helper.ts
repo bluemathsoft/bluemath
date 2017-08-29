@@ -19,23 +19,23 @@
 
 */
 
-import {NDArray} from '@bluemath/common'
-import {Topology} from '../src/topo'
+import {iszero} from '@bluemath/common'
 
-import testEulerOps from './topo/eulerops'
-import testDelaunayHelper from './delaunay/helper'
+export function pointLineOrientation(a:number[],b:number[],c:number[]) {
+  // This predicate is based upon the formula described here
+  // https://www.cs.cmu.edu/~quake/robust.html
+  // Unfortunately I don't know the proof of this formula, but the
+  // tests so far are working
+  let [ax,ay] = a;
+  let [bx,by] = b;
+  let [cx,cy] = c;
+  let det = (ax-cx)*(by-cy) - (bx-cx)*(ay-cy);
+  if(iszero(det)) {
+    return 0;
+  }
+  return det/Math.abs(det);
+}
 
-window.onload = () => {
+export function pointInCircle(a:number[],b:number[],c:number[],d:number[]) {
 
-
-  let qunitDiv = document.createElement('div');
-  qunitDiv.setAttribute('id', 'qunit');
-  document.body.appendChild(qunitDiv);
-
-  let qunitFixtureDiv = document.createElement('div');
-  qunitFixtureDiv.setAttribute('id', 'qunit-fixture');
-  document.body.appendChild(qunitFixtureDiv);
-
-  testEulerOps();
-  testDelaunayHelper();
 }
