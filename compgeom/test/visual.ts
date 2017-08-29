@@ -42,8 +42,20 @@ function testTopology() {
 
 function testTriangulation() {
   let tri = Triangulation.fromTriangulation(
-    [20,20, 60,300, 220,300, 180,80, 400,120, 30,200],
-    [0,1,3, 1,2,3, 3,2,4]
+    [20,20, 200,20, 100,100], // points
+    [0,1,2], // triangles
+    // edges
+    [
+      [0,1, 0],
+      [1,2, 0],
+      [2,0, 0]
+    ],
+    // vertices
+    [
+      [0,1], // incident edges, TODO:orientation?
+      [1,2],
+      [2,0]
+    ]
   );
   document.body.innerHTML = tri.toSVG();
 }
