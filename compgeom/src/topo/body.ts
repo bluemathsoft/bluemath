@@ -85,6 +85,12 @@ export class Body {
     this.halfedges.splice(idx,1);
   }
 
+  removeFace(face:Face) {
+    let idx = this.faces.indexOf(face);
+    console.assert(idx >= 0);
+    this.faces.splice(idx,1);
+  }
+
   unlink() {
     this.faces.forEach(f => f.unlink());
     this.vertices.forEach(v => v.unlink());
