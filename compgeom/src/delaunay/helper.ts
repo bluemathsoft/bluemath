@@ -38,4 +38,32 @@ export function pointLineOrientation(a:number[],b:number[],c:number[]) {
 
 export function pointInCircle(a:number[],b:number[],c:number[],d:number[]) {
 
+  let [ax,ay] = a;
+  let [bx,by] = b;
+  let [cx,cy] = c;
+  let [dx,dy] = d;
+
+  /*
+   * | A B C |   | ax-dx  ay-dy  (ax-dx)^2+(ay-dy)^2 |
+   * | D E F | = | bx-dx  by-dy  (bx-dx)^2+(by-dy)^2 |
+   * | G H I |   | cx-dx  cy-dy  (cx-dx)^2+(cy-dy)^2 |
+   *
+   * det = AEI + BFG + CDH - GEC - HFA - IDB
+   */
+  let A = ax-dx;
+  let B = ay-dy;
+  let D = bx-dx;
+  let E = by-dy;
+  let G = cx-dx;
+  let H = cy-dy;
+
+  let C = A*A+B*B;
+  let F = D*D+E*E;
+  let I = G*G+H*H;
+
+  let det = A*E*I + B*F*G + C*D*H - G*E*C - H*F*A - I*D*B;
+  if(iszero(det)) {
+    return 0;
+  }
+  return det/Math.abs(det);
 }

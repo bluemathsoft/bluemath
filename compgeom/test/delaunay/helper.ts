@@ -51,5 +51,19 @@ export default function testDelaunayHelper() {
       assert.equal(helper.pointLineOrientation([150,25],[50,75],[50,25]),1);
       assert.equal(helper.pointLineOrientation([150,25],[50,75],[100,50]),0);
     });
+
+    QUnit.test('Point in circle', assert => {
+      assert.equal(helper.pointInCircle(
+        [100,100],[150,125],[200,100], [150,75]
+      ), 1);
+      assert.equal(helper.pointInCircle(
+        [100,100],[150,125],[200,100], [150,25]
+      ), -1);
+      assert.equal(helper.pointInCircle(
+        [100,100],[150,150],[200,100], [150,50]
+      ), 0);
+
+    });
+
   });
 }
