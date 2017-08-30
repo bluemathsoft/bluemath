@@ -103,7 +103,7 @@ export class Body {
     s += '  ranksep=.5;ratio=compress;\n';
     s += '  {\n';
     s += '    node[shape=plaintext];\n';
-    s += '    Faces->Loops->Vertices->Edges->HalfEdges;\n';
+    s += '    Faces->Loops->Vertices;\n';
     s += '  }\n';
 
     s += '  {\n';
@@ -113,20 +113,60 @@ export class Body {
     }
     s += '  }\n';
 
-    s += '  {\n';
-    s += '    rank=same; Edges;';
-    for(let edge of this.edges) {
-      s += edge.id+';';
-    }
-    s += '  }\n';
+    // s += '  {\n';
+    // s += '    rank=same; Edges;';
+    // for(let edge of this.edges) {
+    //   s += edge.id+';';
+    // }
+    // s += '  }\n';
+
+    let lps = '{ rank=same; Loops;';
 
     s += '  {\n';
     s += '    rank=same; Faces;';
     for(let face of this.faces) {
       s += face.id+';';
+      for(let loop of face.iloops) {
+        lps += loop.id+';';
+      }
+      if(face.oloop) {
+        lps += face.oloop.id+';';
+      }
     }
     s += '\n';
     s += '  }\n';
+
+    lps += ' }';
+    s += lps+'\n';
+
+    for(let vertex of this.vertices) {
+      console.assert(vertex.halfedge);
+      s += vertex.id+'->'+vertex.halfedge!.id+';';
+    }
+
+    for(let face of this.faces) {
+      for(let loop of face.iloops) {
+        s += face.id+'->'+loop.id+';';
+      }
+      if(face.oloop) {
+        s += face.id+'->'+face.oloop.id+'[label=OL];';
+      }
+    }
+
+    for(let halfedge of this.halfedges) {
+      if(halfedge.next) {
+        s += halfedge.id + '->' + halfedge.next.id + '[label=N,color=blue];';
+      }
+      if(halfedge.prev) {
+        s += halfedge.id + '->' + halfedge.prev.id + '[label=P,color=red];';
+      }
+      if(halfedge.vertex) {
+        s += halfedge.id + '->' + halfedge.vertex.id + '[color=brown];';
+      }
+      if(halfedge.loop) {
+        s += halfedge.id + '->' + halfedge.loop.id + '[color=gray];';
+      }
+    }
 
     s += '}';
     return s;

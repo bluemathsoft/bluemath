@@ -31,6 +31,7 @@ export class Loop {
 
   constructor(face:Face) {
     this.face = face;
+    this.id = 'L'+IDManager.genId('L');
   }
 
   insertHalfEdgeAfter(heNew:HalfEdge, heExisting:HalfEdge) {
@@ -39,7 +40,6 @@ export class Loop {
     heNew.prev = heExisting;
     heNew.next = next;
     next!.prev = heNew;
-    this.id = 'L'+IDManager.genId('L');
   }
 
   removeHalfEdge(he:HalfEdge) {

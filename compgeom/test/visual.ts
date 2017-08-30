@@ -64,10 +64,10 @@ function testEulerOpsBodyViz() {
   topo.IDManager.init(['B','V','E','F','L','HE']);
   let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS();
   let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0);
+  let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v1);
 
-  // console.log(body.toDOT());
-  // console.log(Viz);
-  let img = Viz(body.toDOT(), {format:"png-image-element"});
+  let dot = body.toDOT();
+  let img = Viz(dot, {format:"png-image-element"});
   document.body.appendChild(img);
 }
 
