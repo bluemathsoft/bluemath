@@ -21,6 +21,8 @@
 
 import * as THREE from 'three'
 import {OrbitControls} from 'three-orbitcontrols-ts'
+import {BezierSurface} from '../src/nurbs'
+import {NDArray} from '@bluemath/common'
 
 function makeAxes() {
   var L = 50;
@@ -71,10 +73,30 @@ window.onload = () => {
 
   let camera = new THREE.PerspectiveCamera(75, width/height, 1, 200);
 
+  let bezsrf = new BezierSurface(3, 2,
+    new NDArray([
+        [[-1,-1,0],[0,-1,0],[1,-1,0]],
+        [[-1,0,1],[0,0,2],[1,0,-1]],
+        [[-1,1,0],[0,1,0],[1,1,0]],
+        [[-1,2,0],[0,2,0],[1,2,0]]
+      ]));
+  let {vertices,faces} = bezsrf.tessellate();
+
+  let loader = new THREE.JSONLoader();
+  let {geometry} = loader.parse({ vertices, faces });
+  var material = new THREE.MeshLambertMaterial({
+    color: 0x00ff00,
+    side: THREE.DoubleSide
+  });
+  material.shading = THREE.SmoothShading;
+  let mesh = new THREE.Mesh(geometry, material);
+
   let scene = new THREE.Scene();
   scene.fog = new THREE.Fog(0x111111, 150,200);
 
   makeAxes().forEach(function (o) { scene.add(o); });
+
+  scene.add(mesh);
 
   //cpointSprite = THREE.ImageUtils.loadTexture( "static/cpoint.png" );
 

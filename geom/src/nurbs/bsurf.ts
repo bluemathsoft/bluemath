@@ -102,6 +102,22 @@ class BezierSurface {
     }
     return tess;
   }
+
+  tessellate(resolution=10) {
+    let tessPoints = this.tessellatePoints(resolution);
+    let N = resolution+1;
+    let faces:number[] = [];
+    for(let i=0; i<N-1; i++) {
+      for(let j=0; j<N-1; j++) {
+        faces = faces.concat(
+          0, N*j+i, N*j+i+1, N*(j+1)+i,
+          0, N*j+i+1, N*(j+1)+i+1, N*(j+1)+i
+        );
+      }
+    }
+    tessPoints.reshape([N*N]);
+    return {vertices:tessPoints.data,faces};
+  }
 }
 
 class BSplineSurface {
