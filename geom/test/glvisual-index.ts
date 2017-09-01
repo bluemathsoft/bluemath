@@ -86,9 +86,10 @@ window.onload = () => {
   let {geometry} = loader.parse({ vertices, faces });
   var material = new THREE.MeshLambertMaterial({
     color: 0x00ff00,
-    side: THREE.DoubleSide
+    side: THREE.DoubleSide,
+    shading : THREE.SmoothShading
   });
-  material.shading = THREE.SmoothShading;
+  // geometry.computeVertexNormals();
   let mesh = new THREE.Mesh(geometry, material);
 
   let scene = new THREE.Scene();
