@@ -21,8 +21,7 @@
 
 import * as THREE from 'three'
 import {OrbitControls} from 'three-orbitcontrols-ts'
-import {BezierSurface} from '../src/nurbs'
-import {NDArray} from '@bluemath/common'
+import {BezierSurface,BSplineSurface} from '../src/nurbs'
 
 function makeAxes() {
   var L = 50;
@@ -65,6 +64,35 @@ function makeAxes() {
   ]
 }
 
+function makeGeometry() {
+
+  // let bezsrf = new BezierSurface(3, 2,
+  //   new NDArray([
+  //       [[-1,-1,0],[0,-1,0],[1,-1,0]],
+  //       [[-1,0,1],[0,0,2],[1,0,-1]],
+  //       [[-1,1,0],[0,1,0],[1,1,0]],
+  //       [[-1,2,0],[0,2,0],[1,2,0]]
+  //     ]));
+  // let {vertices,faces} = bezsrf.tessellate();
+
+
+  let bsurf = new BSplineSurface(3,2,
+      [0,0,0,0,1,1,1,1],
+      [0,0,0,0.5,1,1,1],
+      [
+        [ [-1,-1,2],[0,-1,1],[1,-1,1],[2,-1,1] ],
+        [ [-1,0,1],[0,0,1],[1,0,1],[2,0,1] ],
+        [ [-1,1,1],[0,1,-1],[1,1,-1],[2,1,-1] ],
+        [ [-1,2,0],[0,2,0],[1,2,-1],[2,2,-1] ]
+      ]
+  );
+  let {vertices,faces} = bsurf.tessellate();
+
+  let loader = new THREE.JSONLoader();
+  return loader.parse({ vertices, faces }).geometry;
+
+}
+
 window.onload = () => {
 
 
@@ -73,23 +101,13 @@ window.onload = () => {
 
   let camera = new THREE.PerspectiveCamera(75, width/height, 1, 200);
 
-  let bezsrf = new BezierSurface(3, 2,
-    new NDArray([
-        [[-1,-1,0],[0,-1,0],[1,-1,0]],
-        [[-1,0,1],[0,0,2],[1,0,-1]],
-        [[-1,1,0],[0,1,0],[1,1,0]],
-        [[-1,2,0],[0,2,0],[1,2,0]]
-      ]));
-  let {vertices,faces} = bezsrf.tessellate();
-
-  let loader = new THREE.JSONLoader();
-  let {geometry} = loader.parse({ vertices, faces });
+  let geometry = makeGeometry();
   var material = new THREE.MeshLambertMaterial({
     color: 0x00ff00,
     side: THREE.DoubleSide,
     shading : THREE.SmoothShading
   });
-  // geometry.computeVertexNormals();
+  geometry.computeVertexNormals();
   let mesh = new THREE.Mesh(geometry, material);
 
   let scene = new THREE.Scene();

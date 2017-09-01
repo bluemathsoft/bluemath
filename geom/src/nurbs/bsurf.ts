@@ -35,18 +35,18 @@ class BezierSurface {
   constructor(
     u_degree:number,
     v_degree:number,
-    cpoints:NDArray,
-    weights?:NDArray)
+    cpoints:NDArray|number[][][],
+    weights?:NDArray|number[][])
   {
     this.u_degree = u_degree;
     this.v_degree = v_degree;
-    console.assert(cpoints.shape.length === 3);
-    console.assert(cpoints.shape[2] === 2 || cpoints.shape[2] === 3);
-    this.cpoints = cpoints;
+    this.cpoints = cpoints instanceof NDArray ? cpoints : new NDArray(cpoints);
+    console.assert(this.cpoints.shape.length === 3);
+    console.assert(this.cpoints.shape[2] === 2 || this.cpoints.shape[2] === 3);
     if(weights) {
-      console.assert(weights.shape.length === 2);
+      this.weights = weights instanceof NDArray ? weights : new NDArray(weights);
+      console.assert(this.weights.shape.length === 2);
     }
-    this.weights = weights;
   }
 
   get dimension() {
@@ -169,17 +169,19 @@ class BSplineSurface {
   constructor(
     u_degree:number,
     v_degree:number,
-    u_knots:NDArray,
-    v_knots:NDArray,
-    cpoints:NDArray,
-    weights?:NDArray)
+    u_knots:NDArray|number[],
+    v_knots:NDArray|number[],
+    cpoints:NDArray|number[][][],
+    weights?:NDArray|number[][])
   {
     this.u_degree = u_degree;
     this.v_degree = v_degree;
-    this.u_knots = u_knots;
-    this.v_knots = v_knots;
-    this.cpoints = cpoints;
-    this.weights = weights;
+    this.u_knots = u_knots instanceof NDArray ? u_knots : new NDArray(u_knots);
+    this.v_knots = v_knots instanceof NDArray ? v_knots : new NDArray(v_knots);
+    this.cpoints = cpoints instanceof NDArray ? cpoints : new NDArray(cpoints);
+    if(weights) {
+      this.weights = weights instanceof NDArray ? weights : new NDArray(weights);
+    }
   }
 
   get dimension() {
@@ -234,6 +236,22 @@ class BSplineSurface {
       }
     }
     return tess;
+  }
+
+  tessellate(resolution=10) {
+    let tessPoints = this.tessellatePoints(resolution);
+    let N = resolution+1;
+    let faces:number[] = [];
+    for(let i=0; i<N-1; i++) {
+      for(let j=0; j<N-1; j++) {
+        faces = faces.concat(
+          0, N*j+i, N*j+i+1, N*(j+1)+i,
+          0, N*j+i+1, N*(j+1)+i+1, N*(j+1)+i
+        );
+      }
+    }
+    tessPoints.reshape([N*N]);
+    return {vertices:tessPoints.data,faces};
   }
 
   insertKnotU(un:number, r:number) {
