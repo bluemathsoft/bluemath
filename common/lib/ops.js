@@ -191,8 +191,32 @@ function dot(A, B) {
 }
 exports.dot = dot;
 /**
+ * Computes cross product of A and B
+ * Only defined for A and B to 1D vectors of length at least 3
+ * Only first 3 elements of A and B are used
+ */
+function cross(A, B) {
+    if (A.shape.length !== 1 || B.shape.length !== 1) {
+        throw new Error('A or B is not 1D');
+    }
+    if (A.length < 3 || B.length < 3) {
+        throw new Error('A or B is less than 3 in length');
+    }
+    var a1 = A.getN(0);
+    var a2 = A.getN(1);
+    var a3 = A.getN(2);
+    var b1 = B.getN(0);
+    var b2 = B.getN(1);
+    var b3 = B.getN(2);
+    return new ndarray_1.NDArray([
+        a2 * b3 - a3 * b2,
+        a3 * b1 - a1 * b3,
+        a1 * b2 - a2 * b1
+    ]);
+}
+exports.cross = cross;
+/**
  * Computes length or magnitude of A, where A is a 1D vector
- * @param A C
  */
 function length(A) {
     if (A.shape.length !== 1) {

@@ -22,7 +22,7 @@
 import {NDArray} from '../src/ndarray'
 import {Complex} from '../src/complex'
 import {
-  arr,eye,zeros,add,sub,mul,div,range,count,empty,dot,length,isequal,dir
+  arr,eye,zeros,add,sub,mul,div,range,count,empty,dot,length,isequal,dir,cross
 } from '../src/ops'
 
 export default function testOps() {
@@ -79,6 +79,13 @@ export default function testOps() {
         assert.equal(dot(A,B), 30);
       });
     });
+    QUnit.module('cross', () => {
+      QUnit.test('_', assert => {
+        let A = arr([2,3,4]);
+        let B = arr([5,6,7]);
+        assert.ok(cross(A,B).isEqual(arr([-3,6,-3])));
+      });
+    })
     QUnit.module('length', () => {
       QUnit.test('_', assert => {
         let B = arr([2,2,2]);

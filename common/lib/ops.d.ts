@@ -67,8 +67,13 @@ export declare function arr(arg: any[]): NDArray;
  */
 export declare function dot(A: NDArray, B: NDArray): number;
 /**
+ * Computes cross product of A and B
+ * Only defined for A and B to 1D vectors of length at least 3
+ * Only first 3 elements of A and B are used
+ */
+export declare function cross(A: NDArray, B: NDArray): NDArray;
+/**
  * Computes length or magnitude of A, where A is a 1D vector
- * @param A C
  */
 export declare function length(A: NDArray): number;
 /**

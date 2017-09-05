@@ -185,8 +185,32 @@ export function dot(A:NDArray, B:NDArray) : number {
 }
 
 /**
+ * Computes cross product of A and B
+ * Only defined for A and B to 1D vectors of length at least 3
+ * Only first 3 elements of A and B are used
+ */
+export function cross(A:NDArray, B:NDArray) : NDArray {
+  if(A.shape.length !== 1 || B.shape.length !== 1) {
+    throw new Error('A or B is not 1D');
+  }
+  if(A.length < 3 || B.length < 3) {
+    throw new Error('A or B is less than 3 in length');
+  }
+  let a1 = A.getN(0);
+  let a2 = A.getN(1);
+  let a3 = A.getN(2);
+  let b1 = B.getN(0);
+  let b2 = B.getN(1);
+  let b3 = B.getN(2);
+  return new NDArray([
+    a2*b3-a3*b2,
+    a3*b1-a1*b3,
+    a1*b2-a2*b1
+  ]);
+}
+
+/**
  * Computes length or magnitude of A, where A is a 1D vector
- * @param A C
  */
 export function length(A:NDArray) {
   if(A.shape.length !== 1) {
