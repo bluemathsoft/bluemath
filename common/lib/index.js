@@ -15,6 +15,7 @@ exports.mul = ops_1.mul;
 exports.sub = ops_1.sub;
 exports.div = ops_1.div;
 exports.dot = ops_1.dot;
+exports.cross = ops_1.cross;
 exports.length = ops_1.length;
 exports.dir = ops_1.dir;
 exports.count = ops_1.count;

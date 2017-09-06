@@ -9,7 +9,7 @@ import {
   iszero, isequal,
   torad, todeg,
   add, mul, sub, div,
-  dot, length, dir,
+  dot, cross, length, dir,
   count
 } from './ops'
 import {EPSILON} from './constants'
@@ -33,6 +33,6 @@ export {
   iszero, isequal,
   torad, todeg,
   add, mul, sub, div,
-  dot, length, dir,
+  dot, cross, length, dir,
   count
 }

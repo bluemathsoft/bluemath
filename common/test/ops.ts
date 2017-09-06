@@ -85,7 +85,7 @@ export default function testOps() {
         let B = arr([5,6,7]);
         assert.ok(cross(A,B).isEqual(arr([-3,6,-3])));
       });
-    })
+    });
     QUnit.module('length', () => {
       QUnit.test('_', assert => {
         let B = arr([2,2,2]);
