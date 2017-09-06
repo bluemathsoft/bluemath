@@ -23,8 +23,97 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 import {NDArray,arr} from '@bluemath/common'
 
 import {BSplineCurve, BezierCurve} from '../src/nurbs/bcurve'
+import {planeFrom3Points} from '../src/nurbs/helper'
 
 export default function testNURBS() {
+
+  QUnit.module('Helper', () => {
+    QUnit.test('XY plane',assert=> {
+      assert.deepEqual(planeFrom3Points(
+        arr([0,0,0]),
+        arr([5,0,0]),
+        arr([0,5,0])
+      ), [0,0,1,0]);
+      assert.deepEqual(planeFrom3Points(
+        arr([0,0,0]),
+        arr([0,5,0]),
+        arr([5,0,0])
+      ), [0,0,-1,0]);
+      assert.deepEqual(planeFrom3Points(
+        arr([0,0,3]),
+        arr([0,5,3]),
+        arr([5,0,3])
+      ), [0,0,-1,3]);
+      assert.deepEqual(planeFrom3Points(
+        arr([0,0,3]),
+        arr([5,0,3]),
+        arr([0,5,3])
+      ), [0,0,1,-3]);
+    });
+    QUnit.test('XZ plane',assert=> {
+      assert.deepEqual(planeFrom3Points(
+        arr([0,0,0]),
+        arr([5,0,0]),
+        arr([0,0,5])
+      ), [0,-1,0,0]);
+      assert.deepEqual(planeFrom3Points(
+        arr([0,0,0]),
+        arr([0,0,5]),
+        arr([5,0,0])
+      ), [0,1,0,0]);
+      assert.deepEqual(planeFrom3Points(
+        arr([0,2,0]),
+        arr([0,2,5]),
+        arr([5,2,0])
+      ), [0,1,0,-2]);
+      assert.deepEqual(planeFrom3Points(
+        arr([0,2,0]),
+        arr([5,2,0]),
+        arr([0,2,5])
+      ), [0,-1,0,2]);
+    });
+    QUnit.test('YZ plane',assert=> {
+      assert.deepEqual(planeFrom3Points(
+        arr([0,0,0]),
+        arr([0,5,0]),
+        arr([0,0,5])
+      ), [1,0,0,0]);
+      assert.deepEqual(planeFrom3Points(
+        arr([0,0,0]),
+        arr([0,0,5]),
+        arr([0,5,0])
+      ), [-1,0,0,0]);
+      assert.deepEqual(planeFrom3Points(
+        arr([2,0,0]),
+        arr([2,0,5]),
+        arr([2,5,0])
+      ), [-1,0,0,2]);
+      assert.deepEqual(planeFrom3Points(
+        arr([2,0,0]),
+        arr([2,5,0]),
+        arr([2,0,5])
+      ), [1,0,0,-2]);
+    });
+    QUnit.test('Oblique plane',assert=> {
+      {
+        let [a,b,c,d] = planeFrom3Points(
+          arr([1,0,0]),
+          arr([0,1,0]),
+          arr([0,0,1])
+        );
+        assert.ok(a>0 && b>0 && c>0);
+      }
+      {
+        let [a,b,c,d] = planeFrom3Points(
+          arr([0,1,0]),
+          arr([1,0,0]),
+          arr([0,0,1])
+        );
+        assert.ok(a<0 && b<0 && c<0);
+      }
+    });
+  });
+
   QUnit.module('NURBS', () => {
     QUnit.module('Bezier2D', () => {
       QUnit.test('construction', assert => {
@@ -33,7 +122,7 @@ export default function testNURBS() {
         ]));
         assert.ok(!!bezcrv);
       });
-      QUnit.test('isFlat', assert => {
+      QUnit.test('isStraight', assert => {
         let bezcrv = new BezierCurve(3,arr([
           [0,0],[1,3],[2,-3],[3,1]
         ]));

@@ -20,7 +20,7 @@
  */
 
 import {
-  isequal, empty, NDArray, TypedArray, add, mul
+  isequal, empty, NDArray, TypedArray, add, sub, mul, dir, dot, cross
 } from '@bluemath/common'
 
 /**
@@ -222,10 +222,35 @@ function blossom(cpoints:NDArray, n:number, ts:number[]) : NDArray {
   return <NDArray>b.get(0);
 }
 
+/**
+ * Computes equation of plane passing through given 3 points
+ * Eqn of plane is
+ *  ax + by + cz + d = 0
+ * This routine returns [a,b,c,d]
+ * The direction of the normal is defined by assuming that A,B,C are in
+ * counter-clockwise direction. i.e. if you curl fingers of right hand
+ * in counter-clockwise direction, then the raised thumb will give the
+ * direction of the plane normal
+ */
+function planeFrom3Points(A:NDArray, B:NDArray, C:NDArray) {
+  if(A.shape.length !== 1 || B.shape.length !== 1 || C.shape.length !== 1) {
+    throw new Error('A,B,C should be 1D position vectors, i.e. Point coord');
+  }
+  if(A.shape[0] !== 3 || B.shape[0] !== 3 || C.shape[0] !== 3) {
+    throw new Error('A,B,C should be points in 3D space');
+  }
+  let AB = sub(B,A);
+  let AC = sub(C,A);
+  let n = dir(cross(AB,AC));
+  let d = -dot(n,A);
+  return [n.getN(0), n.getN(1), n.getN(2), d];
+}
+
 export {
   bernstein,
   findSpan,
   getBasisFunction,
   getBasisFunctionDerivatives,
-  blossom
+  blossom,
+  planeFrom3Points
 }

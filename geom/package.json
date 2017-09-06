@@ -29,22 +29,22 @@
   "author": "Jayesh Salvi",
   "license": "AGPL-3.0",
   "devDependencies": {
-    "@types/jquery": "^3.2.11",
+    "@types/jquery": "^3.2.12",
     "@types/qunit": "^2.0.31",
-    "@types/three": "^0.84.19",
-    "awesome-typescript-loader": "^3.2.2",
+    "@types/three": "^0.84.20",
+    "awesome-typescript-loader": "^3.2.3",
     "source-map-loader": "^0.2.1",
-    "three": "^0.86.0",
+    "three": "^0.87.1",
     "three-orbitcontrols-ts": "^0.1.2",
     "typedoc": "^0.8.0",
-    "typescript": "^2.4.2",
-    "webpack": "^3.5.4"
+    "typescript": "^2.5.2",
+    "webpack": "^3.5.5"
   },
   "bugs": {
     "url": "https://github.com/bluemathsoft/bluemath/issues"
   },
   "homepage": "https://github.com/bluemathsoft/bluemath#readme",
   "dependencies": {
-    "@bluemath/common": "^0.1.11"
+    "@bluemath/common": "^0.1.13"
   }
 }
