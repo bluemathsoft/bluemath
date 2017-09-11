@@ -24,7 +24,8 @@ import {
   bernstein, planeFrom3Points
 } from './helper'
 import {
-  NDArray,zeros,arr,add,dot,mul,dir,count,empty,iszero
+  NDArray,zeros,arr,add,dot,mul,dir,count,empty,iszero,
+  EPSILON
 } from '@bluemath/common'
 
 class BezierSurface {
@@ -299,6 +300,10 @@ class BSplineSurface {
     }
     tessPoints.reshape([N*N]);
     return {vertices:tessPoints.data,faces};
+  }
+
+  tessellateAdaptive(tolerance=EPSILON) {
+
   }
 
   insertKnotU(un:number, r:number) {
@@ -815,7 +820,7 @@ class BSplineSurface {
     }
     let bezStrips = [];
     for(let numUBez=0; numUBez<Q.length; numUBez++) {
-      let cpoints = <NDArray>Q.get(numUBez);
+      let cpoints = Q.getA(numUBez);
       bezStrips.push(new BSplineSurface(
         this.u_degree,this.v_degree,u_bez_knots,this.v_knots, cpoints));
     }
@@ -825,7 +830,7 @@ class BSplineSurface {
     for(let bezStrip of bezStrips) {
       let Q = bezStrip.decomposeV();
       for(let numUBez=0; numUBez<Q.length; numUBez++) {
-        let cpoints = <NDArray>Q.get(numUBez);
+        let cpoints = Q.getA(numUBez);
         bezSurfs.push(new BezierSurface(this.u_degree, this.v_degree, cpoints));
       }
     }

@@ -641,6 +641,94 @@ function displayCurveDecomposition(crvsrc, bezcrvs) {
   Plotly.newPlot(pelem, traces, CURVE_COMPARISION_LAYOUT);
 }
 
+function displaySurfaceDecomposition(srfsrc, bezsrfs) {
+  let pelem = $('#action-viz #mainplot').get(0);
+  let traces = [];
+
+  let tess = srfsrc.tessellatePoints(10);
+
+  let ures = tess.shape[0];
+  let vres = tess.shape[1];
+  let xdata = [];
+  let ydata = [];
+  let zdata = [];
+  for(let i=0; i<ures; i++) {
+    for(let j=0; j<vres; j++) {
+      let pt:NDArray = <NDArray>(tess.get(i,j));
+      xdata.push(<number>pt.get(0));
+      ydata.push(<number>pt.get(1));
+      zdata.push(<number>pt.get(2));
+    }
+  }
+
+  traces.push({
+    x: xdata,
+    y: ydata,
+    z: zdata,
+    type : 'scatter3d',
+    mode : 'markers',
+    name : 'Source Surface',
+    scene:'scene1'
+  });
+
+  for(let bezsrf of bezsrfs) {
+
+    let tess = bezsrf.tessellatePoints(10);
+
+    let ures = tess.shape[0];
+    let vres = tess.shape[1];
+    let xdata = [];
+    let ydata = [];
+    let zdata = [];
+    for(let i=0; i<ures; i++) {
+      for(let j=0; j<vres; j++) {
+        let pt:NDArray = <NDArray>(tess.get(i,j));
+        xdata.push(<number>pt.get(0));
+        ydata.push(<number>pt.get(1));
+        zdata.push(<number>pt.get(2));
+      }
+    }
+    traces.push({
+      x: xdata,
+      y: ydata,
+      z: zdata,
+      type : 'scatter3d',
+      mode : 'markers',
+      scene:'scene2',
+      name:'Control Points'
+    });
+
+    /*
+    let uncp = bezsrf.cpoints.shape[0];
+    let vncp = bezsrf.cpoints.shape[1];
+    let cxdata = [];
+    let cydata = [];
+    let czdata = [];
+    for(let i=0; i<uncp; i++) {
+      for(let j=0; j<vncp; j++) {
+        let cp:NDArray = <NDArray>(bezsrf.cpoints.get(i,j));
+        cxdata.push(<number>cp.get(0));
+        cydata.push(<number>cp.get(1));
+        czdata.push(<number>cp.get(2));
+      }
+    }
+
+    traces.push({
+      x: cxdata,
+      y: cydata,
+      z: czdata,
+      type : 'scatter3d',
+      mode : 'markers',
+      scene:'scene2',
+      name:'Control Points'
+    });
+    */
+
+  }
+
+  Plotly.newPlot(pelem, traces, SURFACE_COMPARISION_LAYOUT);
+}
+
 function displayCurveComparision(crvsrc, crvtgt, titles) {
   let pelem = $('#action-viz #mainplot').get(0);
 
@@ -882,6 +970,14 @@ function performAction(actionData) {
         crvdef.weights ? new NDArray(crvdef.weights) : undefined);
     let bezcrvs = crvSource.decompose();
     displayCurveDecomposition(crvSource, bezcrvs);
+  } else if(actionData.actiontype === 'decompose_surf') {
+    let srfdef = DATA_MAP[nameToKey(actionData.input)].object;
+    let srfSource = new BSplineSurface(srfdef.u_degree,srfdef.v_degree,
+      srfdef.u_knots, srfdef.v_knots,
+      srfdef.cpoints
+    );
+    let bezsrfs = srfSource.decompose();
+    displaySurfaceDecomposition(srfSource, bezsrfs);
   } else if(actionData.actiontype === 'insert_knot_surf') {
     let srfdef = DATA_MAP[nameToKey(actionData.input)].object;
     let srfSource = new BSplineSurface(
