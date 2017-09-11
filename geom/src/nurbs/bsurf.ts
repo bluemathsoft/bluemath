@@ -21,9 +21,11 @@
 
 import {                                                                                                                                                      
   findSpan, getBasisFunction,
-  bernstein                                                                                                     
+  bernstein, planeFrom3Points
 } from './helper'
-import {NDArray,zeros,add,mul,count,empty,iszero} from '@bluemath/common'
+import {
+  NDArray,zeros,arr,add,dot,mul,dir,count,empty,iszero
+} from '@bluemath/common'
 
 class BezierSurface {
 
@@ -161,6 +163,18 @@ class BSplineSurface {
 
   u_degree : number;
   v_degree : number;
+  /**
+   * cpoints is a two dimensional grid of coordinates.
+   * The outermost index is along U, the next inner index is along V
+   * 
+   *          V-->
+   *      [
+   *  U     [ [xa,ya,za], [xb,yb,zb], ...]
+   *  |     [ [xl,yl,zl], [xm,ym,zm], ...]
+   *  |     .
+   *  v     .
+   *      ]
+   */
   cpoints : NDArray;
   u_knots : NDArray;
   v_knots : NDArray;
@@ -201,6 +215,39 @@ class BSplineSurface {
 
   isRational() {
     return !!this.weights;
+  }
+
+  isFlat(tolerance=1) {
+    let nU = this.cpoints.shape[0];
+    let nV = this.cpoints.shape[1];
+    let p00 = this.cpoints.getA(0,0);
+    let p01 = this.cpoints.getA(0,nU-1);
+    let p11 = this.cpoints.getA(nV-1,nU-1);
+    let p10 = this.cpoints.getA(nV-1,0);
+
+    let [a0,b0,c0,d0] = planeFrom3Points(p00,p01,p11);
+    let [a1,b1,c1,d1] = planeFrom3Points(p00,p11,p10);
+
+    // Mean plane is average of normals and offset of two planes
+    let n0 = arr([a0,b0,c0]);
+    let n1 = arr([a1,b1,c1]);
+    let n = dir(<NDArray>add(n0,n1));
+    let d = (d0+d1)/2;
+
+    // We substitute every control point in this equation of mean plane
+    // If the resulting value is within tolerance, then they are on
+    // the plane for given tolerance. If all of them are on the plane
+    // then the BSpline Surface could be considered flat for given tolerance
+    for(let i=0; i<nU; i++) {
+      for(let j=0; j<nV; j++) {
+        let cpoint = this.cpoints.getA(i,j);
+        let val = <number>add(dot(n,cpoint), d);
+        if(Math.abs(val) > tolerance) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   evaluate(u:number, v:number, tess:NDArray, uidx:number, vidx:number) {

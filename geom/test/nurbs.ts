@@ -22,7 +22,9 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 */
 import {NDArray,arr} from '@bluemath/common'
 
-import {BSplineCurve, BezierCurve} from '../src/nurbs/bcurve'
+import {
+  BSplineCurve, BezierCurve, BSplineSurface
+} from '../src/nurbs'
 import {planeFrom3Points} from '../src/nurbs/helper'
 
 export default function testNURBS() {
@@ -96,7 +98,7 @@ export default function testNURBS() {
     });
     QUnit.test('Oblique plane',assert=> {
       {
-        let [a,b,c,d] = planeFrom3Points(
+        let [a,b,c] = planeFrom3Points(
           arr([1,0,0]),
           arr([0,1,0]),
           arr([0,0,1])
@@ -104,7 +106,7 @@ export default function testNURBS() {
         assert.ok(a>0 && b>0 && c>0);
       }
       {
-        let [a,b,c,d] = planeFrom3Points(
+        let [a,b,c] = planeFrom3Points(
           arr([0,1,0]),
           arr([1,0,0]),
           arr([0,0,1])
@@ -162,6 +164,31 @@ export default function testNURBS() {
         assert.equal(bcrv.degree, 1);
         assert.equal(bcrv.cpoints.shape[0], 2);
         assert.equal(bcrv.knots.shape[0], 4);
+      });
+    });
+    QUnit.module('BSpline Surf 3D', () => {
+      QUnit.test('isFlat', assert => {
+        let bsrf = new BSplineSurface(2,2,
+          [0,0,0,1,1,1],
+          [0,0,0,1,1,1],
+          [
+            [[-1,-1,0],[0,-1,0],[1,-1,0]],
+            [[-1,0,1],[0,0,2],[1,0,-1]],
+            [[-1,1,0],[0,1,0],[1,1,0]]
+          ]
+        );
+        assert.ok(!bsrf.isFlat(1));
+        assert.ok(bsrf.isFlat(3));
+
+        bsrf = new BSplineSurface(1,1,
+          [0,0,1,1],
+          [0,0,1,1],
+          [
+            [[-1,-1,0],[0,-1,0]],
+            [[-1,0,0],[0,0,0]],
+          ]
+        );
+        assert.ok(bsrf.isFlat(0));
       });
     });
   });

@@ -239,8 +239,8 @@ function planeFrom3Points(A:NDArray, B:NDArray, C:NDArray) {
   if(A.shape[0] !== 3 || B.shape[0] !== 3 || C.shape[0] !== 3) {
     throw new Error('A,B,C should be points in 3D space');
   }
-  let AB = sub(B,A);
-  let AC = sub(C,A);
+  let AB = <NDArray>sub(B,A);
+  let AC = <NDArray>sub(C,A);
   let n = dir(cross(AB,AC));
   let d = -dot(n,A);
   return [n.getN(0), n.getN(1), n.getN(2), d];
