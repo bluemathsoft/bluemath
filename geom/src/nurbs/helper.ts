@@ -290,16 +290,16 @@ function intersectLineSegLineSeg3D(
   let d4343 = dot(p43,p43);
   let d2121 = dot(p21,p21);
 
-  let denom = d2121 * d4343 - d4321 * d4321
+  let denom = d2121 * d4343 - d4321 * d4321;
 
   if(iszero(denom)) {
     return null;
   }
 
-  let numer = d1343 * d4321 - d1321 * d4343
+  let numer = d1343 * d4321 - d1321 * d4343;
 
-  let mua = numer / denom
-  let mub = (d1343 + d4321 * mua) / d4343
+  let mua = numer / denom;
+  let mub = (d1343 + d4321 * mua) / d4343;
 
   let pa = add(pt1, mul(mua, p21));
   let pb = add(pt3, mul(mub, p43));

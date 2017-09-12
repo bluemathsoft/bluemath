@@ -22,7 +22,7 @@
 
 import {
   BezierCurve, BSplineCurve,
-  LineSegment, CircleArc, Circle, EllipseArc, Ellipse
+  LineSegment, CircleArc, Circle
 } from './bcurve'
 import {
   BezierSurface, BSplineSurface
@@ -34,8 +34,6 @@ export {
   LineSegment,
   CircleArc,
   Circle,
-  EllipseArc,
-  Ellipse,
   BezierSurface,
   BSplineSurface
 };

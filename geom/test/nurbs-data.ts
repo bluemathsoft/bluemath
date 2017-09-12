@@ -464,8 +464,14 @@ export const DATA = [
       "from" : [0,1],
       "to" : [0,4]
     }
-  }
-
+  },
+  {
+    "name" : "CircleArc1",
+    "type" : "SpecificGeometry",
+    "object" : {
+      "type" : "CircleArc"
+    }
+  },
   {
     "name" : "Split Bezier 0",
     "type" : "Action",

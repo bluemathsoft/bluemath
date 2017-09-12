@@ -22,7 +22,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 import {NDArray,AABB,length,dir,add,mul} from '@bluemath/common'
 import {
   BSplineCurve,BezierCurve,BezierSurface,BSplineSurface,
-  LineSegment
+  LineSegment, CircleArc
 } from '../src/nurbs'
 const RESOLUTION = 50;
 
@@ -308,7 +308,7 @@ function plotBSplineCurve(bcrv:BSplineCurve) {
   $('#action-viz').hide();
 
   let {traces,shapes} = generateBSplinePlotlyData(bcrv);
-  if(shapes) {
+  if(shapes && false) {
     CURVE_CONSTRUCTION_LAYOUT.shapes = shapes;
   }
 
@@ -478,6 +478,10 @@ function displaySpecificGeometry(object) {
   switch(object.type) {
     case "LineSegment":
       bcrv = new LineSegment(object.from, object.to);
+      break;
+    case "CircleArc":
+      bcrv = new CircleArc(undefined,4,0,3*Math.PI/2);
+      console.log(bcrv.toString());
       break;
   }
 

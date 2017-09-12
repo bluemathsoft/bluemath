@@ -20,7 +20,25 @@
 */
 
 import * as nurbs from './nurbs'
+import {NDArray} from '@bluemath/common'
+
+class Axis {
+  origin : NDArray;
+  z : NDArray;
+}
+
+class CoordSystem {
+  origin : NDArray;
+  z : NDArray;
+  x : NDArray;
+
+  fromXY(coord:number[]|NDArray) : NDArray {
+
+  }
+}
 
 export {
-  nurbs
+  nurbs,
+  Axis,
+  CoordSystem
 };

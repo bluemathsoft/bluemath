@@ -22,11 +22,12 @@
 
 import {                                                                                                                                                      
   findSpan, getBasisFunction, getBasisFunctionDerivatives,
-  bernstein, blossom
+  bernstein, blossom, intersectLineSegLineSeg3D
 } from './helper'
 import {
-  EPSILON, NDArray,iszero, zeros, AABB, add, mul, arr
+  EPSILON, NDArray,iszero, zeros, AABB, add, mul, arr, sub
 } from '@bluemath/common'
+import {CoordSystem} from '..'
 
 class BezierCurve {
   degree : number;
@@ -783,14 +784,13 @@ class BSplineCurve {
 
   toString() {
     let s = `BSpline(Deg ${this.degree} cpoints ${this.cpoints.toString()})`;
-    s += ` knots ${this.knots.toString}`;
+    s += ` knots ${this.knots.toString()}`;
     if(this.weights) { // isRational
       s += ` weights ${this.weights.toString()}`;
     }
     return s;
   }
 }
-
 
 class LineSegment extends BSplineCurve {
   constructor(from:number[],to:number[]) {
@@ -799,27 +799,111 @@ class LineSegment extends BSplineCurve {
 }
 
 class CircleArc extends BSplineCurve {
+  constructor(coordsys:CoordSystem, radius:number, start:number, end:number) {
+    let O = arr([0,0]);
+    let X = arr([1,0]);
+    let Y = arr([0,1]);
+    if(end < start) {
+      end = end + 2*Math.PI;
+    }
+    let theta = end-start;
 
+    let narcs;
+    if(theta <= Math.PI/2) {
+      narcs = 1;
+    } else if(theta <= Math.PI) {
+      narcs = 2;
+    } else if(theta <= 3*Math.PI/2) {
+      narcs = 3;
+    } else {
+      narcs = 4;
+    }
+    let dtheta = theta/narcs;
+
+    let n = 2*narcs; // n+1 control points
+    let p = 2; // Degree
+    let m = n+p+1;
+    let U = new NDArray({shape:[m+1]});
+    let P = new NDArray({shape:[n+1,2]});
+    let wt = new NDArray({shape:[n+1]});
+
+    let w1 = Math.cos(dtheta/2); // dtheta/2 is the base angle
+    let P0 = <NDArray>add(O,add(
+      mul(radius,Math.cos(start),X),mul(radius,Math.sin(start),Y)
+    ));
+    let T0 = <NDArray>add(
+      mul(-Math.sin(start),X),mul(Math.cos(start),Y));
+    P.set(0,P0);
+    wt.set(0,1);
+    let index = 0;
+    let angle = start;
+
+    for(let i=1; i<narcs+1; i++) {
+      angle += dtheta;
+      let P2 = <NDArray>add(O,
+        mul(radius, Math.cos(angle), X), mul(radius, Math.sin(angle), Y));
+      P.set(index+2, P2);
+      wt.set(index+2, 1);
+      let T2 = <NDArray>add(mul(-Math.sin(angle),X), mul(Math.cos(angle),Y));
+      let P0_ = [P0.getN(0), P0.getN(1), 0];
+      let T0_ = [T0.getN(0), T0.getN(1), 0];
+      let P2_ = [P2.getN(0), P2.getN(1), 0];
+      let T2_ = [T2.getN(0), T2.getN(1), 0];
+      let isect = intersectLineSegLineSeg3D(P0_,T0_,P2_,T2_);
+      if(!isect) {
+        throw new Error('Intersection in 3D failed');
+      }
+      console.log(isect);
+      // let pti = <NDArray>add(arr(P0_),
+      //   mul(<NDArray>sub(arr(T0_),arr(P0_)),isect[0]));
+      let pti = <NDArray>add(arr(P2_),
+          mul(<NDArray>sub(arr(T2_),arr(P2_)),isect[1]));
+      console.log(pti.toString());
+      P.set(index+1,pti.getA(':2'));
+      wt.set(index+1,w1);
+
+      index += 2;
+      if(i < narcs) {
+        P0 = P2;
+        T0 = T2;
+      }
+    }
+    let j = 2*narcs+1;
+    for(let i=0; i<3; i++) {
+      U.set(i,0.0);
+      U.set(i+j,1.0);
+    }
+
+    if(narcs === 1) {
+    } else if(narcs === 2) {
+      U.set(3, 0.5);
+      U.set(4, 0.5);
+    } else if(narcs === 3) {
+      U.set(3, 1/3);
+      U.set(4, 1/3);
+      U.set(5, 2/3);
+      U.set(6, 2/3);
+    } else if(narcs === 4) {
+      U.set(3, 0.25);
+      U.set(4, 0.25);
+      U.set(5, 0.5);
+      U.set(6, 0.5);
+      U.set(7, 0.75);
+      U.set(8, 0.75);
+    }
+    super(p,P,U,wt);
+  }
 }
 
 class Circle extends CircleArc {
 
 }
 
-class EllipseArc extends BSplineCurve {
-
-}
-
-class Ellipse extends EllipseArc {
-
-}
 
 export {
   BezierCurve,
   BSplineCurve,
   LineSegment,
   Circle,
-  CircleArc,
-  Ellipse,
-  EllipseArc
+  CircleArc
 }
