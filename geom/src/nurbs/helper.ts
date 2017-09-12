@@ -20,7 +20,8 @@
  */
 
 import {
-  isequal, empty, NDArray, TypedArray, add, sub, mul, dir, dot, cross
+  isequal, empty, NDArray, TypedArray, add, sub, mul, dir, dot, cross,
+  arr, iszero, length
 } from '@bluemath/common'
 
 /**
@@ -246,11 +247,78 @@ function planeFrom3Points(A:NDArray, B:NDArray, C:NDArray) {
   return [n.getN(0), n.getN(1), n.getN(2), d];
 }
 
+/**
+ * Finds intersection between two line segments in 3D
+ * First line segment extends from p1 to p2, and second extends from p3 to p4
+ * Input points are assumed to be coordinates in 3D coord system
+ * 
+ * Algorithm based on C implemention by Paul Bourke
+ * http://paulbourke.net/geometry/pointlineplane/lineseglineseg.c
+ * 
+ * The method will return a tuple with results (ua, ub),
+ * where u is the parameter value on each line
+ * If there is no intersection null will be returned
+ */
+function intersectLineSegLineSeg3D(
+  p1:number[],p2:number[],p3:number[],p4:number[]):null|number[]
+{
+  if(p1.length !== 3 || p2.length !== 3 || p3.length !== 3 || p4.length !== 3)
+  {
+    throw new Error('All input points need to be 3D');
+  }
+  let pt1 = arr(p1);
+  let pt2 = arr(p2);
+  let pt3 = arr(p3);
+  let pt4 = arr(p4);
+
+  let p13 = <NDArray>sub(pt1,pt3);
+  let p43 = <NDArray>sub(pt4,pt3);
+
+  if(iszero(p43.getN(0)) && iszero(p43.getN(1)) && iszero(p43.getN(2))) {
+    return null;
+  }
+
+  let p21 = <NDArray>sub(pt2,pt1);
+
+  if(iszero(p21.getN(0)) && iszero(p21.getN(1)) && iszero(p21.getN(2))) {
+    return null;
+  }
+
+  let d1343 = dot(p13,p43);
+  let d4321 = dot(p43,p21);
+  let d1321 = dot(p13,p21);
+  let d4343 = dot(p43,p43);
+  let d2121 = dot(p21,p21);
+
+  let denom = d2121 * d4343 - d4321 * d4321
+
+  if(iszero(denom)) {
+    return null;
+  }
+
+  let numer = d1343 * d4321 - d1321 * d4343
+
+  let mua = numer / denom
+  let mub = (d1343 + d4321 * mua) / d4343
+
+  let pa = add(pt1, mul(mua, p21));
+  let pb = add(pt3, mul(mub, p43));
+
+  // Line segment pa to pb represents shortest line segment between a and b
+  // If it's of length zero, then ua, ub represent point of intersection
+  // between the two lines
+  if(iszero(length(<NDArray>sub(pb,pa)))) {
+    return [mua, mub];
+  }
+  return null;
+}
+
 export {
   bernstein,
   findSpan,
   getBasisFunction,
   getBasisFunctionDerivatives,
   blossom,
-  planeFrom3Points
+  planeFrom3Points,
+  intersectLineSegLineSeg3D
 }

@@ -25,94 +25,121 @@ import {NDArray,arr} from '@bluemath/common'
 import {
   BSplineCurve, BezierCurve, BSplineSurface
 } from '../src/nurbs'
-import {planeFrom3Points} from '../src/nurbs/helper'
+import {
+  planeFrom3Points, intersectLineSegLineSeg3D
+} from '../src/nurbs/helper'
 
 export default function testNURBS() {
 
   QUnit.module('Helper', () => {
-    QUnit.test('XY plane',assert=> {
-      assert.deepEqual(planeFrom3Points(
-        arr([0,0,0]),
-        arr([5,0,0]),
-        arr([0,5,0])
-      ), [0,0,1,0]);
-      assert.deepEqual(planeFrom3Points(
-        arr([0,0,0]),
-        arr([0,5,0]),
-        arr([5,0,0])
-      ), [0,0,-1,0]);
-      assert.deepEqual(planeFrom3Points(
-        arr([0,0,3]),
-        arr([0,5,3]),
-        arr([5,0,3])
-      ), [0,0,-1,3]);
-      assert.deepEqual(planeFrom3Points(
-        arr([0,0,3]),
-        arr([5,0,3]),
-        arr([0,5,3])
-      ), [0,0,1,-3]);
+    QUnit.module('planeFrom3Points', () => {
+      QUnit.test('XY plane',assert=> {
+        assert.deepEqual(planeFrom3Points(
+          arr([0,0,0]),
+          arr([5,0,0]),
+          arr([0,5,0])
+        ), [0,0,1,0]);
+        assert.deepEqual(planeFrom3Points(
+          arr([0,0,0]),
+          arr([0,5,0]),
+          arr([5,0,0])
+        ), [0,0,-1,0]);
+        assert.deepEqual(planeFrom3Points(
+          arr([0,0,3]),
+          arr([0,5,3]),
+          arr([5,0,3])
+        ), [0,0,-1,3]);
+        assert.deepEqual(planeFrom3Points(
+          arr([0,0,3]),
+          arr([5,0,3]),
+          arr([0,5,3])
+        ), [0,0,1,-3]);
+      });
+      QUnit.test('XZ plane',assert=> {
+        assert.deepEqual(planeFrom3Points(
+          arr([0,0,0]),
+          arr([5,0,0]),
+          arr([0,0,5])
+        ), [0,-1,0,0]);
+        assert.deepEqual(planeFrom3Points(
+          arr([0,0,0]),
+          arr([0,0,5]),
+          arr([5,0,0])
+        ), [0,1,0,0]);
+        assert.deepEqual(planeFrom3Points(
+          arr([0,2,0]),
+          arr([0,2,5]),
+          arr([5,2,0])
+        ), [0,1,0,-2]);
+        assert.deepEqual(planeFrom3Points(
+          arr([0,2,0]),
+          arr([5,2,0]),
+          arr([0,2,5])
+        ), [0,-1,0,2]);
+      });
+      QUnit.test('YZ plane',assert=> {
+        assert.deepEqual(planeFrom3Points(
+          arr([0,0,0]),
+          arr([0,5,0]),
+          arr([0,0,5])
+        ), [1,0,0,0]);
+        assert.deepEqual(planeFrom3Points(
+          arr([0,0,0]),
+          arr([0,0,5]),
+          arr([0,5,0])
+        ), [-1,0,0,0]);
+        assert.deepEqual(planeFrom3Points(
+          arr([2,0,0]),
+          arr([2,0,5]),
+          arr([2,5,0])
+        ), [-1,0,0,2]);
+        assert.deepEqual(planeFrom3Points(
+          arr([2,0,0]),
+          arr([2,5,0]),
+          arr([2,0,5])
+        ), [1,0,0,-2]);
+      });
+      QUnit.test('Oblique plane',assert=> {
+        {
+          let [a,b,c] = planeFrom3Points(
+            arr([1,0,0]),
+            arr([0,1,0]),
+            arr([0,0,1])
+          );
+          assert.ok(a>0 && b>0 && c>0);
+        }
+        {
+          let [a,b,c] = planeFrom3Points(
+            arr([0,1,0]),
+            arr([1,0,0]),
+            arr([0,0,1])
+          );
+          assert.ok(a<0 && b<0 && c<0);
+        }
+      });
     });
-    QUnit.test('XZ plane',assert=> {
-      assert.deepEqual(planeFrom3Points(
-        arr([0,0,0]),
-        arr([5,0,0]),
-        arr([0,0,5])
-      ), [0,-1,0,0]);
-      assert.deepEqual(planeFrom3Points(
-        arr([0,0,0]),
-        arr([0,0,5]),
-        arr([5,0,0])
-      ), [0,1,0,0]);
-      assert.deepEqual(planeFrom3Points(
-        arr([0,2,0]),
-        arr([0,2,5]),
-        arr([5,2,0])
-      ), [0,1,0,-2]);
-      assert.deepEqual(planeFrom3Points(
-        arr([0,2,0]),
-        arr([5,2,0]),
-        arr([0,2,5])
-      ), [0,-1,0,2]);
-    });
-    QUnit.test('YZ plane',assert=> {
-      assert.deepEqual(planeFrom3Points(
-        arr([0,0,0]),
-        arr([0,5,0]),
-        arr([0,0,5])
-      ), [1,0,0,0]);
-      assert.deepEqual(planeFrom3Points(
-        arr([0,0,0]),
-        arr([0,0,5]),
-        arr([0,5,0])
-      ), [-1,0,0,0]);
-      assert.deepEqual(planeFrom3Points(
-        arr([2,0,0]),
-        arr([2,0,5]),
-        arr([2,5,0])
-      ), [-1,0,0,2]);
-      assert.deepEqual(planeFrom3Points(
-        arr([2,0,0]),
-        arr([2,5,0]),
-        arr([2,0,5])
-      ), [1,0,0,-2]);
-    });
-    QUnit.test('Oblique plane',assert=> {
-      {
-        let [a,b,c] = planeFrom3Points(
-          arr([1,0,0]),
-          arr([0,1,0]),
-          arr([0,0,1])
-        );
-        assert.ok(a>0 && b>0 && c>0);
-      }
-      {
-        let [a,b,c] = planeFrom3Points(
-          arr([0,1,0]),
-          arr([1,0,0]),
-          arr([0,0,1])
-        );
-        assert.ok(a<0 && b<0 && c<0);
-      }
+    QUnit.module('intersectLineSegLineSeg3D', () => {
+      QUnit.test('_',assert=> {
+        let result;
+        result = intersectLineSegLineSeg3D(
+          [0, 0, 0], [1, 0, 0], [0, 0, 0], [0, 1, 0]);
+        assert.deepEqual(result, [0,0]);
+        result = intersectLineSegLineSeg3D(
+          [0, 0, 0], [1, 1, 0], [0, 1, 0], [1, 0, 0]);
+        assert.deepEqual(result, [0.5,0.5]);
+        result = intersectLineSegLineSeg3D(
+          [0, 0, 0], [1, 1, 0], [0, 1, 1], [1, 0, 1]);
+        assert.equal(result, null);
+        result = intersectLineSegLineSeg3D(
+          [0, 0, 0], [1, 1, 1], [0, 1, 0], [1, 0, 1]);
+        assert.deepEqual(result, [0.5,0.5]);
+        result = intersectLineSegLineSeg3D(
+          [0, 0, 0], [1, 1, 1], [1, 0, 0], [2, 1, 1]);
+        assert.equal(result, null);
+        result = intersectLineSegLineSeg3D(
+          [0, 0, 0], [1, 1, 1], [1, 1, 0], [2, 0, 1]);
+        assert.equal(result, null);
+      });
     });
   });
 
