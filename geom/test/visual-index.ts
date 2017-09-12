@@ -21,7 +21,8 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 
 import {NDArray,AABB,length,dir,add,mul} from '@bluemath/common'
 import {
-  BSplineCurve,BezierCurve,BezierSurface,BSplineSurface
+  BSplineCurve,BezierCurve,BezierSurface,BSplineSurface,
+  LineSegment
 } from '../src/nurbs'
 const RESOLUTION = 50;
 
@@ -300,28 +301,11 @@ function displayBezierCurve(crvData) {
   Plotly.newPlot(pelem, traces, BEZCURVE_CONSTRUCTION_LAYOUT);
 }
 
-function displayBSplineCurve(crvData) {
-
+function plotBSplineCurve(bcrv:BSplineCurve) {
   let pelem = $('#curve-viz #mainplot').get(0);
 
   $('#curve-viz').show();
   $('#action-viz').hide();
-
-  if(!crvData.knots) {
-    // Assume it's a bezier curve
-    crvData.knots = [];
-    for(let i=0; i<=crvData.degree; i++) {
-      crvData.knots.push(0);
-    }
-    for(let i=0; i<=crvData.degree; i++) {
-      crvData.knots.push(1);
-    }
-  }
-  let {degree, cpoints, knots} = crvData;
-
-  let bcrv = new BSplineCurve(degree,
-      new NDArray(cpoints), new NDArray(knots),
-      crvData.weights ? new NDArray(crvData.weights) : undefined);
 
   let {traces,shapes} = generateBSplinePlotlyData(bcrv);
   if(shapes) {
@@ -330,7 +314,7 @@ function displayBSplineCurve(crvData) {
 
   Plotly.newPlot(pelem, traces, CURVE_CONSTRUCTION_LAYOUT);
 
-  let knotzeros = new Array(degree);
+  let knotzeros = new Array(bcrv.degree);
   knotzeros.fill(0);
   $('#knotsliders')
     .empty();
@@ -392,7 +376,9 @@ function displayBSplineCurve(crvData) {
         .text(knotzeros.join(','))
       );
 
-  for(let i=degree+1; i<knots.length-degree; i++) {
+  let knots = bcrv.knots.data;
+
+  for(let i=bcrv.degree+1; i<knots.length-bcrv.degree; i++) {
     let jqelem = $('<div></div>')
       .attr('id',`slider${i}`)
       .addClass('knotslider')
@@ -404,10 +390,10 @@ function displayBSplineCurve(crvData) {
         slide : function (ev, ui) {
           let thisid = $(this).attr('id');
           let thisnum = parseInt(/slider(\d+)/.exec(thisid)[1]);
-          if(thisnum === degree+1 && ui.handleIndex === 0) {
+          if(thisnum === bcrv.degree+1 && ui.handleIndex === 0) {
             return false;
           }
-          if(thisnum === knots.length-degree-1 && ui.handleIndex === 1) {
+          if(thisnum === knots.length-bcrv.degree-1 && ui.handleIndex === 1) {
             return false;
           }
           let handles = $(this).find('.ui-slider-handle');
@@ -457,11 +443,45 @@ function displayBSplineCurve(crvData) {
       });
     $('#knotsliders').append(jqelem);
   }
-  let knotones = new Array(degree);
+  let knotones = new Array(bcrv.degree);
   knotones.fill(1);
   $('#knotsliders').append($('<span></span>')
     .attr('id','clamped-one-knots')
     .text(knotones.join(',')));
+}
+
+function displayBSplineCurve(crvData) {
+
+
+  if(!crvData.knots) {
+    // Assume it's a bezier curve
+    crvData.knots = [];
+    for(let i=0; i<=crvData.degree; i++) {
+      crvData.knots.push(0);
+    }
+    for(let i=0; i<=crvData.degree; i++) {
+      crvData.knots.push(1);
+    }
+  }
+  let {degree, cpoints, knots} = crvData;
+
+  let bcrv = new BSplineCurve(degree,
+      new NDArray(cpoints), new NDArray(knots),
+      crvData.weights ? new NDArray(crvData.weights) : undefined);
+
+  plotBSplineCurve(bcrv);
+}
+
+function displaySpecificGeometry(object) {
+
+  let bcrv;
+  switch(object.type) {
+    case "LineSegment":
+      bcrv = new LineSegment(object.from, object.to);
+      break;
+  }
+
+  plotBSplineCurve(bcrv);
 }
 
 function displayBezierSurface(bezsrfData) {
@@ -1059,6 +1079,8 @@ window.onload = () => {
     displayBezierCurve(data.object);
   } else if(data.type === 'BSplineCurve') {
     displayBSplineCurve(data.object);
+  } else if(data.type === 'SpecificGeometry') {
+    displaySpecificGeometry(data.object);
   } else if(data.type === 'BezSurf') {
     displayBezierSurface(data.object);
   } else if(data.type === 'BSurf') {

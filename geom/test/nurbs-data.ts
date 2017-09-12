@@ -456,6 +456,15 @@ export const DATA = [
       ]
     }
   },
+  {
+    "name" : "Line1",
+    "type" : "SpecificGeometry",
+    "object" : {
+      "type" : "LineSegment",
+      "from" : [0,1],
+      "to" : [0,4]
+    }
+  }
 
   {
     "name" : "Split Bezier 0",

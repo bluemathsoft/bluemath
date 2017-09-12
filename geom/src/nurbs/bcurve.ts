@@ -24,7 +24,9 @@ import {
   findSpan, getBasisFunction, getBasisFunctionDerivatives,
   bernstein, blossom
 } from './helper'
-import {EPSILON, NDArray,iszero, zeros, AABB, add, mul} from '@bluemath/common'
+import {
+  EPSILON, NDArray,iszero, zeros, AABB, add, mul, arr
+} from '@bluemath/common'
 
 class BezierCurve {
   degree : number;
@@ -789,7 +791,35 @@ class BSplineCurve {
   }
 }
 
+
+class LineSegment extends BSplineCurve {
+  constructor(from:number[],to:number[]) {
+    super(1,arr([from,to]),arr([0,0,1,1]));
+  }
+}
+
+class CircleArc extends BSplineCurve {
+
+}
+
+class Circle extends CircleArc {
+
+}
+
+class EllipseArc extends BSplineCurve {
+
+}
+
+class Ellipse extends EllipseArc {
+
+}
+
 export {
   BezierCurve,
-  BSplineCurve
+  BSplineCurve,
+  LineSegment,
+  Circle,
+  CircleArc,
+  Ellipse,
+  EllipseArc
 }
