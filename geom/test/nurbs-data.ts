@@ -481,6 +481,19 @@ export const DATA = [
     }
   },
   {
+    "name" : "Circle",
+    "type" : "SpecificGeometry",
+    "object" : {
+      "type" : "Circle",
+      "radius" : 4,
+      "coord" : {
+        origin : [0,0,0],
+        x : [1,0,0],
+        z : [0,1,0]
+      }
+    }
+  },
+  {
     "name" : "Split Bezier 0",
     "type" : "Action",
     "object" : {

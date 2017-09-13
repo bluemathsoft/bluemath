@@ -22,7 +22,7 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 import {NDArray,AABB,length,dir,add,mul} from '@bluemath/common'
 import {
   BSplineCurve,BezierCurve,BezierSurface,BSplineSurface,
-  LineSegment, CircleArc
+  LineSegment, CircleArc, Circle
 } from '../src/nurbs'
 import {CoordSystem} from '../src'
 const RESOLUTION = 50;
@@ -484,6 +484,11 @@ function displaySpecificGeometry(object) {
       bcrv = new CircleArc(
         new CoordSystem(object.coord.origin,object.coord.x,object.coord.z),
         object.radius,object.start,object.end);
+      break;
+    case "Circle":
+      bcrv = new Circle(
+        new CoordSystem(object.coord.origin,object.coord.x,object.coord.z),
+        object.radius);
       break;
   }
 

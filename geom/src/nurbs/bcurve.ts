@@ -892,7 +892,9 @@ class CircleArc extends BSplineCurve {
 }
 
 class Circle extends CircleArc {
-
+  constructor(coord:CoordSystem, radius:number) {
+    super(coord,radius, 0, 2*Math.PI);
+  }
 }
 
 
