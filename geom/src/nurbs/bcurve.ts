@@ -800,9 +800,9 @@ class LineSegment extends BSplineCurve {
 
 class CircleArc extends BSplineCurve {
   constructor(coordsys:CoordSystem, radius:number, start:number, end:number) {
-    let O = arr([0,0]);
-    let X = arr([1,0]);
-    let Y = arr([0,1]);
+    let O = arr([0,0,0]);
+    let X = arr([1,0,0]);
+    let Y = arr([0,1,0]);
     if(end < start) {
       end = end + 2*Math.PI;
     }
@@ -824,7 +824,7 @@ class CircleArc extends BSplineCurve {
     let p = 2; // Degree
     let m = n+p+1;
     let U = new NDArray({shape:[m+1]});
-    let P = new NDArray({shape:[n+1,2]});
+    let P = new NDArray({shape:[n+1,3]});
     let wt = new NDArray({shape:[n+1]});
 
     let w1 = Math.cos(dtheta/2); // dtheta/2 is the base angle
@@ -845,21 +845,17 @@ class CircleArc extends BSplineCurve {
       P.set(index+2, P2);
       wt.set(index+2, 1);
       let T2 = <NDArray>add(mul(-Math.sin(angle),X), mul(Math.cos(angle),Y));
-      let P0_ = [P0.getN(0), P0.getN(1), 0];
-      let T0_ = [T0.getN(0), T0.getN(1), 0];
-      let P2_ = [P2.getN(0), P2.getN(1), 0];
-      let T2_ = [T2.getN(0), T2.getN(1), 0];
-      let isect = intersectLineSegLineSeg3D(P0_,T0_,P2_,T2_);
+      let isect = intersectLineSegLineSeg3D(
+        P0.toArray(),
+        (<NDArray>add(P0,T0)).toArray(),
+        P2.toArray(),
+        (<NDArray>add(P2,T2)).toArray(),
+      );
       if(!isect) {
         throw new Error('Intersection in 3D failed');
       }
-      console.log(isect);
-      // let pti = <NDArray>add(arr(P0_),
-      //   mul(<NDArray>sub(arr(T0_),arr(P0_)),isect[0]));
-      let pti = <NDArray>add(arr(P2_),
-          mul(<NDArray>sub(arr(T2_),arr(P2_)),isect[1]));
-      console.log(pti.toString());
-      P.set(index+1,pti.getA(':2'));
+      let pti = <NDArray>add(P0, mul(T0,isect[0]));
+      P.set(index+1,pti);
       wt.set(index+1,w1);
 
       index += 2;

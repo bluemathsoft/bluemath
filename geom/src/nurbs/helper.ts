@@ -253,7 +253,7 @@ function planeFrom3Points(A:NDArray, B:NDArray, C:NDArray) {
  * Input points are assumed to be coordinates in 3D coord system
  * 
  * Algorithm based on C implemention by Paul Bourke
- * http://paulbourke.net/geometry/pointlineplane/lineseglineseg.c
+ * http://paulbourke.net/geometry/pointlineplane/lineline.c
  * 
  * The method will return a tuple with results (ua, ub),
  * where u is the parameter value on each line
