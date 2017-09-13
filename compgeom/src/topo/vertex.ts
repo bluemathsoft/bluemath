@@ -38,7 +38,15 @@ export class Vertex {
   }
 
   walk(heStart:HalfEdge, callback:walkHandler) {
-
+    console.assert(heStart.vertex === this);
+    let count = 0;
+    let heCursor = heStart;
+    do {
+      callback(heCursor, count);
+      console.assert(heCursor.mate().next);
+      heCursor = heCursor.mate().next!;
+      count++;
+    } while(heCursor !== heStart);
   }
 
   degree() : number {

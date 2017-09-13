@@ -65,6 +65,10 @@ export default function testEulerOps() {
         assert.equal(f0.iloops[0].length, 4);
 
         topo.EulerOps.KEV(e1,v2);
+        assert.equal(v0.degree(), 1);
+        assert.equal(v1.degree(), 1);
+        assert.equal(f0.iloops[0].length, 2);
+
         topo.EulerOps.KEV(e0,v1);
         topo.EulerOps.KVFS(body);
       });
@@ -82,11 +86,44 @@ export default function testEulerOps() {
         assert.equal(f0.iloops[0].length, 6);
 
         topo.EulerOps.KEV(e2,v3);
+        assert.equal(v0.degree(), 1);
+        assert.equal(v1.degree(), 2);
+        assert.equal(v2.degree(), 1);
+        assert.equal(f0.iloops[0].length, 4);
+
         topo.EulerOps.KEV(e1,v2);
         topo.EulerOps.KEV(e0,v1);
         topo.EulerOps.KVFS(body);
       });
 
+    });
+
+    QUnit.module('MEF-KEF', () => {
+      QUnit.test('1', assert => {
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS();
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0);
+        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1);
+
+        let {edge:e2,face:f1} = topo.EulerOps.MEF(f0,v2,v1,v0,v1);
+
+        assert.equal(v0.degree(), 2);
+        assert.equal(v1.degree(), 2);
+        assert.equal(v2.degree(), 2);
+        assert.equal(f0.iloops[0].length, 3);
+        assert.equal(f1.iloops[0].length, 3);
+
+        topo.EulerOps.KEF(e2,f1);
+
+        assert.equal(v0.degree(), 1);
+        assert.equal(v1.degree(), 2);
+        assert.equal(v2.degree(), 1);
+        assert.equal(f0.iloops[0].length, 4);
+
+        topo.EulerOps.KEV(e1,v2);
+        topo.EulerOps.KEV(e0,v1);
+        topo.EulerOps.KVFS(body);
+
+      });
     });
   });
 }

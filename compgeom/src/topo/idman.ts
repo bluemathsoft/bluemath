@@ -27,7 +27,7 @@ export class IDManager {
   static init(labels:string[]) {
     IDManager.idmap = {};
     for(let label of labels) {
-      IDManager.idmap[label] = 0;
+      IDManager.idmap[label] = -1;
     }
   }
 

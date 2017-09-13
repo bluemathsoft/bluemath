@@ -62,13 +62,16 @@ function testTriangulation() {
 
 function testEulerOpsBodyViz() {
   topo.IDManager.init(['B','V','E','F','L','HE']);
+
   let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS();
   let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0);
-  let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v1);
+  let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1);
+  let {edge:e2,face:f1} = topo.EulerOps.MEF(f0,v2, v1,v0,v1);
 
   let dot = body.toDOT();
   let img = Viz(dot, {format:"png-image-element"});
   document.body.appendChild(img);
+
 }
 
 window.onload = () => {

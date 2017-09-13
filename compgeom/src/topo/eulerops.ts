@@ -196,6 +196,7 @@ export class EulerOps {
     let newEdge = body.newEdge();
     let newFace = body.newFace();
     let newLoop = new Loop(newFace);
+    newFace.addLoop(newLoop);
 
     let hePlus = body.newHalfEdge();
     let heMinus = body.newHalfEdge();
