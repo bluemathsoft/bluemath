@@ -20,7 +20,7 @@
 */
 
 import * as nurbs from './nurbs'
-import {NDArray} from '@bluemath/common'
+import {NDArray,arr,cross} from '@bluemath/common'
 
 class Axis {
   origin : NDArray;
@@ -31,9 +31,15 @@ class CoordSystem {
   origin : NDArray;
   z : NDArray;
   x : NDArray;
+  y : NDArray;
 
-  fromXY(coord:number[]|NDArray) : NDArray {
-
+  constructor(origin:NDArray|number[],
+    x:NDArray|number[], z:NDArray|number[])
+  {
+    this.origin = origin instanceof NDArray ? origin : arr(origin);
+    this.x = x instanceof NDArray ? x : arr(x);
+    this.z = z instanceof NDArray ? z : arr(z);
+    this.y = cross(this.z,this.x);
   }
 }
 

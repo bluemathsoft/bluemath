@@ -469,7 +469,15 @@ export const DATA = [
     "name" : "CircleArc1",
     "type" : "SpecificGeometry",
     "object" : {
-      "type" : "CircleArc"
+      "type" : "CircleArc",
+      "radius" : 4,
+      "coord" : {
+        origin : [0,0,0],
+        x : [1,0,0],
+        z : [0,0,1]
+      },
+      "start" : Math.PI/4,
+      "end" : 3*Math.PI/2
     }
   },
   {

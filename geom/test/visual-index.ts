@@ -24,6 +24,7 @@ import {
   BSplineCurve,BezierCurve,BezierSurface,BSplineSurface,
   LineSegment, CircleArc
 } from '../src/nurbs'
+import {CoordSystem} from '../src'
 const RESOLUTION = 50;
 
 import {DATA} from './nurbs-data'
@@ -480,8 +481,9 @@ function displaySpecificGeometry(object) {
       bcrv = new LineSegment(object.from, object.to);
       break;
     case "CircleArc":
-      bcrv = new CircleArc(undefined,4,0,3*Math.PI/2);
-      console.log(bcrv.toString());
+      bcrv = new CircleArc(
+        new CoordSystem(object.coord.origin,object.coord.x,object.coord.z),
+        object.radius,object.start,object.end);
       break;
   }
 

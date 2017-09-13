@@ -800,9 +800,9 @@ class LineSegment extends BSplineCurve {
 
 class CircleArc extends BSplineCurve {
   constructor(coordsys:CoordSystem, radius:number, start:number, end:number) {
-    let O = arr([0,0,0]);
-    let X = arr([1,0,0]);
-    let Y = arr([0,1,0]);
+    let O = coordsys.origin;
+    let X = coordsys.x;
+    let Y = coordsys.y;
     if(end < start) {
       end = end + 2*Math.PI;
     }
