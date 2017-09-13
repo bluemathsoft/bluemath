@@ -61,4 +61,10 @@ export class Loop {
     return n;
   }
 
+  toString() {
+    let s = this.id+': ';
+    HalfEdge.walk(this.halfedge!, he => {s += he.id+' '});
+    return s;
+  }
+
 }

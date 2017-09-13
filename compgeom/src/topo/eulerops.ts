@@ -25,6 +25,7 @@ import {Edge} from './edge'
 import {HalfEdge} from './halfedge'
 import {Body} from './body'
 import {Loop} from './loop'
+import {NDArray} from '@bluemath/common'
 
 export type MVFS_result = {
   vertex : Vertex;
@@ -44,10 +45,10 @@ export type MEF_result = {
 
 export class EulerOps {
 
-  static MVFS() : MVFS_result {
+  static MVFS(coord:NDArray) : MVFS_result {
     let body = new Body();
 
-    let vertex = body.newVertex();
+    let vertex = body.newVertex(coord);
     let face = body.newFace();
     let loop = new Loop(face);
     face.addLoop(loop);
@@ -68,11 +69,11 @@ export class EulerOps {
     body.unlink();
   }
 
-  private static LMEV(he0:HalfEdge, he1:HalfEdge) {
+  private static LMEV(he0:HalfEdge, he1:HalfEdge, coord:NDArray) {
     console.assert(he0.loop);
     let body = he0.loop!.face.body;
 
-    let vertex = body.newVertex();
+    let vertex = body.newVertex(coord);
     let edge = body.newEdge();
 
     if(he0 === he1) {
@@ -103,12 +104,12 @@ export class EulerOps {
     return {vertex, edge};
   }
 
-  static MEV(face:Face, vertex:Vertex) {
+  static MEV(face:Face, vertex:Vertex, coord:NDArray) {
     let he0 = face.findHalfEdge(vertex);
     console.assert(he0);
     let he1 = he0!.isSolitary() ? he0 : he0!.prevInLoop();
     console.assert(he1);
-    return EulerOps.LMEV(he0!, he1!);
+    return EulerOps.LMEV(he0!, he1!, coord);
   }
 
   static KEV(edge:Edge, vertex:Vertex) {

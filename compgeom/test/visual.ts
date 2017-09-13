@@ -19,7 +19,7 @@
 
 */
 
-import {NDArray} from '@bluemath/common'
+import {NDArray,arr} from '@bluemath/common'
 import {Topology} from '../src/topo'
 import {Triangulation} from '../src/delaunay'
 
@@ -62,15 +62,23 @@ function testTriangulation() {
 
 function testEulerOpsBodyViz() {
   topo.IDManager.init(['B','V','E','F','L','HE']);
+  let pA = arr([100,100]);
+  let pB = arr([200,100]);
+  let pC = arr([200,200]);
+  let pD = arr([100,200]);
 
-  let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS();
-  let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0);
-  let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1);
-  let {edge:e2,face:f1} = topo.EulerOps.MEF(f0,v2, v1,v0,v1);
+  let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
+  let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
+  let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
+  let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v2,pD);
+
+  let {edge:e3,face:f1} = topo.EulerOps.MEF(f0,v1,v2,v3,v2);
 
   let dot = body.toDOT();
   let img = Viz(dot, {format:"png-image-element"});
   document.body.appendChild(img);
+
+  // document.body.innerHTML = body.toSVG();
 
 }
 

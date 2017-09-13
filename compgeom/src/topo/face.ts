@@ -43,6 +43,10 @@ export class Face {
     this.iloops.push(loop);
   }
 
+  setOuterloop(loop:Loop) {
+    this.oloop = loop;
+  }
+
   unlink() {
 
   }

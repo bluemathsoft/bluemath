@@ -49,7 +49,7 @@ export class Body {
     return face;
   }
 
-  newVertex(coord?:NDArray) : Vertex {
+  newVertex(coord:NDArray) : Vertex {
     let vertex = new Vertex(coord);
     this.vertices.push(vertex);
     return vertex;
@@ -176,5 +176,22 @@ export class Body {
 
     s += '}';
     return s;
+  }
+
+  toSVG(width=600, height=600) {
+    const VTX_RADIUS = 3;
+    const VTX_STYLE = 'fill:#f88';
+    let vtxmarkup = `<g>`;
+    for(let i=0; i<this.vertices.length; i++) {
+      let x = this.vertices[i].coord!.getN(0);
+      let y = this.vertices[i].coord!.getN(1);
+      vtxmarkup += `<circle cx=${x} cy=${height-y} `+
+        `r=${VTX_RADIUS} style="${VTX_STYLE}"></circle>\n`;
+    }
+    vtxmarkup += `</g>`;
+
+    return `<svg width=${width} height=${height}>\n`+
+      vtxmarkup+'\n'+
+    `</svg>`;
   }
 }
