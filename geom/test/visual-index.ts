@@ -1001,6 +1001,14 @@ function performAction(actionData) {
         crvdef.weights ? new NDArray(crvdef.weights) : undefined);
     let bezcrvs = crvSource.decompose();
     displayCurveDecomposition(crvSource, bezcrvs);
+  } else if(actionData.actiontype === 'split_curve') {
+    let crvdef = DATA_MAP[nameToKey(actionData.input)].object;
+    let crvSource = new BSplineCurve(crvdef.degree,
+        new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
+        crvdef.weights ? new NDArray(crvdef.weights) : undefined);
+    let crvTarget = crvSource.split(actionData.parameter);
+    displayCurveComparision(crvSource, crvTarget,
+      ['Before Knot Refinement','After Knot Refinement']);
   } else if(actionData.actiontype === 'decompose_surf') {
     let srfdef = DATA_MAP[nameToKey(actionData.input)].object;
     let srfSource = new BSplineSurface(srfdef.u_degree,srfdef.v_degree,
@@ -1049,6 +1057,7 @@ function performAction(actionData) {
     }
     displaySurfaceComparision(srfSource, srfTarget,
       ['Before knot refinement','After knot refinement']);
+
   }
 }
 

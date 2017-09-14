@@ -25,7 +25,7 @@ import {
   bernstein, blossom, intersectLineSegLineSeg3D
 } from './helper'
 import {
-  EPSILON, NDArray,iszero, zeros, AABB, add, mul, arr, sub
+  EPSILON, NDArray,iszero, zeros, AABB, add, mul, arr, sub, isequal
 } from '@bluemath/common'
 import {CoordSystem} from '..'
 
@@ -277,6 +277,35 @@ class BSplineCurve {
 
   get dimension() {
     return this.cpoints.shape[1];
+  }
+
+  split(uk:number) {
+    let r = this.degree;
+    // Count number of times uk already occurs in the knot vector
+    // We have to add uk until it occurs p-times in the knot vector,
+    // where p is the degree of the curve
+    // In case there are knots in the knot vector that are equal to uk,
+    // within the error tolerance, then we replace those knots with uk
+    // Such knot vector is named safeknots.
+    let safeknots = [];
+    for(let i=0; i<this.knots.data.length; i++) {
+      if(isequal(this.knots.getN(i), uk)) {
+        safeknots.push(uk);
+        r--;
+      } else {
+        safeknots.push(this.knots.getN(i));
+      }
+    }
+    let addknots = [];
+    for(let i=0; i<r; i++) {
+      addknots.push(uk);
+    }
+    let copy = this.clone();
+    copy.setKnots(arr(safeknots));
+    copy.refineKnots(addknots);
+
+    return copy;
+    
   }
 
   setKnots(knots:NDArray) {
