@@ -371,6 +371,7 @@ class BSplineCurve {
   }
 
   /**
+   * Inserts knot un in the knot vector r-times
    * Algorithm A5.1 from "The NURBS Book"
    */
   insertKnot(un:number, r:number) {
@@ -486,7 +487,9 @@ class BSplineCurve {
   }
 
   /**
+   * Inserts multiple knots into the knot vector at once
    * Algorithm A5.4 from "The NURBS Book"
+   * See http://www.bluemathsoftware.com/pages/nurbs/funalgo
    */
   refineKnots(ukList:number[]) {
     let m = this.knots.length-1;
@@ -601,6 +604,7 @@ class BSplineCurve {
    *  = Length of knot vector - 2*(p+1) + 1
    *  = (m+1) - 2*(p+1) + 1
    *  = m - 2*p
+   * See http://www.bluemathsoftware.com/pages/nurbs/funalgo
    */
   decompose() {
     let p = this.degree;

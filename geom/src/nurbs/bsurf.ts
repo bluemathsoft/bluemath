@@ -306,6 +306,12 @@ class BSplineSurface {
 
   }
 
+  /**
+   * Inserts knot un in the U knot vector r-times
+   * Ref: Algorithm A5.3 "The NURBS book"
+   * @param un Knot to be inserted
+   * @param r Number of times to insert the knot
+   */
   insertKnotU(un:number, r:number) {
     let p = this.u_degree;
 
@@ -395,6 +401,12 @@ class BSplineSurface {
     this.v_knots = VQ
   }
 
+  /**
+   * Inserts knot vn in the V knot vector r-times
+   * Ref: Algorithm A5.3 "The NURBS book"
+   * @param vn Knot to be inserted
+   * @param r Number of times to insert the knot
+   */
   insertKnotV(vn:number, r:number) {
     let q = this.v_degree;
 
@@ -484,11 +496,19 @@ class BSplineSurface {
     this.v_knots = VQ;
   }
 
+  /**
+   * Insert knots in U and V knot vectors 
+   * See http://www.bluemathsoftware.com/pages/nurbs/funalgo
+   */
   insertKnotUV(un:number, vn:number, ur:number,vr:number) {
     this.insertKnotU(un, ur);
     this.insertKnotV(vn, vr);
   }
 
+  /**
+   * Inserts multiple knots into the U knot vector at once
+   * See http://www.bluemathsoftware.com/pages/nurbs/funalgo
+   */
   refineKnotsU(uklist:number[]) {
     let mU = this.u_knots.length-1;
     let mV = this.v_knots.length-1;
@@ -574,6 +594,10 @@ class BSplineSurface {
     this.cpoints = Q;
   }
 
+  /**
+   * Inserts multiple knots into the V knot vector at once
+   * See http://www.bluemathsoftware.com/pages/nurbs/funalgo
+   */
   refineKnotsV(vklist:number[]) {
     let mU = this.u_knots.length-1;
     let mV = this.v_knots.length-1;
@@ -658,6 +682,10 @@ class BSplineSurface {
     this.cpoints = Q;
   }
 
+  /**
+   * Inserts multiple knots into the U and V knot vectors at once
+   * See http://www.bluemathsoftware.com/pages/nurbs/funalgo
+   */
   refineKnotsUV(uklist:number[], vklist:number[]) {
     this.refineKnotsU(uklist);
     this.refineKnotsV(vklist);
@@ -807,6 +835,14 @@ class BSplineSurface {
     return Q;
   }
 
+  /**
+   * Creates grid of Bezier surfaces that represent this BSpline surface.
+   * The routine first computes bezier strips along u (i.e. BSpline surfaces that
+   * are Bezier in one direction and BSpline in other). Subsequently 
+   * decompose it called on each of these strips in the v direction
+   * Algorithm A5.7 from "The NURBS Book"
+   * See http://www.bluemathsoftware.com/pages/nurbs/funalgo
+   */
   decompose() {
     let Q = this.decomposeU();
     // Using Q, create Bezier strip surfaces. These are individual BSurf objects

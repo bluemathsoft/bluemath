@@ -473,22 +473,22 @@ function displayBSplineCurve(crvData) {
   plotBSplineCurve(bcrv);
 }
 
-function displaySpecificGeometry(object) {
+function displaySpecificGeometry(o) {
 
   let bcrv;
-  switch(object.type) {
+  switch(o.type) {
     case "LineSegment":
-      bcrv = new LineSegment(object.from, object.to);
+      bcrv = new LineSegment(o.from, o.to);
       break;
     case "CircleArc":
       bcrv = new CircleArc(
-        new CoordSystem(object.coord.origin,object.coord.x,object.coord.z),
-        object.radius,object.start,object.end);
+        new CoordSystem(o.coord.origin,o.coord.x,o.coord.z),
+        o.radius,o.start,o.end);
       break;
     case "Circle":
       bcrv = new Circle(
-        new CoordSystem(object.coord.origin,object.coord.x,object.coord.z),
-        object.radius);
+        new CoordSystem(o.coord.origin,o.coord.x,o.coord.z),
+        o.radius);
       break;
   }
 
