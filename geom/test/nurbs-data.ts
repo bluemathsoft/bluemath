@@ -290,7 +290,18 @@ export const DATA = [
     }
   },
   {
-    "name": "Simple BSpline 7 (3D)",
+    "name": "Simple BSpline 7",
+    "type": "BSplineCurve",
+    "object": {
+      "degree": 3,
+      "knots": [0, 0, 0, 0, 0.7, 0.7, 0.9, 1, 1, 1, 1],
+      "cpoints": [
+        [-1, 0], [-1, 1], [0, 1], [0, 0], [1, 0], [1.75, 0.5], [1.2, 1.5]
+      ]
+    }
+  },
+  {
+    "name": "Simple BSpline 8 (3D)",
     "type": "BSplineCurve",
     "object": {
       "degree": 3,
@@ -570,6 +581,15 @@ export const DATA = [
     }
   },
   {
+    "name" : "Subdivide Simple BSpline 7 into two halves",
+    "type" : "Action",
+    "object" : {
+      "actiontype" : "refine_knot_curve",
+      "input" : "Simple BSpline 7",
+      "knots_to_add" : [0.5,0.5,0.5]
+    }
+  },
+  {
     "name" : "Split Simple BSpline 5 in the middle",
     "type" : "Action",
     "object" : {
@@ -584,6 +604,15 @@ export const DATA = [
     "object" : {
       "actiontype" : "split_curve",
       "input" : "Simple BSpline 6",
+      "parameter" : 0.5
+    }
+  },
+  {
+    "name" : "Split Simple BSpline 7 in the middle",
+    "type" : "Action",
+    "object" : {
+      "actiontype" : "split_curve",
+      "input" : "Simple BSpline 7",
       "parameter" : 0.5
     }
   },

@@ -288,6 +288,8 @@ class BSplineCurve {
     // within the error tolerance, then we replace those knots with uk
     // Such knot vector is named safeknots.
     let safeknots = [];
+
+
     for(let i=0; i<this.knots.data.length; i++) {
       if(isequal(this.knots.getN(i), uk)) {
         safeknots.push(uk);
@@ -304,7 +306,53 @@ class BSplineCurve {
     copy.setKnots(arr(safeknots));
     copy.refineKnots(addknots);
 
-    return copy;
+    // Find the index of the first uk knot in the new knot vector
+    let ibreak = -1;
+    for(let i=0; i<copy.knots.data.length; i++) {
+      if(isequal(copy.knots.getN(i), uk)) {
+        ibreak = i;
+        break;
+      }
+    }
+    console.assert(ibreak >= 0);
+
+    // The control point on the curve, where the split will happen is
+    // at index ibreak-1 in the control points array (found by observation)
+    // The left curve will have ibreak control points and
+    // right curve will have N-ibreak+1 control points
+    // (where N is number of control point in original curve)
+    // The control point at ibreak-1 will be repeated in left and right curves
+    // It will be the last control point of left and first control point of
+    // right curve.
+
+    let lcpoints = copy.cpoints.getA(':'+ibreak);
+    let rcpoints = copy.cpoints.getA((ibreak-1)+':');
+
+    let lknots = copy.knots.getA(':'+ibreak).toArray();
+    // Scale the internal knot values, to fit into left curve 0-1 param range
+    for(let i=copy.degree+1; i<lknots.length; i++) {
+      lknots[i] = lknots[i]/uk;
+    }
+    // Append clamped knots to the left curve at 1
+    for(let i=0; i<=copy.degree; i++) {
+      lknots.push(1);
+    }
+
+    let rknots = copy.knots.getA((ibreak+copy.degree)+':').toArray();
+    // Scale the internal knot values, to fit into right curve 0-1 param range
+    for(let i=0; i<rknots.length-copy.degree; i++) {
+      rknots[i] = (rknots[i]-uk)/(1-uk);
+    }
+    // Prepend clamped knots to the right curve at 0
+    for(let i=0; i<=copy.degree; i++) {
+      rknots.unshift(0);
+    }
+
+    // TODO : Rational
+    let lcurve = new BSplineCurve(copy.degree, lcpoints, arr(lknots)); 
+    let rcurve = new BSplineCurve(copy.degree, rcpoints, arr(rknots));
+
+    return [lcurve, rcurve];
     
   }
 

@@ -622,7 +622,7 @@ function displayBSplineSurface(bsrfData) {
   Plotly.newPlot(pelem, traces, BEZSURF_CONSTRUCTION_LAYOUT);
 }
 
-function displayCurveDecomposition(crvsrc, bezcrvs) {
+function displayCurveDecomposition(crvsrc, bcrvs, titles) {
   let pelem = $('#action-viz #mainplot').get(0);
 
   let traces = [];
@@ -647,8 +647,11 @@ function displayCurveDecomposition(crvsrc, bezcrvs) {
     name:'Control Points'
   });
 
-  for(let bezcrv of bezcrvs) {
-    let tess = bezcrv.tessellate(RESOLUTION);
+  let aabbTotal = crvsrc.aabb();
+  let aabbTarget = new AABB(2);
+
+  for(let bcrv of bcrvs) {
+    let tess = bcrv.tessellate(RESOLUTION);
     traces.push({
       x: Array.from(tess.get(':',0).data),
       y: Array.from(tess.get(':',1).data),
@@ -659,14 +662,36 @@ function displayCurveDecomposition(crvsrc, bezcrvs) {
       name:'Curve'
     });
     traces.push({
-      x: Array.from(bezcrv.cpoints.get(':',0).data),
-      y: Array.from(bezcrv.cpoints.get(':',1).data),
+      x: Array.from(bcrv.cpoints.get(':',0).data),
+      y: Array.from(bcrv.cpoints.get(':',1).data),
       xaxis : 'x2',
       yaxis : 'y2',
       type : 'scatter',
       mode : 'markers',
       name:'Control Points'
     });
+    aabbTarget.merge(bcrv.aabb());
+  }
+
+  aabbTotal.merge(aabbTarget);
+
+  let xmin = aabbTotal.min.get(0);
+  let ymin = aabbTotal.min.get(1);
+  let xmax = aabbTotal.max.get(0);
+  let ymax = aabbTotal.max.get(1);
+  let plotXRange = [xmin-0.1*Math.abs(xmin), xmax+0.1*Math.abs(xmax)];
+  let plotYRange = [ymin-0.1*Math.abs(ymin), ymax+0.1*Math.abs(ymax)];
+  CURVE_COMPARISION_LAYOUT.xaxis.range = plotXRange;
+  CURVE_COMPARISION_LAYOUT.xaxis2.range = plotXRange;
+  CURVE_COMPARISION_LAYOUT.yaxis.range = plotYRange;
+  CURVE_COMPARISION_LAYOUT.yaxis2.range = plotYRange;
+
+  if(titles) {
+    CURVE_COMPARISION_LAYOUT.yaxis.title = titles[0];
+    CURVE_COMPARISION_LAYOUT.yaxis2.title = titles[1];
+  } else {
+    CURVE_COMPARISION_LAYOUT.yaxis.title = undefined;
+    CURVE_COMPARISION_LAYOUT.yaxis2.title = undefined;
   }
 
   Plotly.newPlot(pelem, traces, CURVE_COMPARISION_LAYOUT);
@@ -1000,15 +1025,16 @@ function performAction(actionData) {
         new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
         crvdef.weights ? new NDArray(crvdef.weights) : undefined);
     let bezcrvs = crvSource.decompose();
-    displayCurveDecomposition(crvSource, bezcrvs);
+    displayCurveDecomposition(crvSource, bezcrvs,
+      ['Original','Decomposed Bezier pieces']);
   } else if(actionData.actiontype === 'split_curve') {
     let crvdef = DATA_MAP[nameToKey(actionData.input)].object;
     let crvSource = new BSplineCurve(crvdef.degree,
         new NDArray(crvdef.cpoints), new NDArray(crvdef.knots),
         crvdef.weights ? new NDArray(crvdef.weights) : undefined);
-    let crvTarget = crvSource.split(actionData.parameter);
-    displayCurveComparision(crvSource, crvTarget,
-      ['Before Knot Refinement','After Knot Refinement']);
+    let splitCurves = crvSource.split(actionData.parameter);
+    displayCurveDecomposition(crvSource, splitCurves,
+      ['Original','Split BSpline curves']);
   } else if(actionData.actiontype === 'decompose_surf') {
     let srfdef = DATA_MAP[nameToKey(actionData.input)].object;
     let srfSource = new BSplineSurface(srfdef.u_degree,srfdef.v_degree,
