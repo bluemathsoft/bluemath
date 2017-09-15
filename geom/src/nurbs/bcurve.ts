@@ -279,6 +279,11 @@ class BSplineCurve {
     return this.cpoints.shape[1];
   }
 
+  /**
+   * Split the curve at given parameter value and return two bspline
+   * curves. The two curves put together will exactly represent the
+   * original curve.
+   */
   split(uk:number) {
     let r = this.degree;
     // Count number of times uk already occurs in the knot vector
@@ -288,7 +293,6 @@ class BSplineCurve {
     // within the error tolerance, then we replace those knots with uk
     // Such knot vector is named safeknots.
     let safeknots = [];
-
 
     for(let i=0; i<this.knots.data.length; i++) {
       if(isequal(this.knots.getN(i), uk)) {
