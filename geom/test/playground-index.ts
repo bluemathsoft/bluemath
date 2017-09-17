@@ -20,16 +20,23 @@ along with bluemath. If not, see <http://www.gnu.org/licenses/>.
 */
 
 import $ = require("jquery");
-(<any>window).jQuery = $;
 require('select2');
-
-//import {Plots} from 'plotly.js'
-//console.log((<any>window).Plotly);
-//console.log(Plots);
+import * as Plotly from 'plotly.js/lib/core'
 
 $(document).ready(function () {
   $('.js-example-basic-single').select2({
   }).on('change',function() {
     console.log($('.js-example-basic-single').val());
-  });;
+  });
+
+  let plotDiv = document.createElement('div');
+  document.body.appendChild(plotDiv);
+  plotDiv.style.width = '600px';
+  plotDiv.style.height = '600px';
+
+	Plotly.plot( plotDiv, [{
+    x: [1, 2, 3, 4, 5],
+    y: [1, 2, 4, 8, 16] }], {
+    margin: { t: 0 } }
+  );
 });
