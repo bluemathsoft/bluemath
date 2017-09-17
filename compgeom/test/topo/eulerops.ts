@@ -31,7 +31,7 @@ export default function testEulerOps() {
 
   QUnit.module('Euler Ops', () => {
     QUnit.test('MVFS-KVFS', assert => {
-      topo.IDManager.init(['B','V','E','F','L','HE']);
+      topo.IDManager.init();
       let result = topo.EulerOps.MVFS(pA);
 
       assert.ok(result.body !== null);
@@ -49,7 +49,7 @@ export default function testEulerOps() {
 
     QUnit.module('MEV-KEV', () => {
       QUnit.test('1', assert => {
-        topo.IDManager.init(['B','V','E','F','L','HE']);
+        topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
         let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pA);
 
@@ -62,7 +62,7 @@ export default function testEulerOps() {
       });
 
       QUnit.test('2', assert => {
-        topo.IDManager.init(['B','V','E','F','L','HE']);
+        topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
         let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
         let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
@@ -82,7 +82,7 @@ export default function testEulerOps() {
       });
 
       QUnit.test('3 branch', assert => {
-        topo.IDManager.init(['B','V','E','F','L','HE']);
+        topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
         let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
         let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
@@ -109,7 +109,7 @@ export default function testEulerOps() {
 
     QUnit.module('MEF-KEF', () => {
       QUnit.test('3-Edge face', assert => {
-        topo.IDManager.init(['B','V','E','F','L','HE']);
+        topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
         let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
         let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
@@ -135,7 +135,7 @@ export default function testEulerOps() {
       });
 
       QUnit.test('3-Edge face (shorthand)', assert => {
-        topo.IDManager.init(['B','V','E','F','L','HE']);
+        topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
         let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
         let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
@@ -161,7 +161,7 @@ export default function testEulerOps() {
       });
 
       QUnit.test('Rectangular face', assert => {
-        topo.IDManager.init(['B','V','E','F','L','HE']);
+        topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
         let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
         let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
@@ -194,7 +194,7 @@ export default function testEulerOps() {
       });
 
       QUnit.test('Topo 4V4E2F', assert => {
-        topo.IDManager.init(['B','V','E','F','L','HE']);
+        topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
         let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
         let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);

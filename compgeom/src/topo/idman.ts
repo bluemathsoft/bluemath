@@ -24,7 +24,8 @@ export class IDManager {
 
   static idmap : any;
 
-  static init(labels:string[]) {
+  static init() {
+    let labels = ['B','V','E','F','L','HE'];
     IDManager.idmap = {};
     for(let label of labels) {
       IDManager.idmap[label] = -1;
