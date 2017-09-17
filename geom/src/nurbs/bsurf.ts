@@ -307,15 +307,18 @@ class BSplineSurface {
     if(this.isFlat(100*tolerance)) {
       tessGrid.push(this.tessellatePoints(10));
     } else {
+      /*
       let subgrid = this.split(0.5,0.5);
       for(surf of subgrid) {
         tessGrid.push(surf.tessellatePoints(10));
       }
+      */
     }
     return tessGrid;
   }
 
   split(uk:number, vk:number) {
+    uk;vk;
     return [];
   }
 

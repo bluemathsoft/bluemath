@@ -25,11 +25,11 @@ import {
   bernstein, blossom, intersectLineSegLineSeg3D
 } from './helper'
 import {
-  EPSILON, NDArray,iszero, zeros, AABB, add, mul, arr, sub, isequal
+  EPSILON, NDArray,iszero, zeros, AABB, add, mul, arr, isequal
 } from '@bluemath/common'
 import {CoordSystem} from '..'
 
-class BezierCurve {
+export class BezierCurve {
   degree : number;
   cpoints : NDArray;
   weights? : NDArray;
@@ -240,7 +240,7 @@ class BezierCurve {
 /**
  * @hidden
  */
-class BSplineCurve {
+export class BSplineCurve {
 
   degree : number;
   cpoints : NDArray;
@@ -877,13 +877,13 @@ class BSplineCurve {
   }
 }
 
-class LineSegment extends BSplineCurve {
+export class LineSegment extends BSplineCurve {
   constructor(from:number[],to:number[]) {
     super(1,arr([from,to]),arr([0,0,1,1]));
   }
 }
 
-class CircleArc extends BSplineCurve {
+export class CircleArc extends BSplineCurve {
   constructor(coordsys:CoordSystem, radius:number, start:number, end:number) {
     let O = coordsys.origin;
     let X = coordsys.x;
@@ -976,17 +976,8 @@ class CircleArc extends BSplineCurve {
   }
 }
 
-class Circle extends CircleArc {
+export class Circle extends CircleArc {
   constructor(coord:CoordSystem, radius:number) {
     super(coord,radius, 0, 2*Math.PI);
   }
-}
-
-
-export {
-  BezierCurve,
-  BSplineCurve,
-  LineSegment,
-  Circle,
-  CircleArc
 }

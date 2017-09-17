@@ -9,8 +9,8 @@
     "watch-test": "webpack --watch --config webpack.test.config.js",
     "build-visual": "webpack --config webpack.visual.config.js",
     "watch-visual": "webpack --watch --config webpack.visual.config.js",
-    "build-glvisual": "webpack --config webpack.glvisual.config.js",
-    "watch-glvisual": "webpack --watch --config webpack.glvisual.config.js",
+    "build-playground": "webpack --config webpack.playground.config.js",
+    "watch-playground": "webpack --watch --config webpack.playground.config.js",
     "prepare": "(cd src; tsc -p .)"
   },
   "repository": {
@@ -30,9 +30,14 @@
   "license": "AGPL-3.0",
   "devDependencies": {
     "@types/jquery": "^3.2.12",
+    "@types/plotly.js": "^1.28.5",
     "@types/qunit": "^2.0.31",
+    "@types/select2": "^4.0.41",
     "@types/three": "^0.84.20",
     "awesome-typescript-loader": "^3.2.3",
+    "jquery": "^3.2.1",
+    "plotly.js": "^1.30.1",
+    "select2": "^4.0.3",
     "source-map-loader": "^0.2.1",
     "three": "^0.87.1",
     "three-orbitcontrols-ts": "^0.1.2",
