@@ -19,9 +19,6 @@
 
 */
 
-import {NDArray} from '@bluemath/common'
-import {Topology} from '../src/topo'
-
 import testEulerOps from './topo/eulerops'
 import testDelaunayHelper from './delaunay/helper'
 

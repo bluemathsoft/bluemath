@@ -63,9 +63,6 @@ export class Triangulation {
     return new Triangulation(points,triangles,edges,vertices);
   }
 
-  isEdgeIllegal(edgeIdx:number) {
-
-  }
 
   runDelaunay() {
 

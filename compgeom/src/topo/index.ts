@@ -19,7 +19,6 @@
 
 */
 
-import {Topology} from './topology'
 import {Vertex} from './vertex'
 import {Edge} from './edge'
 import {Face} from './face'
@@ -28,7 +27,6 @@ import {EulerOps} from './eulerops'
 import {IDManager} from './idman'
 
 export {
-  Topology,
   Vertex,
   Edge,
   Face,

@@ -19,6 +19,7 @@
 
 */
 
+/*
 import {NDArray,div,arr,length} from '@bluemath/common'
 import {Vertex} from './vertex'
 import {Face} from './face'
@@ -170,3 +171,4 @@ export class Topology {
   }
 
 }
+*/
