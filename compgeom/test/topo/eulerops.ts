@@ -28,6 +28,7 @@ export default function testEulerOps() {
   let pB = arr([200,100]);
   let pC = arr([200,200]);
   let pD = arr([100,200]);
+  let pE = arr([300,300]);
 
   QUnit.module('Euler Ops', () => {
     QUnit.test('MVFS-KVFS', assert => {
@@ -140,7 +141,7 @@ export default function testEulerOps() {
         let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
         let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
 
-        let {edge:e2,face:f1} = topo.EulerOps.MEF(f0,v2,null,v0,null);
+        let {edge:e2,face:f1} = topo.EulerOps.MEF(f0,v2,undefined,v0,undefined);
 
         assert.equal(v0.degree(), 2);
         assert.equal(v1.degree(), 2);
@@ -220,6 +221,116 @@ export default function testEulerOps() {
         assert.equal(v3.degree(), 1);
         assert.equal(f0.iloops[0].length, 6);
 
+        topo.EulerOps.KEV(e2,v3);
+        topo.EulerOps.KEV(e1,v2);
+        topo.EulerOps.KEV(e0,v1);
+        topo.EulerOps.KVFS(body);
+      });
+      QUnit.test('Topo 4V4E2F otherdir', assert => {
+        topo.IDManager.init();
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
+        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
+        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v2,pD);
+        assert.equal(v0.degree(), 1);
+        assert.equal(v1.degree(), 2);
+        assert.equal(v2.degree(), 2);
+        assert.equal(v3.degree(), 1);
+        assert.equal(f0.iloops[0].length, 6);
+
+        let {edge:e3,face:f1} = topo.EulerOps.MEF(f0,v3,v2,v1,v2);
+        assert.equal(v0.degree(), 1);
+        assert.equal(v1.degree(), 3);
+        assert.equal(v2.degree(), 2);
+        assert.equal(v3.degree(), 2);
+        assert.equal(f0.iloops[0].length, 3);
+        assert.equal(f1.iloops[0].length, 5);
+
+        topo.EulerOps.KEF(e3,f1);
+        assert.equal(v0.degree(), 1);
+        assert.equal(v1.degree(), 2);
+        assert.equal(v2.degree(), 2);
+        assert.equal(v3.degree(), 1);
+        assert.equal(f0.iloops[0].length, 6);
+
+        topo.EulerOps.KEV(e2,v3);
+        topo.EulerOps.KEV(e1,v2);
+        topo.EulerOps.KEV(e0,v1);
+        topo.EulerOps.KVFS(body);
+      });
+
+      QUnit.test('Topo 5V5E2F', assert => {
+        topo.IDManager.init();
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
+        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
+        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v2,pD);
+        let {vertex:v4,edge:e3} = topo.EulerOps.MEV(f0,v3,pE);
+
+        assert.equal(v0.degree(), 1);
+        assert.equal(v1.degree(), 2);
+        assert.equal(v2.degree(), 2);
+        assert.equal(v3.degree(), 2);
+        assert.equal(v4.degree(), 1);
+        assert.equal(f0.iloops[0].length, 8);
+
+        let {edge:e4,face:f1} = topo.EulerOps.MEF(f0,v1,v2,v3,v2);
+        assert.equal(v0.degree(), 1);
+        assert.equal(v1.degree(), 3);
+        assert.equal(v2.degree(), 2);
+        assert.equal(v3.degree(), 3);
+        assert.equal(v4.degree(), 1);
+        assert.equal(f0.iloops[0].length, 3);
+        assert.equal(f1.iloops[0].length, 7);
+
+        topo.EulerOps.KEF(e4,f1);
+        assert.equal(v0.degree(), 1);
+        assert.equal(v1.degree(), 2);
+        assert.equal(v2.degree(), 2);
+        assert.equal(v3.degree(), 2);
+        assert.equal(v4.degree(), 1);
+        assert.equal(f0.iloops[0].length, 8);
+
+        topo.EulerOps.KEV(e3,v4);
+        topo.EulerOps.KEV(e2,v3);
+        topo.EulerOps.KEV(e1,v2);
+        topo.EulerOps.KEV(e0,v1);
+        topo.EulerOps.KVFS(body);
+      });
+
+      QUnit.test('Topo 5V5E2F otherdir', assert => {
+        topo.IDManager.init();
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
+        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
+        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v2,pD);
+        let {vertex:v4,edge:e3} = topo.EulerOps.MEV(f0,v3,pE);
+
+        assert.equal(v0.degree(), 1);
+        assert.equal(v1.degree(), 2);
+        assert.equal(v2.degree(), 2);
+        assert.equal(v3.degree(), 2);
+        assert.equal(v4.degree(), 1);
+        assert.equal(f0.iloops[0].length, 8);
+
+        let {edge:e4,face:f1} = topo.EulerOps.MEF(f0,v3,v2,v1,v2);
+        assert.equal(v0.degree(), 1);
+        assert.equal(v1.degree(), 3);
+        assert.equal(v2.degree(), 2);
+        assert.equal(v3.degree(), 3);
+        assert.equal(v4.degree(), 1);
+        assert.equal(f0.iloops[0].length, 3);
+        assert.equal(f1.iloops[0].length, 7);
+
+        topo.EulerOps.KEF(e4,f1);
+        assert.equal(v0.degree(), 1);
+        assert.equal(v1.degree(), 2);
+        assert.equal(v2.degree(), 2);
+        assert.equal(v3.degree(), 2);
+        assert.equal(v4.degree(), 1);
+        assert.equal(f0.iloops[0].length, 8);
+
+        topo.EulerOps.KEV(e3,v4);
         topo.EulerOps.KEV(e2,v3);
         topo.EulerOps.KEV(e1,v2);
         topo.EulerOps.KEV(e0,v1);
