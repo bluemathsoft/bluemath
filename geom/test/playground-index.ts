@@ -87,6 +87,8 @@ function nameToKey(name) {
 
 $(document).ready(function () {
 
+  let urlmatch = /#([\d\w-]+)$/.exec(window.location.href);
+
   let selectData = DATA.map(group => {
     return {
       text : group.groupname,
@@ -99,12 +101,24 @@ $(document).ready(function () {
     };
   });
 
-  $('.js-example-basic-single').select2({
+  $('#pg-selector').select2({
     data : selectData,
     width : '50%'
   }).on('change',function() {
-    console.log($('.js-example-basic-single').val());
+    let choice = $('#pg-selector').val();
+    window.location.href =
+      window.location.protocol + '//' +
+      window.location.host + window.location.pathname + '#' + choice;
+    window.location.reload(true);
   });
+
+  let curChoice;
+  if(urlmatch) {
+    curChoice = urlmatch[1];
+    $('#pg-selector').val(''+curChoice);
+  } else {
+    curChoice = $('#pg-selector:selected').val();
+  }
 
   let plotDiv = document.createElement('div');
   document.body.appendChild(plotDiv);
