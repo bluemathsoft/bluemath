@@ -43,6 +43,12 @@ export class Face {
     this.iloops.push(loop);
   }
 
+  removeLoop(loop:Loop) {
+    let idx = this.iloops.indexOf(loop);
+    console.assert(idx >= 0);
+    this.iloops.splice(idx,1);
+  }
+
   setOuterloop(loop:Loop) {
     this.oloop = loop;
   }

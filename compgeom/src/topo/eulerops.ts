@@ -45,6 +45,10 @@ export type MEF_result = {
 
 export class EulerOps {
 
+  /**
+   * Make Vertex Face Solid
+   * (Solid = Body in this library)
+   */
   static MVFS(coord:NDArray) : MVFS_result {
     let body = new Body();
 
@@ -65,10 +69,17 @@ export class EulerOps {
     return {body,vertex,face};
   }
 
+  /**
+   * Kill Vertex Face Solid
+   * (Solid = Body in this library)
+   */
   static KVFS(body:Body) {
     body.unlink();
   }
 
+  /**
+   * Low level MEV (Make Edge Vertex)
+   */
   private static LMEV(he0:HalfEdge, he1:HalfEdge, coord:NDArray) {
     console.assert(he0.loop);
     let body = he0.loop!.face.body;
@@ -104,6 +115,9 @@ export class EulerOps {
     return {vertex, edge};
   }
 
+  /**
+   * Make Edge Vertex
+   */
   static MEV(face:Face, vertex:Vertex, coord:NDArray) {
     let he0 = face.findHalfEdge(vertex);
     console.assert(he0);
@@ -112,6 +126,9 @@ export class EulerOps {
     return EulerOps.LMEV(he0!, he1!, coord);
   }
 
+  /**
+   * Kill Edge Vertex
+   */
   static KEV(edge:Edge, vertex:Vertex) {
     console.assert(edge.hePlus);
     let loop = edge.hePlus!.loop;
@@ -176,9 +193,12 @@ export class EulerOps {
     }
   }
 
+  /**
+   * Make Edge Face
+   */
   static MEF(face:Face,
-    fromHEV0:Vertex, fromHEV1:Vertex,
-    toHEV0:Vertex, toHEV1:Vertex) : MEF_result
+    fromHEV0:Vertex, fromHEV1:Vertex|undefined,
+    toHEV0:Vertex, toHEV1:Vertex|undefined) : MEF_result
   {
     let heFrom = face.findHalfEdge(fromHEV0, fromHEV1);
     let heTo = face.findHalfEdge(toHEV0, toHEV1);
@@ -318,6 +338,9 @@ export class EulerOps {
     return {edge:newEdge,face:newFace};
   }
 
+  /**
+   * Kill Edge Face
+   */
   static KEF(edge:Edge, face:Face) {
     console.assert(face.iloops.length === 1);
     let loopToKill = face.iloops[0];
@@ -365,5 +388,133 @@ export class EulerOps {
 
     body.removeFace(face);
     face.unlink();
+  }
+
+  /**
+   * Kill Edge Make Ring 
+   * (Ring = Loop in this library)
+   */
+  static KEMR(face:Face, v1:Vertex, v2:Vertex) : Loop {
+    let hePos = face.findHalfEdge(v1, v2);
+    console.assert(hePos);
+    let heNeg = hePos!.mate();
+    let edgeToKill = hePos!.edge;
+    console.assert(edgeToKill);
+
+    let oldLoop = hePos!.loop;
+    console.assert(oldLoop);
+
+    let heNextInNewLoop = hePos!.next;
+    let hePrevInOldLoop = hePos!.prevInLoop();
+    let heNextInOldLoop = hePos!.mate().next;
+    let hePrevInNewLoop = hePos!.mate().prevInLoop();
+    console.assert(heNextInNewLoop);
+    console.assert(hePrevInNewLoop);
+    console.assert(heNextInOldLoop);
+    console.assert(hePrevInOldLoop);
+
+    hePrevInNewLoop!.next = heNextInNewLoop;
+    hePrevInOldLoop!.next = heNextInOldLoop;
+    heNextInNewLoop!.prev = hePrevInNewLoop;
+    heNextInOldLoop!.prev = hePrevInOldLoop;
+
+    let ring = new Loop(face);
+    face.addLoop(ring);
+
+    // Old loop becomes the outer loop of face (needs reconsideration later)
+    face.setOuterloop(oldLoop!);
+
+    let heCursor = hePos!.next;
+
+    do {
+      heCursor!.loop = ring;
+      heCursor = heCursor!.next;
+    } while(heCursor !== hePos!.next);
+
+    ring.halfedge = hePos!.next;
+
+    console.assert(hePos!.vertex);
+    if(hePos!.vertex!.halfedge === hePos) {
+      hePos!.vertex!.halfedge = hePrevInOldLoop!.mate();
+    }
+    console.assert(heNeg.vertex);
+    if(heNeg.vertex!.halfedge == heNeg) {
+      heNeg.vertex!.halfedge = heNextInNewLoop;
+    }
+
+    oldLoop!.halfedge = hePrevInOldLoop;
+
+    hePos!.next = undefined;
+    hePos!.prev = undefined;
+    heNeg!.next = undefined;
+    hePos!.prev = undefined;
+    heNeg!.unlink();
+    hePos!.unlink();
+
+    edgeToKill!.unlink();
+
+    face.body.removeEdge(edgeToKill!);
+    face.body.removeHalfEdge(hePos!);
+    face.body.removeHalfEdge(heNeg!);
+
+    return ring;
+  }
+
+  static MEKR(
+    faceFrom:Face, fromHEV0:Vertex, fromHEV1:Vertex,
+    faceTo:Face, toHEV0:Vertex, toHEV1:Vertex
+  ) : Edge
+  {
+    let heFrom = faceFrom.findHalfEdge(fromHEV0, fromHEV1);
+    let heTo = faceTo.findHalfEdge(toHEV0, toHEV1);
+    let body = faceFrom.body;
+
+    console.assert(heFrom);
+    console.assert(heTo);
+
+    let heFromNextInOuterLoop = heFrom!.next;
+    console.assert(heFromNextInOuterLoop);
+    let heToPrevInRing = heTo!.prevInLoop();
+    console.assert(heToPrevInRing);
+
+    let outerLoop = heFrom!.loop;
+    let ringToKill = heTo!.loop;
+    console.assert(ringToKill);
+
+    let heCursor = heTo;
+    do {
+      heCursor!.loop = outerLoop;
+      heCursor = heCursor!.next;
+      console.assert(heCursor);
+    } while(heCursor !== heTo);
+
+    let hePos = body.newHalfEdge();
+    let heNeg = body.newHalfEdge();
+
+    let edge = body.newEdge();
+    edge.hePlus = hePos;
+    edge.heMinus = heNeg;
+    hePos.edge = edge;
+    heNeg.edge = edge;
+
+    heFrom!.next = heNeg;
+    heNeg.next = heTo;
+    heToPrevInRing!.next = hePos;
+    hePos.next = heFromNextInOuterLoop;
+
+    heNeg.prev = heFrom;
+    heTo!.prev = heNeg;
+    hePos.prev = heToPrevInRing;
+    heFromNextInOuterLoop!.prev = hePos;
+
+    hePos.loop = outerLoop;
+    heNeg.loop = outerLoop;
+    hePos.vertex = toHEV0;
+    heNeg.vertex = fromHEV1;
+
+    ringToKill!.face.removeLoop(ringToKill!);
+    ringToKill!.unlink();
+
+    return edge;
   }
 }

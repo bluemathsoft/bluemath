@@ -46,8 +46,10 @@ export class HalfEdge {
   mate() : HalfEdge {
     console.assert(this.edge);
     if(this.edge!.hePlus === this) {
+      console.assert(this.edge!.heMinus);
       return this.edge!.heMinus!;
     } else {
+      console.assert(this.edge!.hePlus);
       return this.edge!.hePlus!;
     }
   }
