@@ -48,6 +48,9 @@ export default function testEulerOps() {
       topo.EulerOps.KVFS(result.body);
     });
 
+    /*
+      v0  -- e0 --  v1
+    */
     QUnit.module('MEV-KEV', () => {
       QUnit.test('1', assert => {
         topo.IDManager.init();
@@ -62,6 +65,15 @@ export default function testEulerOps() {
         topo.EulerOps.KVFS(body);
       });
 
+    /*
+      v0  -- e0 --  v1
+                    |
+                    |
+                    e1
+                    |
+                    |
+                    v2
+    */
       QUnit.test('2', assert => {
         topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
@@ -82,6 +94,15 @@ export default function testEulerOps() {
         topo.EulerOps.KVFS(body);
       });
 
+    /*
+      v0  -- e0 -- v1
+                /   |
+              /     |
+           e2      e1
+          /         |
+        /           |
+      v3           v2
+    */
       QUnit.test('3 branch', assert => {
         topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
@@ -109,6 +130,16 @@ export default function testEulerOps() {
     });
 
     QUnit.module('MEF-KEF', () => {
+
+      /*
+        v0  -- e0 --  v1
+          \           |
+            \         |
+              e2      e1
+                 \    |
+                   \  |
+                      v2
+      */
       QUnit.test('3-Edge face', assert => {
         topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
@@ -135,6 +166,15 @@ export default function testEulerOps() {
         topo.EulerOps.KVFS(body);
       });
 
+      /*
+        v0  -- e0 --  v1
+          \           |
+            \         |
+              e2      e1
+                 \    |
+                   \  |
+                      v2
+      */
       QUnit.test('3-Edge face (shorthand)', assert => {
         topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
@@ -161,6 +201,15 @@ export default function testEulerOps() {
         topo.EulerOps.KVFS(body);
       });
 
+      /*
+        v0  -- e0 --  v1
+        |             |
+        |             |
+        e3            e1
+        |             |
+        |             |
+        v3  -- e2 --  v2
+      */
       QUnit.test('Rectangular face', assert => {
         topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
@@ -194,6 +243,15 @@ export default function testEulerOps() {
         topo.EulerOps.KVFS(body);
       });
 
+      /*
+        v0  -- e0 --  v1
+                    / |
+                  /   |
+              e3      e1
+            /         |
+          /           |
+        v3  -- e2 --  v2
+      */
       QUnit.test('Topo 4V4E2F', assert => {
         topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
@@ -226,6 +284,16 @@ export default function testEulerOps() {
         topo.EulerOps.KEV(e0,v1);
         topo.EulerOps.KVFS(body);
       });
+
+      /*
+        v0  -- e0 --  v1
+                    / |
+                  /   |
+              e3      e1
+            /         |
+          /           |
+        v3  -- e2 --  v2
+      */
       QUnit.test('Topo 4V4E2F otherdir', assert => {
         topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
@@ -259,6 +327,21 @@ export default function testEulerOps() {
         topo.EulerOps.KVFS(body);
       });
 
+      /*
+        v0  -- e0 --  v1
+                    / |
+                  /   |
+              e4      e1
+            /         |
+          /           |
+        v3  -- e2 --  v2
+            \
+                \
+                   e3
+                      \
+                          \
+                             v4
+      */
       QUnit.test('Topo 5V5E2F', assert => {
         topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
@@ -298,6 +381,21 @@ export default function testEulerOps() {
         topo.EulerOps.KVFS(body);
       });
 
+      /*
+        v0  -- e0 --  v1
+                    / |
+                  /   |
+              e4      e1
+            /         |
+          /           |
+        v3  -- e2 --  v2
+            \
+                \
+                   e3
+                      \
+                          \
+                             v4
+      */
       QUnit.test('Topo 5V5E2F otherdir', assert => {
         topo.IDManager.init();
         let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
