@@ -23,6 +23,8 @@ import $ = require("jquery");
 require('select2');
 import * as Plotly from 'plotly.js/lib/core'
 
+import {DATA} from './pgdata'
+
 function doPlot(plotDiv,width=600,height=600) {
   let layout:Partial<Plotly.Layout> = {
     showlegend : false
@@ -79,11 +81,31 @@ function doPlot(plotDiv,width=600,height=600) {
 
 }
 
+function nameToKey(name) {
+  return name.replace(/[\(\)\s]+/g,'-').toLowerCase();
+}
+
 $(document).ready(function () {
-  // $('.js-example-basic-single').select2({
-  // }).on('change',function() {
-  //   console.log($('.js-example-basic-single').val());
-  // });
+
+  let selectData = DATA.map(group => {
+    return {
+      text : group.groupname,
+      children : (<any[]>group.objects).map(object => {
+        return {
+          id : nameToKey(object.name),
+          text : object.name
+        };
+      })
+    };
+  });
+
+  $('.js-example-basic-single').select2({
+    data : selectData,
+    width : '50%'
+  }).on('change',function() {
+    console.log($('.js-example-basic-single').val());
+  });
+
   let plotDiv = document.createElement('div');
   document.body.appendChild(plotDiv);
 
