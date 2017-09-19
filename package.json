@@ -1,6 +1,6 @@
 {
   "name": "bluemath",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Math kernel in Javascript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -36,6 +36,7 @@
     "@bluemath/common": "^0.1.3",
     "@bluemath/geom": "^0.1.3",
     "@bluemath/linalg": "^0.1.2",
+    "@bluemath/topo": "^0.2.0",
     "set-blocking": "^2.0.0",
     "string-width": "^2.1.1",
     "yargs-parser": "^7.0.0"
