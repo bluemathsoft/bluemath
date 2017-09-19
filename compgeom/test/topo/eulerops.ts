@@ -24,16 +24,16 @@ import {arr} from '@bluemath/common'
 
 export default function testEulerOps() {
 
-  let pA = arr([100,100]);
-  let pB = arr([200,100]);
-  let pC = arr([200,200]);
-  let pD = arr([100,200]);
-  let pE = arr([300,300]);
+  let p0 = arr([100,100]);
+  let p1 = arr([200,100]);
+  let p2 = arr([200,200]);
+  let p3 = arr([100,200]);
+  let p4 = arr([300,300]);
 
   QUnit.module('Euler Ops', () => {
     QUnit.test('MVFS-KVFS', assert => {
       topo.IDManager.init();
-      let result = topo.EulerOps.MVFS(pA);
+      let result = topo.EulerOps.MVFS(p0);
 
       assert.ok(result.body !== null);
       assert.equal(result.body.faces.length, 1);
@@ -54,8 +54,8 @@ export default function testEulerOps() {
     QUnit.module('MEV-KEV', () => {
       QUnit.test('1', assert => {
         topo.IDManager.init();
-        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
-        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pA);
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(p0);
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,p0);
 
         assert.equal(v0.degree(), 1);
         assert.equal(v1.degree(), 1);
@@ -76,9 +76,9 @@ export default function testEulerOps() {
     */
       QUnit.test('2', assert => {
         topo.IDManager.init();
-        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
-        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
-        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(p0);
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,p1);
+        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,p2);
 
         assert.equal(v0.degree(), 1);
         assert.equal(v1.degree(), 2);
@@ -105,10 +105,10 @@ export default function testEulerOps() {
     */
       QUnit.test('3 branch', assert => {
         topo.IDManager.init();
-        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
-        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
-        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
-        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v1,pD);
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(p0);
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,p1);
+        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,p2);
+        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v1,p3);
 
         assert.equal(v0.degree(), 1);
         assert.equal(v1.degree(), 3);
@@ -142,9 +142,9 @@ export default function testEulerOps() {
       */
       QUnit.test('3-Edge face', assert => {
         topo.IDManager.init();
-        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
-        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
-        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(p0);
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,p1);
+        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,p2);
 
         let {edge:e2,face:f1} = topo.EulerOps.MEF(f0,v2,v1,v0,v1);
 
@@ -177,9 +177,9 @@ export default function testEulerOps() {
       */
       QUnit.test('3-Edge face (shorthand)', assert => {
         topo.IDManager.init();
-        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
-        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
-        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(p0);
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,p1);
+        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,p2);
 
         let {edge:e2,face:f1} = topo.EulerOps.MEF(f0,v2,undefined,v0,undefined);
 
@@ -212,10 +212,10 @@ export default function testEulerOps() {
       */
       QUnit.test('Rectangular face', assert => {
         topo.IDManager.init();
-        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
-        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
-        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
-        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v2,pD);
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(p0);
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,p1);
+        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,p2);
+        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v2,p3);
         assert.equal(v0.degree(), 1);
         assert.equal(v1.degree(), 2);
         assert.equal(v2.degree(), 2);
@@ -254,10 +254,10 @@ export default function testEulerOps() {
       */
       QUnit.test('Topo 4V4E2F', assert => {
         topo.IDManager.init();
-        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
-        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
-        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
-        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v2,pD);
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(p0);
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,p1);
+        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,p2);
+        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v2,p3);
         assert.equal(v0.degree(), 1);
         assert.equal(v1.degree(), 2);
         assert.equal(v2.degree(), 2);
@@ -296,10 +296,10 @@ export default function testEulerOps() {
       */
       QUnit.test('Topo 4V4E2F otherdir', assert => {
         topo.IDManager.init();
-        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
-        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
-        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
-        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v2,pD);
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(p0);
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,p1);
+        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,p2);
+        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v2,p3);
         assert.equal(v0.degree(), 1);
         assert.equal(v1.degree(), 2);
         assert.equal(v2.degree(), 2);
@@ -344,11 +344,11 @@ export default function testEulerOps() {
       */
       QUnit.test('Topo 5V5E2F', assert => {
         topo.IDManager.init();
-        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
-        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
-        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
-        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v2,pD);
-        let {vertex:v4,edge:e3} = topo.EulerOps.MEV(f0,v3,pE);
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(p0);
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,p1);
+        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,p2);
+        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v2,p3);
+        let {vertex:v4,edge:e3} = topo.EulerOps.MEV(f0,v3,p4);
 
         assert.equal(v0.degree(), 1);
         assert.equal(v1.degree(), 2);
@@ -398,11 +398,11 @@ export default function testEulerOps() {
       */
       QUnit.test('Topo 5V5E2F otherdir', assert => {
         topo.IDManager.init();
-        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(pA);
-        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,pB);
-        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,pC);
-        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v2,pD);
-        let {vertex:v4,edge:e3} = topo.EulerOps.MEV(f0,v3,pE);
+        let {vertex:v0,face:f0,body} = topo.EulerOps.MVFS(p0);
+        let {vertex:v1,edge:e0} = topo.EulerOps.MEV(f0,v0,p1);
+        let {vertex:v2,edge:e1} = topo.EulerOps.MEV(f0,v1,p2);
+        let {vertex:v3,edge:e2} = topo.EulerOps.MEV(f0,v2,p3);
+        let {vertex:v4,edge:e3} = topo.EulerOps.MEV(f0,v3,p4);
 
         assert.equal(v0.degree(), 1);
         assert.equal(v1.degree(), 2);
