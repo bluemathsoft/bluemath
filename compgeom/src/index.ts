@@ -19,8 +19,3 @@
 
 */
 
-import * as topo from './topo'
-
-export {
-  topo
-}
