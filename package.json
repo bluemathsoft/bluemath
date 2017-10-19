@@ -1,6 +1,6 @@
 {
   "name": "bluemath",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Math kernel in Typescript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
