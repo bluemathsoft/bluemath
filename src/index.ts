@@ -20,20 +20,7 @@
 
 */
 
-import {
-  eye, zeros, empty, arr,
-  range,
-  iszero, isequal,
-  torad, todeg,
-  add, mul, sub, div,
-  dot, cross, length, dir,
-  count,
-
-  NDArray, Complex,
-
-  EPSILON
-} from '@bluemath/common'
-
+import * as common from '@bluemath/common' 
 import * as linalg from '@bluemath/linalg'
 import * as geom from '@bluemath/geom'
 import * as topo from '@bluemath/topo'
@@ -46,23 +33,9 @@ export const version = '0.4.2'; // TODO: populate from package.json
 
 export {
   // Submodules
+  common,
   linalg,
   geom,
-  topo,
-
-  // Constants
-  EPSILON,
-
-  // Classes
-  NDArray, Complex,
-
-  // Ops
-  eye, zeros, empty, arr,
-  range,
-  iszero, isequal,
-  torad, todeg,
-  add, mul, sub, div,
-  dot, cross, length, dir,
-  count
+  topo
 }
 
