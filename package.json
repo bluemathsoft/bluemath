@@ -21,7 +21,7 @@
     "Matrix"
   ],
   "author": "Jayesh Salvi",
-  "license": "AGPL-3.0",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@types/jquery": "^3.2.11",
     "@types/qunit": "^2.0.31",
