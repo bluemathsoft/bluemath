@@ -1,7 +1,14 @@
 # bluemath
 
 [![NPM package](https://img.shields.io/npm/v/bluemath.svg)](https://www.npmjs.com/package/bluemath)
+&#8226;
 [![License](https://img.shields.io/badge/License-APL2.0-blue.svg)](https://choosealicense.com/licenses/apache-2.0/)
+&#8226;
+[**Docs**](http://www.bluemathsoftware.com/docs.html)
+&#8226;
+[**Tests**](http://www.bluemathsoftware.com/tests/index.html)
+&#8226;
+[**Launch Shell**](http://www.bluemathsoftware.com/shell/index.html)
 
 BlueMath is Math kernel library purely written in Javascript. *Work in progress*
 
@@ -56,8 +63,3 @@ const bluemath = require('bluemath');
 console.log(bluemath.eye(3));
 ```
 
-[**API Reference**](http://www.bluemathsoftware.com/docs/index.html)
-
-[**Unit Tests**](http://www.bluemathsoftware.com/tests/index.html)
-
-[**Interactive Shell**](http://www.bluemathsoftware.com/shell/index.html)
