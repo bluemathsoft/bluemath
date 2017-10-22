@@ -1,6 +1,6 @@
 {
   "name": "bluemath",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "description": "Math kernel in Typescript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -23,20 +23,20 @@
   "author": "Jayesh Salvi",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jquery": "^3.2.11",
+    "@types/jquery": "^3.2.15",
     "@types/qunit": "^2.0.31",
-    "awesome-typescript-loader": "^3.2.2",
+    "awesome-typescript-loader": "^3.2.3",
     "blueplot": "^0.1.1",
-    "source-map-loader": "^0.2.1",
+    "source-map-loader": "^0.2.2",
     "typedoc": "^0.9.0",
-    "typescript": "^2.4.2",
-    "webpack": "^3.5.2"
+    "typescript": "^2.5.3",
+    "webpack": "^3.8.1"
   },
   "dependencies": {
     "@bluemath/common": "^0.2.2",
-    "@bluemath/geom": "^0.2.1",
+    "@bluemath/geom": "^0.2.2",
     "@bluemath/linalg": "^0.2.2",
-    "@bluemath/topo": "^0.2.1",
+    "@bluemath/topo": "^0.2.2",
     "set-blocking": "^2.0.0",
     "string-width": "^2.1.1",
     "yargs-parser": "^8.0.0"
